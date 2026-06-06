@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.Tooltip?>
+
+<VBox spacing="0.0" styleClass="profile-card" xmlns="http://javafx.com/javafx/20.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.artist.ProfileHeaderController">
+    <StackPane fx:id="coverPane" prefHeight="190.0" minHeight="190.0" maxHeight="190.0"
+               styleClass="profile-cover">
+        <ImageView fx:id="coverBannerView" pickOnBounds="true" preserveRatio="true"
+                   StackPane.alignment="TOP_LEFT" />
+    </StackPane>
+
+    <VBox spacing="12.0" styleClass="profile-body">
+        <padding>
+            <Insets bottom="12.0" left="16.0" right="16.0" top="16.0" />
+        </padding>
+
+        <HBox alignment="CENTER_LEFT" spacing="12.0">
+            <StackPane prefHeight="88.0" prefWidth="88.0" styleClass="profile-avatar">
+                <ImageView fx:id="profileImageView" fitHeight="80.0" fitWidth="80.0" pickOnBounds="true" preserveRatio="false" styleClass="profile-avatar-image" visible="false" />
+                <Label fx:id="avatarLabelFallback" styleClass="avatar-text" text="A" />
+            </StackPane>
+
+            <VBox spacing="6.0" HBox.hgrow="ALWAYS">
+                <Label fx:id="fullNameLabel" styleClass="profile-name" text="Artist Name" />
+                <Label fx:id="metaLabel" styleClass="profile-meta" text="Specialite - Ville - Inscrit le" />
+            </VBox>
+
+            <Button mnemonicParsing="false" onAction="#onEditProfileClick" styleClass="edit-profile-button" text="✏ Modifier profil" />
+        </HBox>
+    </VBox>
+
+    <HBox alignment="CENTER_LEFT" spacing="2.0" styleClass="tab-nav">
+        <padding>
+            <Insets bottom="0.0" left="8.0" right="8.0" top="0.0" />
+        </padding>
+
+        <Button fx:id="collectionsTabButton" mnemonicParsing="false" onAction="#onCollectionsClick" styleClass="tab-nav-item" text="Collections" />
+        <Button fx:id="bibliothequeTabButton" mnemonicParsing="false" onAction="#onBibliothequeClick" styleClass="tab-nav-item" text="Bibliotheque" />
+        <Button fx:id="contentTabButton" mnemonicParsing="false" onAction="#onDynamicContentClick" styleClass="tab-nav-item" text="Mes Oeuvres" />
+        <Button fx:id="musiquesTabButton" mnemonicParsing="false" onAction="#onMusiquesClick" styleClass="tab-nav-item" text="Musiques" />
+        <Button fx:id="evenementsTabButton" mnemonicParsing="false" onAction="#onEvenementsClick" styleClass="tab-nav-item" text="Evenements" />
+        <Button fx:id="reclamationsTabButton" mnemonicParsing="false" onAction="#onReclamationsClick" styleClass="tab-nav-item" text="Reclamations" />
+        <Button fx:id="statistiquesTabButton" mnemonicParsing="false" onAction="#onStatistiquesClick" styleClass="tab-nav-item" text="Statistiques" />
+        <Region HBox.hgrow="ALWAYS" />
+    </HBox>
+</VBox>
+

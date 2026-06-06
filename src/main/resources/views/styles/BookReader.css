@@ -1,0 +1,312 @@
+/* ═══════════════════════════════════════════════════════════════════
+   BookReader.css  —  Premium immersive reading experience
+   All properties are valid JavaFX CSS (no -fx-clip polygon,
+   no -fx-transition, no -fx-background shorthand with rgba,
+   no @keyframes, no HBox.hgrow).
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* ── Root StackPane fills the entire Stage ───────────────────────── */
+.reader-root {
+    -fx-background-color: #0f0f15;
+    -fx-font-family: "Exo 2", sans-serif;
+    -fx-padding: 0;
+}
+
+/* ── Dark reading background layer ──────────────────────────────── */
+.reader-bg {
+    -fx-background-color: #0f0f15;
+    /* stretch to fill root */
+    -fx-min-width:  1px;
+    -fx-min-height: 1px;
+    -fx-pref-width: 5000px;
+    -fx-pref-height: 5000px;
+}
+
+/* ── Book HBox ───────────────────────────────────────────────────── */
+.book-hbox {
+    -fx-background-color: transparent;
+    -fx-alignment: center;
+    -fx-pref-width:  5000px;
+    -fx-pref-height: 5000px;
+}
+
+/* ── Click hit zones on left / right edges ───────────────────────── */
+.page-hit-zone {
+    -fx-pref-width:  120px;
+    -fx-min-width:   80px;
+    -fx-max-width:   180px;
+    -fx-min-height:  400px;
+    -fx-background-color: transparent;
+    -fx-cursor: hand;
+}
+
+/* ── Page wrapper (sizing container) ────────────────────────────── */
+.page-wrapper {
+    -fx-pref-width:  420px;
+    -fx-min-width:   320px;
+    -fx-max-width:   520px;
+    -fx-pref-height: 580px;
+    -fx-min-height:  450px;
+    -fx-max-height:  700px;
+    -fx-alignment: center;
+    -fx-background-color: transparent;
+}
+
+/* ── Paper depth layers (sit behind page face) ───────────────────── */
+.paper-layer {
+    -fx-background-color: #d8d3ca;
+    -fx-background-radius: 1 10 10 1;
+}
+/* Each layer is slightly smaller and offset to simulate paper stack */
+.pl1 {
+    -fx-pref-width:  412px; -fx-pref-height: 572px;
+    -fx-translate-x: -2px;  -fx-translate-y: 2px;
+    -fx-opacity: 0.80;
+}
+.pl2 {
+    -fx-pref-width:  410px; -fx-pref-height: 570px;
+    -fx-translate-x: -4px;  -fx-translate-y: 4px;
+    -fx-opacity: 0.55;
+    -fx-background-color: #ccc7be;
+}
+.pl3 {
+    -fx-pref-width:  408px; -fx-pref-height: 568px;
+    -fx-translate-x: -6px;  -fx-translate-y: 6px;
+    -fx-opacity: 0.35;
+    -fx-background-color: #c2bdb3;
+}
+
+/* ── Page face (the visible surface) ────────────────────────────── */
+.page-face {
+    -fx-pref-width:  414px;
+    -fx-pref-height: 574px;
+    -fx-background-color: linear-gradient(
+            from 0% 0% to 100% 100%,
+            #fefcf8 0%,
+            #f8f5ef 55%,
+            #f3f0e8 100%
+    );
+    -fx-padding: 24px;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.50), 20, 0.20, 0, 6);
+    -fx-alignment: center;
+}
+
+.left-face {
+    -fx-background-radius: 3 12 12 3;
+    -fx-border-color: rgba(160,150,135,0.40);
+    -fx-border-width: 0.5px;
+    -fx-border-radius: 3 12 12 3;
+}
+
+.right-face {
+    -fx-background-radius: 12 3 3 12;
+    -fx-border-color: rgba(160,150,135,0.40);
+    -fx-border-width: 0.5px;
+    -fx-border-radius: 12 3 3 12;
+}
+
+/* ── Page image ──────────────────────────────────────────────────── */
+.page-img {
+    -fx-fit-width:  360px;
+    -fx-fit-height: 510px;
+    -fx-preserve-ratio: true;
+    -fx-smooth: true;
+}
+
+/* ── Inner spine shadows on page faces ──────────────────────────── */
+.face-spine-shadow {
+    -fx-pref-width:  48px;
+    -fx-pref-height: 574px;
+}
+/* shadow on right edge of left page (darkens toward spine) */
+.face-spine-left {
+    -fx-background-color: linear-gradient(
+            from 0% 0% to 100% 0%,
+            transparent,
+            rgba(0,0,0,0.13)
+    );
+}
+/* shadow on left edge of right page */
+.face-spine-right {
+    -fx-background-color: linear-gradient(
+            from 0% 0% to 100% 0%,
+            rgba(0,0,0,0.13),
+            transparent
+    );
+}
+
+/* ── Page numbers ────────────────────────────────────────────────── */
+.page-num {
+    -fx-text-fill: rgba(110,100,85,0.65);
+    -fx-font-size: 11px;
+    -fx-font-family: "Exo 2", sans-serif;
+    -fx-padding: 0 6 4 6;
+}
+
+/* ── Centre spine ────────────────────────────────────────────────── */
+.centre-spine {
+    -fx-pref-width:  8px;
+    -fx-min-width:   8px;
+    -fx-max-width:   8px;
+    -fx-pref-height: 574px;
+    -fx-background-color: #b0a898;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.45), 8, 0.5, 0, 0);
+}
+.spine-hi {
+    -fx-pref-width: 2px; -fx-min-width: 2px; -fx-max-width: 2px;
+    -fx-pref-height: 574px;
+    -fx-background-color: rgba(255,255,255,0.30);
+    -fx-translate-x: -2px;
+}
+.spine-mid {
+    -fx-pref-width: 2px; -fx-min-width: 2px; -fx-max-width: 2px;
+    -fx-pref-height: 574px;
+    -fx-background-color: rgba(0,0,0,0.08);
+}
+.spine-lo {
+    -fx-pref-width: 2px; -fx-min-width: 2px; -fx-max-width: 2px;
+    -fx-pref-height: 574px;
+    -fx-background-color: rgba(0,0,0,0.18);
+    -fx-translate-x: 2px;
+}
+
+/* ── Bookmark ribbon ─────────────────────────────────────────────── */
+.bookmark-body {
+    -fx-pref-width:  26px;
+    -fx-min-width:   26px;
+    -fx-max-width:   26px;
+    -fx-pref-height: 68px;
+    -fx-min-height:  68px;
+    /* Chevron shape via SVG path */
+    -fx-shape: "M 0 0 L 26 0 L 26 54 L 13 68 L 0 54 Z";
+    -fx-background-color: linear-gradient(to bottom, #ef4444, #b91c1c);
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.45), 6, 0.3, -1, 3);
+    -fx-translate-x: -32px;
+    -fx-translate-y:  0px;
+    -fx-alignment: top-center;
+    -fx-padding: 8 0 0 0;
+}
+.bookmark-star {
+    -fx-font-size: 11px;
+    -fx-text-fill: rgba(255,255,255,0.90);
+}
+
+/* ── Controls overlay ────────────────────────────────────────────── */
+.controls-overlay {
+    -fx-padding: 0 0 28px 0;
+    -fx-opacity: 0;
+    -fx-transition: opacity 0.3s ease-in-out;
+}
+
+/*
+  JavaFX does support the :hover pseudo-class on containers.
+  We use reader-root:hover so the bar appears whenever the
+  mouse is anywhere in the reading window.
+*/
+.reader-root:hover .controls-overlay {
+    -fx-opacity: 1;
+}
+
+/* ── Controls bar pill ───────────────────────────────────────────── */
+.controls-bar {
+    -fx-background-color: rgba(10, 10, 18, 0.93);
+    -fx-background-radius: 40px;
+    -fx-border-color: rgba(255,255,255,0.07);
+    -fx-border-radius: 40px;
+    -fx-border-width: 1px;
+    -fx-padding: 10px 28px;
+    -fx-min-width: 580px;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.65), 28, 0.25, 0, 8);
+}
+
+.cbar-side   { -fx-min-width: 130px; -fx-pref-width: 150px; }
+.cbar-center { -fx-alignment: center; -fx-spacing: 3px; }
+
+/* ── Generic control button ──────────────────────────────────────── */
+.ctrl-btn {
+    -fx-background-color: transparent;
+    -fx-text-fill: #8888a8;
+    -fx-font-size: 15px;
+    -fx-cursor: hand;
+    -fx-padding: 9px 14px;
+    -fx-background-radius: 24px;
+    -fx-border-width: 0;
+}
+.ctrl-btn:hover {
+    -fx-background-color: rgba(255,255,255,0.09);
+    -fx-text-fill: #e8e8f4;
+}
+.ctrl-btn:pressed {
+    -fx-background-color: rgba(255,255,255,0.14);
+    -fx-scale-x: 0.92;
+    -fx-scale-y: 0.92;
+}
+.ctrl-btn:disabled {
+    -fx-opacity: 0.20;
+    -fx-cursor: default;
+}
+
+.exit-btn { -fx-font-size: 13px; -fx-text-fill: #ff6b6b; }
+.exit-btn:hover {
+    -fx-text-fill: #ff8787;
+    -fx-background-color: rgba(255,107,107,0.15);
+    -fx-effect: dropshadow(gaussian, rgba(255,107,107,0.3), 8, 0, 0, 2);
+}
+
+.nav-btn  { -fx-font-size: 12px; -fx-padding: 9 16px; }
+
+.bm-btn   { -fx-font-size: 21px; -fx-padding: 6px 12px; }
+
+/* ── Centre text ─────────────────────────────────────────────────── */
+.ctrl-title {
+    -fx-text-fill: #d4d4e8;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-font-family: "Exo 2", sans-serif;
+}
+.ctrl-pages {
+    -fx-text-fill: #55556a;
+    -fx-font-size: 11px;
+    -fx-font-family: "Exo 2", sans-serif;
+    -fx-font-style: italic;
+}
+
+/* ── Loading overlay ─────────────────────────────────────────────── */
+.loading-overlay {
+    /* Solid cover – no transparency so nothing bleeds through */
+    -fx-background-color: #0f0f15;
+    -fx-pref-width:  5000px;
+    -fx-pref-height: 5000px;
+}
+.load-icon  { -fx-font-size: 54px; }
+.load-text  {
+    -fx-text-fill: #606080;
+    -fx-font-size: 16px;
+    -fx-font-family: "Exo 2", sans-serif;
+    -fx-font-style: italic;
+}
+.ldot {
+    -fx-pref-width:  9px; -fx-max-width:  9px;
+    -fx-pref-height: 9px; -fx-max-height: 9px;
+    -fx-background-color: #3d3b90;
+    -fx-background-radius: 5px;
+    -fx-opacity: 0.55;
+}
+
+/* ── Tooltip ─────────────────────────────────────────────────────── */
+.tooltip {
+    -fx-background-color: rgba(16,16,26,0.97);
+    -fx-text-fill: #ccccde;
+    -fx-font-size: 11px;
+    -fx-padding: 7px 12px;
+    -fx-background-radius: 8px;
+    -fx-border-color: rgba(255,255,255,0.07);
+    -fx-border-radius: 8px;
+    -fx-border-width: 1px;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.4), 8, 0, 0, 3);
+}
+
+/* ── Scrollbar (defensive) ───────────────────────────────────────── */
+.reader-root .scroll-bar            { -fx-background-color: transparent; }
+.reader-root .scroll-bar .thumb     { -fx-background-color: rgba(255,255,255,0.14); -fx-background-radius: 4; }
+.reader-root .scroll-bar .thumb:hover { -fx-background-color: rgba(255,255,255,0.24); }

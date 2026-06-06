@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import java.lang.String?>
+
+<ScrollPane
+        fitToHeight="true"
+        fitToWidth="true"
+        hbarPolicy="NEVER"
+        styleClass="dashboard-scroll"
+        xmlns="http://javafx.com/javafx/20.0.2"
+        xmlns:fx="http://javafx.com/fxml/1"
+        fx:controller="controllers.DashboardController">
+
+    <content>
+        <VBox spacing="22.0" styleClass="page-root">
+            <padding>
+                <Insets bottom="32.0" left="28.0" right="28.0" top="26.0" />
+            </padding>
+
+            <HBox alignment="CENTER_LEFT" spacing="0.0">
+                <VBox spacing="4.0" HBox.hgrow="ALWAYS">
+                    <Label styleClass="page-title"    text="Tableau de Bord" />
+                    <Label styleClass="page-subtitle" text="Vue d'ensemble  ·  Administration" />
+                </VBox>
+                <HBox fx:id="headerChipsContainer" alignment="CENTER_RIGHT" spacing="8.0">
+                    <children>
+                        <Button fx:id="generateReportButton"
+                                text="Generer rapport"
+                                onAction="#onGenerateReport">
+                            <styleClass>
+                                <String fx:value="button" />
+                                <String fx:value="primary-action-button" />
+                                <String fx:value="report-action-button" />
+                            </styleClass>
+                        </Button>
+                    </children>
+                </HBox>
+            </HBox>
+
+            <HBox fx:id="statsContainer" spacing="14.0" />
+
+            <HBox spacing="16.0">
+                <VBox spacing="12.0" styleClass="list-card" HBox.hgrow="ALWAYS">
+                    <padding>
+                        <Insets bottom="18.0" left="20.0" right="20.0" top="18.0" />
+                    </padding>
+                    <HBox alignment="CENTER_LEFT" spacing="10.0">
+                        <Label styleClass="section-title" text="Inscriptions — 6 derniers mois" />
+                        <Region HBox.hgrow="ALWAYS" />
+                        <Label styleClass="dash-section-badge" text="Mensuel" />
+                    </HBox>
+                    <StackPane fx:id="lineChartContainer" prefHeight="260.0" VBox.vgrow="ALWAYS" />
+                </VBox>
+
+                <VBox prefWidth="300.0" spacing="12.0" styleClass="list-card">
+                    <padding>
+                        <Insets bottom="18.0" left="20.0" right="20.0" top="18.0" />
+                    </padding>
+                    <HBox alignment="CENTER_LEFT" spacing="10.0">
+                        <Label styleClass="section-title" text="Répartition des rôles" />
+                        <Region HBox.hgrow="ALWAYS" />
+                        <Label styleClass="dash-section-badge dash-section-badge-purple" text="Rôles" />
+                    </HBox>
+                    <StackPane fx:id="rolePieContainer" prefHeight="260.0" VBox.vgrow="ALWAYS" />
+                </VBox>
+            </HBox>
+
+            <!-- LISTES RÉCENTES — sans ScrollPane, max 5 items -->
+            <HBox spacing="16.0">
+
+                <!-- Inscriptions récentes -->
+                <VBox spacing="12.0" styleClass="list-card dash-section-card" HBox.hgrow="ALWAYS">
+                    <padding>
+                        <Insets bottom="18.0" left="20.0" right="20.0" top="18.0" />
+                    </padding>
+                    <HBox alignment="CENTER_LEFT" spacing="8.0">
+                        <Label styleClass="section-title" text="Inscriptions récentes" />
+                        <Label styleClass="dash-section-badge" text="24 h" />
+                        <Region HBox.hgrow="ALWAYS" />
+                    </HBox>
+                    <VBox fx:id="signupsList" spacing="0.0"
+                          styleClass="dash-list-inner dash-recent-list-inner">
+                        <padding>
+                            <Insets bottom="4.0" left="2.0" right="4.0" top="2.0" />
+                        </padding>
+                    </VBox>
+                </VBox>
+
+                <!-- Réclamations récentes -->
+                <VBox spacing="12.0" styleClass="list-card dash-section-card" HBox.hgrow="ALWAYS">
+                    <padding>
+                        <Insets bottom="18.0" left="20.0" right="20.0" top="18.0" />
+                    </padding>
+                    <HBox alignment="CENTER_LEFT" spacing="8.0">
+                        <Label styleClass="section-title" text="Réclamations récentes" />
+                        <Label fx:id="reclamationsBadge"
+                               styleClass="dash-section-badge dash-section-badge-red"
+                               text="0" />
+                        <Region HBox.hgrow="ALWAYS" />
+                    </HBox>
+                    <VBox fx:id="reclamationsList" spacing="0.0"
+                          styleClass="dash-list-inner dash-recent-list-inner">
+                        <padding>
+                            <Insets bottom="4.0" left="2.0" right="4.0" top="2.0" />
+                        </padding>
+                    </VBox>
+                </VBox>
+
+            </HBox>
+
+            <!-- TOP ARTISTES + CALENDRIER -->
+            <HBox spacing="16.0">
+
+                <VBox spacing="12.0" styleClass="list-card dash-section-card" HBox.hgrow="ALWAYS">
+                    <padding>
+                        <Insets bottom="18.0" left="20.0" right="20.0" top="18.0" />
+                    </padding>
+                    <HBox alignment="CENTER_LEFT" spacing="8.0">
+                        <Label styleClass="section-title" text="Top artistes" />
+                        <Label styleClass="dash-section-badge dash-section-badge-purple" text="★ Classement" />
+                        <Region HBox.hgrow="ALWAYS" />
+                    </HBox>
+                    <ScrollPane fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED"
+                                prefHeight="230.0" styleClass="dash-clean-scroll"
+                                style="-fx-focus-color: transparent; -fx-faint-focus-color: transparent;"
+                                VBox.vgrow="ALWAYS">
+                        <content>
+                            <VBox fx:id="topArtistesList" spacing="8.0" styleClass="dash-list-inner">
+                                <padding>
+                                    <Insets bottom="4.0" left="2.0" right="4.0" top="2.0" />
+                                </padding>
+                            </VBox>
+                        </content>
+                    </ScrollPane>
+                </VBox>
+
+                <StackPane fx:id="calendarContainer" prefWidth="380.0"
+                           styleClass="list-card dash-section-card">
+                    <padding>
+                        <Insets bottom="18.0" left="20.0" right="20.0" top="18.0" />
+                    </padding>
+                </StackPane>
+
+            </HBox>
+
+        </VBox>
+    </content>
+</ScrollPane>

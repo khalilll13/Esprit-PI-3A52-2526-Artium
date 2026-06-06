@@ -1,0 +1,136 @@
+/* Style dédié au popup "Répondre à la réclamation" (comme la capture) */
+
+.reply-dialog-root {
+    -fx-font-family: "Exo 2", sans-serif;
+    /* fond plus moderne */
+    -fx-background-color: linear-gradient(to bottom right, #f5f7ff, #f3fbf9);
+}
+
+.reply-dialog-title {
+    -fx-font-size: 22px;
+    -fx-font-weight: 800;
+    -fx-text-fill: #1c2b3f;
+}
+
+/* Donne une sensation "card" au contenu */
+.reply-dialog-root .separator {
+    -fx-opacity: 0.65;
+}
+
+.reply-dialog-close {
+    -fx-background-color: transparent;
+    -fx-text-fill: #6c7a90;
+    -fx-font-size: 18px;
+    -fx-padding: 2 8;
+    -fx-cursor: hand;
+}
+
+.reply-dialog-close:hover {
+    -fx-background-color: rgba(0,0,0,0.06);
+    -fx-background-radius: 10;
+}
+
+.reply-dialog-section-title {
+    -fx-font-size: 14px;
+    -fx-font-weight: 800;
+    -fx-text-fill: #2f3e52;
+}
+
+.reply-dialog-input {
+    -fx-background-color: white;
+    -fx-border-color: rgba(61,59,194,0.22);
+    -fx-border-radius: 12;
+    -fx-background-radius: 12;
+    -fx-padding: 10 12 10 12;
+}
+
+.reply-dialog-input:focused {
+    -fx-border-color: rgba(61,59,194,0.55);
+    -fx-effect: dropshadow(gaussian, rgba(61,59,194,0.18), 12, 0.25, 0, 2);
+}
+
+.reply-validation-error {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-padding: 0;
+    -fx-text-fill: #dc2626;
+    -fx-font-size: 12px;
+    -fx-font-weight: 700;
+}
+
+.reply-primary {
+    -fx-background-color: linear-gradient(to right, #3d3bc2, #6a4cff);
+    -fx-text-fill: white;
+    -fx-font-weight: 800;
+    -fx-background-radius: 12;
+    -fx-border-radius: 12;
+    -fx-padding: 10 18 10 18;
+    -fx-cursor: hand;
+}
+
+.reply-primary:hover {
+    -fx-effect: dropshadow(gaussian, rgba(61,59,194,0.28), 16, 0.35, 0, 3);
+}
+
+.reply-secondary {
+    -fx-background-color: rgba(255,255,255,0.55);
+    -fx-text-fill: #3d3bc2;
+    -fx-font-weight: 800;
+    -fx-border-color: rgba(61,59,194,0.55);
+    -fx-border-radius: 12;
+    -fx-background-radius: 12;
+    -fx-padding: 10 18 10 18;
+    -fx-cursor: hand;
+}
+
+.reply-secondary:hover {
+    -fx-background-color: rgba(255,255,255,0.9);
+}
+
+.reply-existing-card {
+    -fx-background-color: rgba(255,255,255,0.72);
+    -fx-border-color: rgba(31,41,55,0.10);
+    -fx-border-radius: 14;
+    -fx-background-radius: 14;
+    -fx-effect: dropshadow(gaussian, rgba(16,24,40,0.10), 18, 0.2, 0, 4);
+}
+
+.reply-danger {
+    -fx-background-color: transparent;
+    -fx-text-fill: #e53935;
+    -fx-border-color: #e53935;
+    -fx-font-weight: 800;
+    -fx-border-radius: 12;
+    -fx-background-radius: 12;
+    -fx-padding: 8 14 8 14;
+    -fx-cursor: hand;
+}
+
+.reply-danger:hover {
+    -fx-background-color: rgba(229,57,53,0.10);
+}
+
+/* ListView "cards" */
+.reply-dialog-history {
+    -fx-background-color: transparent;
+    -fx-padding: 0;
+}
+
+.reply-dialog-history .list-cell {
+    -fx-background-color: rgba(255,255,255,0.82);
+    -fx-background-radius: 14;
+    -fx-border-color: rgba(31,41,55,0.10);
+    -fx-border-radius: 14;
+    -fx-padding: 10 12;
+}
+
+.reply-dialog-history .list-cell:filled:selected,
+.reply-dialog-history .list-cell:filled:selected:hover {
+    -fx-background-color: rgba(106,76,255,0.12);
+    -fx-border-color: rgba(106,76,255,0.35);
+}
+
+.reply-dialog-history .list-cell:filled:hover {
+    -fx-background-color: rgba(255,255,255,0.96);
+}
+

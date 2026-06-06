@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane style="-fx-background-color: transparent;" xmlns="http://javafx.com/javafx/20.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.amateur.PaymentFormController">
+    <center>
+        <VBox alignment="CENTER" spacing="20.0">
+            <padding>
+                <Insets bottom="40.0" left="40.0" right="40.0" top="40.0" />
+            </padding>
+            <VBox maxWidth="450.0" spacing="24.0" style="-fx-background-color: #ffffff; -fx-background-radius: 12px; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 20, 0, 0, 10);">
+                <padding>
+                    <Insets bottom="32.0" left="32.0" right="32.0" top="32.0" />
+                </padding>
+                
+                <VBox spacing="8.0" alignment="CENTER">
+                    <Label text="Paiement Sécurisé" style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #1a1f36;" />
+                    <Label text="Propulsé par Stripe" style="-fx-font-size: 14px; -fx-text-fill: #697386;" />
+                </VBox>
+
+                <VBox spacing="16.0" style="-fx-background-color: #f7fafc; -fx-padding: 16px; -fx-background-radius: 8px;">
+                    <Label fx:id="paymentTitleLabel" style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #1a1f36;" text="Achat ticket" />
+                    <Label fx:id="paymentAmountLabel" style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #5469d4;" text="Montant: 0.00 TND" />
+                </VBox>
+
+                <VBox spacing="12.0">
+                    <Label text="Détails de la carte" style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #3c4257;" />
+                    
+                    <VBox spacing="4.0">
+                        <Label text="Titulaire de la carte" style="-fx-text-fill: #697386; -fx-font-size: 12px;" />
+                        <TextField fx:id="cardHolderField" promptText="Nom et prénom" style="-fx-padding: 12px; -fx-background-radius: 6px; -fx-border-radius: 6px; -fx-border-color: #e2e8f0; -fx-background-color: #ffffff;" />
+                    </VBox>
+
+                    <VBox spacing="4.0">
+                        <Label text="Numéro de carte" style="-fx-text-fill: #697386; -fx-font-size: 12px;" />
+                        <TextField fx:id="cardNumberField" promptText="0000 0000 0000 0000" style="-fx-padding: 12px; -fx-background-radius: 6px; -fx-border-radius: 6px; -fx-border-color: #e2e8f0; -fx-background-color: #ffffff;" />
+                    </VBox>
+
+                    <HBox spacing="12.0">
+                        <VBox spacing="4.0" HBox.hgrow="ALWAYS">
+                            <Label text="Mois (MM)" style="-fx-text-fill: #697386; -fx-font-size: 12px;" />
+                            <TextField fx:id="expMonthField" promptText="MM" style="-fx-padding: 12px; -fx-background-radius: 6px; -fx-border-radius: 6px; -fx-border-color: #e2e8f0; -fx-background-color: #ffffff;" />
+                        </VBox>
+                        <VBox spacing="4.0" HBox.hgrow="ALWAYS">
+                            <Label text="Année (AA)" style="-fx-text-fill: #697386; -fx-font-size: 12px;" />
+                            <TextField fx:id="expYearField" promptText="AA" style="-fx-padding: 12px; -fx-background-radius: 6px; -fx-border-radius: 6px; -fx-border-color: #e2e8f0; -fx-background-color: #ffffff;" />
+                        </VBox>
+                        <VBox spacing="4.0" HBox.hgrow="ALWAYS">
+                            <Label text="CVC" style="-fx-text-fill: #697386; -fx-font-size: 12px;" />
+                            <TextField fx:id="cvcField" promptText="123" style="-fx-padding: 12px; -fx-background-radius: 6px; -fx-border-radius: 6px; -fx-border-color: #e2e8f0; -fx-background-color: #ffffff;" />
+                        </VBox>
+                    </HBox>
+                </VBox>
+
+                <Label fx:id="statusLabel" style="-fx-text-fill: #e53e3e; -fx-font-size: 13px;" wrapText="true" />
+
+                <VBox spacing="12.0" alignment="CENTER">
+                    <Button fx:id="payButton" maxWidth="Infinity" mnemonicParsing="false" onAction="#onPayClick" style="-fx-background-color: #5469d4; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 14px; -fx-background-radius: 6px; -fx-cursor: hand; -fx-font-size: 15px;" text="Payer" />
+                    <Button fx:id="cancelButton" maxWidth="Infinity" mnemonicParsing="false" onAction="#onCancelClick" style="-fx-background-color: transparent; -fx-text-fill: #697386; -fx-cursor: hand; -fx-font-size: 14px;" text="Annuler" />
+                </VBox>
+            </VBox>
+        </VBox>
+    </center>
+</BorderPane>

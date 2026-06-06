@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.TilePane?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox spacing="18.0" styleClass="page-root users-shell" xmlns="http://javafx.com/javafx/20.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.artist.MusiquesController">
+    <padding>
+        <Insets bottom="20.0" left="26.0" right="20.0" top="24.0" />
+    </padding>
+
+    <VBox spacing="14.0" styleClass="collections-body-card" VBox.vgrow="ALWAYS">
+        <padding>
+            <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+        </padding>
+
+        <HBox alignment="CENTER_LEFT" spacing="16.0" styleClass="users-header">
+            <Label styleClass="page-title-small" text="Gestion des musiques" />
+            <Region HBox.hgrow="ALWAYS" />
+            <Button fx:id="toggleFormButton" mnemonicParsing="false" onAction="#handleToggleForm" styleClass="primary-action-button" text="Ajouter une musique" />
+        </HBox>
+
+        <HBox alignment="CENTER_LEFT" spacing="10.0" styleClass="users-toolbar">
+            <TextField fx:id="searchField" HBox.hgrow="ALWAYS" promptText="Rechercher: titre, description, genre" styleClass="table-search" />
+            <ComboBox fx:id="sortMusicComboBox" prefWidth="190.0" promptText="Tri" styleClass="input-field" />
+        </HBox>
+
+        <VBox fx:id="musiqueSection" spacing="10.0">
+            <Label styleClass="section-title" text="Musiques disponibles" />
+            <ScrollPane fitToWidth="true" hbarPolicy="NEVER" styleClass="users-scroll">
+                <content>
+                    <TilePane fx:id="musiqueGrid" hgap="14.0" prefColumns="4" styleClass="users-cards-grid" vgap="14.0" />
+                </content>
+            </ScrollPane>
+            <Label fx:id="emptyListLabel" styleClass="users-empty-state" text="Aucune musique disponible pour le moment." wrapText="true" />
+        </VBox>
+
+
+    </VBox>
+
+    <fx:define>
+        <VBox fx:id="formSection" spacing="14.0" styleClass="music-form-panel">
+            <Label fx:id="formTitleLabel" styleClass="form-title" text="Ajouter une nouvelle musique" />
+
+            <VBox spacing="6.0">
+                <Label styleClass="field-label" text="Titre *" />
+                <TextField fx:id="titreField" promptText="Entrez le titre de la musique" styleClass="input-field" />
+                <Label styleClass="section-subtitle" text="3-255 caracteres" />
+            </VBox>
+
+            <VBox spacing="6.0">
+                <Label styleClass="field-label" text="Description *" />
+                <TextArea fx:id="descriptionArea" prefRowCount="5" promptText="Entrez la description de la musique" styleClass="input-field" wrapText="true" />
+                <Label styleClass="section-subtitle" text="10-5000 caracteres" />
+            </VBox>
+
+            <VBox spacing="6.0">
+                <Label styleClass="field-label" text="Genre *" />
+                <ComboBox fx:id="genreComboBox" promptText="Selectionnez un genre" styleClass="input-field" />
+            </VBox>
+
+            <VBox spacing="6.0">
+                <Label styleClass="field-label" text="Collection" />
+                <ComboBox fx:id="collectionComboBox" promptText="Selectionnez une collection" styleClass="input-field" />
+            </VBox>
+
+            <VBox spacing="6.0">
+                <Label styleClass="field-label" text="Image de couverture" />
+                <HBox spacing="10.0">
+                    <TextField fx:id="imagePathField" editable="false" promptText="Cliquez pour parcourir" styleClass="input-field" HBox.hgrow="ALWAYS" />
+                    <Button mnemonicParsing="false" onAction="#handleChooseImage" styleClass="secondary-button" text="Parcourir" />
+                </HBox>
+                <Label styleClass="section-subtitle" text="Max 5MB (JPEG, PNG)" />
+            </VBox>
+
+            <VBox spacing="6.0">
+                <Label styleClass="field-label" text="Fichier audio *" />
+                <HBox spacing="10.0">
+                    <TextField fx:id="audioPathField" editable="false" promptText="Cliquez pour parcourir" styleClass="input-field" HBox.hgrow="ALWAYS" />
+                    <Button mnemonicParsing="false" onAction="#handleChooseAudio" styleClass="secondary-button" text="Parcourir" />
+                    <Button mnemonicParsing="false" onAction="#handleOpenStudio" styleClass="secondary-action-button" text="Ouvrir le Studio" />
+                </HBox>
+                <Label styleClass="section-subtitle" text="Formats acceptes: MP3, M4A, WAV" />
+            </VBox>
+
+            <HBox alignment="CENTER_RIGHT" spacing="10.0">
+                <Button fx:id="submitMusiqueButton" mnemonicParsing="false" onAction="#handleCreateMusique" styleClass="primary-button" text="Creer" />
+            </HBox>
+            <Label fx:id="feedbackLabel" styleClass="section-subtitle" wrapText="true" />
+        </VBox>
+    </fx:define>
+</VBox>
+

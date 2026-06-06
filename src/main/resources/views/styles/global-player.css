@@ -1,0 +1,239 @@
+/*
+   Spotify-style Global Player
+*/
+
+.global-player-root {
+    -fx-background-color: #181818;
+}
+
+.global-player-bar {
+    -fx-background-color: #181818;
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+    -fx-effect: none;
+}
+
+/* Square album art */
+.global-player-cover-frame {
+    -fx-background-color: #282828;
+    -fx-background-radius: 2;
+    -fx-border-color: transparent;
+    -fx-border-radius: 2;
+    -fx-border-width: 0;
+    -fx-padding: 0;
+}
+
+.global-player-cover {
+    -fx-background-radius: 2;
+}
+
+.global-player-bar .label.global-player-title,
+.global-player-bar .global-player-title {
+    -fx-text-fill: #ffffff !important;
+    -fx-font-size: 14px !important;
+    -fx-font-weight: 600 !important;
+    -fx-text-overrun: ellipsis;
+}
+
+.global-player-bar .label.global-player-artist,
+.global-player-bar .global-player-artist {
+    -fx-text-fill: #b3b3b3 !important;
+    -fx-font-size: 11px !important;
+    -fx-text-overrun: ellipsis;
+}
+
+.global-player-bar .label.global-player-artist:hover {
+    -fx-text-fill: #ffffff !important;
+    -fx-underline: true;
+}
+
+.global-player-bar .label.global-player-time,
+.global-player-bar .global-player-time {
+    -fx-text-fill: #b3b3b3 !important;
+    -fx-font-size: 11px !important;
+    -fx-font-family: "Segoe UI", "Roboto", sans-serif;
+}
+
+.global-player-bar .label.global-player-meta,
+.global-player-bar .global-player-meta {
+    -fx-text-fill: #b3b3b3 !important;
+    -fx-font-size: 11px !important;
+    -fx-text-overrun: ellipsis;
+}
+
+.global-player-bar .label.global-player-status,
+.global-player-bar .global-player-status {
+    -fx-background-color: transparent !important;
+    -fx-text-fill: #1db954 !important;
+    -fx-background-radius: 0 !important;
+    -fx-border-color: transparent !important;
+    -fx-border-width: 0 !important;
+    -fx-font-size: 11px !important;
+    -fx-font-weight: 600 !important;
+    -fx-padding: 0 !important;
+    -fx-text-overrun: ellipsis;
+}
+
+/* Icon buttons (shuffle, prev, next, volume, lyrics) */
+.global-player-bar .button.global-player-button,
+.global-player-bar .global-player-button {
+    -fx-background-color: transparent !important;
+    -fx-text-fill: #b3b3b3 !important;
+    -fx-background-radius: 999 !important;
+    -fx-border-color: transparent !important;
+    -fx-border-width: 0 !important;
+    -fx-cursor: hand;
+    -fx-padding: 0 !important;
+    -fx-effect: none !important;
+}
+
+.global-player-bar .button.global-player-button-icon,
+.global-player-bar .global-player-button-icon {
+    -fx-font-size: 14px !important;
+    -fx-opacity: 0.7;
+}
+
+.global-player-bar .button.global-player-button:hover,
+.global-player-bar .global-player-button:hover {
+    -fx-background-color: transparent !important;
+    -fx-text-fill: #ffffff !important;
+    -fx-opacity: 1.0;
+}
+
+.global-player-bar .button.global-player-button:pressed,
+.global-player-bar .global-player-button:pressed {
+    -fx-opacity: 0.6;
+}
+
+.global-player-bar .button.global-player-button-active,
+.global-player-bar .global-player-button-active {
+    -fx-text-fill: #1db954 !important;
+    -fx-opacity: 1.0;
+}
+
+/* Play / Pause — white circle, black icon (Spotify) */
+.global-player-bar .button.global-player-playpause,
+.global-player-bar .global-player-playpause {
+    -fx-background-color: #ffffff !important;
+    -fx-text-fill: #000000 !important;
+    -fx-background-radius: 999 !important;
+    -fx-border-color: transparent !important;
+    -fx-border-width: 0 !important;
+    -fx-font-size: 14px !important;
+    -fx-font-weight: bold !important;
+    -fx-cursor: hand;
+    -fx-effect: none !important;
+    -fx-padding: 0 !important;
+    -fx-content-display: graphic-only;
+}
+
+.global-player-bar .button.global-player-playpause:hover,
+.global-player-bar .global-player-playpause:hover {
+    -fx-background-color: #ffffff !important;
+    -fx-scale-x: 1.06;
+    -fx-scale-y: 1.06;
+}
+
+.global-player-bar .button.global-player-playpause:pressed,
+.global-player-bar .global-player-playpause:pressed {
+    -fx-background-color: #e6e6e6 !important;
+    -fx-scale-x: 1.0;
+    -fx-scale-y: 1.0;
+}
+
+/* Progress & volume sliders — track gradient set from controller */
+.global-player-progress-slider,
+.global-player-volume-slider {
+    -fx-padding: 0;
+}
+
+.global-player-progress-slider .track,
+.global-player-volume-slider .track {
+    -fx-background-color: #535353;
+    -fx-background-radius: 2;
+    -fx-pref-height: 4;
+    -fx-min-height: 4;
+    -fx-max-height: 4;
+}
+
+.global-player-progress-slider .thumb,
+.global-player-volume-slider .thumb {
+    -fx-background-color: transparent;
+    -fx-background-radius: 999;
+    -fx-pref-width: 0;
+    -fx-pref-height: 0;
+    -fx-padding: 0;
+    -fx-effect: none;
+}
+
+.global-player-progress-slider:hover .thumb,
+.global-player-progress-slider:pressed .thumb,
+.global-player-volume-slider:hover .thumb,
+.global-player-volume-slider:pressed .thumb {
+    -fx-background-color: #ffffff;
+    -fx-pref-width: 12;
+    -fx-pref-height: 12;
+}
+
+.global-player-progress-slider.spotify-slider-active .thumb,
+.global-player-volume-slider.spotify-slider-active .thumb {
+    -fx-background-color: #ffffff;
+    -fx-pref-width: 12;
+    -fx-pref-height: 12;
+}
+
+/* Lyrics panel */
+.global-player-lyrics-panel {
+    -fx-background-color: #121212;
+    -fx-border-color: #282828 transparent transparent transparent;
+    -fx-border-width: 1 0 0 0;
+}
+
+.global-player-lyrics-panel .label.global-player-lyrics-status {
+    -fx-text-fill: #b3b3b3 !important;
+    -fx-font-size: 13px !important;
+    -fx-font-weight: 700 !important;
+}
+
+.global-player-lyrics-area {
+    -fx-control-inner-background: #121212 !important;
+    -fx-background-color: #121212 !important;
+    -fx-text-fill: #ffffff !important;
+    -fx-font-family: "Segoe UI", sans-serif;
+    -fx-font-size: 14px;
+    -fx-border-color: #282828;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-padding: 10;
+}
+
+.global-player-lyrics-area .content,
+.global-player-lyrics-area .viewport {
+    -fx-background-color: #121212 !important;
+}
+
+.global-player-bar .button.global-player-button-secondary,
+.global-player-bar .global-player-button-secondary {
+    -fx-background-color: #ffffff !important;
+    -fx-border-color: transparent !important;
+    -fx-text-fill: #000000 !important;
+    -fx-background-radius: 999 !important;
+    -fx-border-radius: 999 !important;
+    -fx-cursor: hand;
+    -fx-font-weight: 700;
+    -fx-font-size: 12px;
+    -fx-padding: 8 16 8 16;
+}
+
+.global-player-bar .button.global-player-button-secondary:hover,
+.global-player-bar .global-player-button-secondary:hover {
+    -fx-background-color: #f2f2f2 !important;
+    -fx-scale-x: 1.04;
+    -fx-scale-y: 1.04;
+}
+
+.global-player-bar .button.global-player-lyrics-active,
+.global-player-bar .global-player-lyrics-active {
+    -fx-text-fill: #1db954 !important;
+    -fx-opacity: 1.0;
+}

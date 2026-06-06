@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.MenuButton?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.SeparatorMenuItem?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+
+<HBox alignment="CENTER_LEFT" prefHeight="62.0" spacing="12.0" styleClass="artist-navbar" xmlns="http://javafx.com/javafx/20.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.artist.NavbarArtisteController">
+    <padding>
+        <Insets bottom="10.0" left="16.0" right="16.0" top="10.0" />
+    </padding>
+
+    <HBox alignment="CENTER_LEFT" spacing="8.0" styleClass="artist-brand-row">
+        <ImageView fitHeight="30.0" fitWidth="30.0" preserveRatio="true" styleClass="artist-brand-logo">
+            <image>
+                <Image url="@/views/assets/PNG Icon.png" />
+            </image>
+        </ImageView>
+        <Label styleClass="artist-brand-text" text="Artium" />
+    </HBox>
+
+    <TextField prefHeight="36.0" prefWidth="260.0" promptText="Recherche..." styleClass="artist-search-field" />
+
+    <Region HBox.hgrow="ALWAYS" />
+
+    <MenuButton fx:id="notificationsButton" mnemonicParsing="false" onAction="#onNotificationsClick" prefHeight="34.0" styleClass="notifications-menu-button" text="🔔">
+        <items>
+            <MenuItem mnemonicParsing="false" styleClass="notifications-header" text="Notifications" />
+            <SeparatorMenuItem />
+            <MenuItem mnemonicParsing="false" text="Aucune notification pour le moment." />
+        </items>
+    </MenuButton>
+
+    <MenuButton fx:id="userMenuButton" mnemonicParsing="false" prefHeight="36.0" styleClass="avatar-menu" text="Compte">
+        <items>
+            <MenuItem mnemonicParsing="false" onAction="#onSwitchToArtistView" styleClass="avatar-dropdown-item" text="Voir profil" />
+            <SeparatorMenuItem styleClass="avatar-dropdown-separator" />
+            <MenuItem id="logoutMenuItem" mnemonicParsing="false" onAction="#onLogoutClick" styleClass="avatar-dropdown-item" text="Se deconnecter" />
+        </items>
+    </MenuButton>
+</HBox>

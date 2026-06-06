@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.geometry.Insets?>
+
+<ScrollPane fx:controller="controllers.EditProfileController"
+            xmlns:fx="http://javafx.com/fxml"
+            fitToWidth="true"
+            hbarPolicy="NEVER"
+            styleClass="profile-scroll"
+            stylesheets="@../styles/profile.css">
+
+    <VBox styleClass="profile-root" spacing="24">
+        <padding><Insets top="40" left="40" right="40" bottom="40"/></padding>
+
+        <!-- Header -->
+        <VBox spacing="8">
+            <Label text="Modifier le Profil" styleClass="profile-fullname"/>
+            <Label text="Mettez à jour vos informations" style="-fx-text-fill: #94a3b8; -fx-font-size: 13px;"/>
+        </VBox>
+
+        <!-- Photo Section -->
+        <VBox styleClass="info-card" spacing="12">
+            <HBox spacing="16" alignment="CENTER_LEFT">
+                <ImageView fx:id="photoPreview" fitWidth="100" fitHeight="100" preserveRatio="true"/>
+                <VBox spacing="8">
+                    <Label text="Photo de Profil" style="-fx-font-weight: bold; -fx-font-size: 13px; -fx-text-fill: #1e293b;"/>
+                    <Button fx:id="changePhotoBtn" text="Changer la photo" styleClass="btn-secondary"/>
+                </VBox>
+            </HBox>
+        </VBox>
+
+        <!-- Form -->
+        <VBox styleClass="info-card" spacing="14">
+            <!-- Prénom -->
+            <VBox spacing="6">
+                <Label text="PRÉNOM" styleClass="card-section-title"/>
+                <TextField fx:id="prenomField" promptText="Votre prénom" styleClass="edit-field"/>
+            </VBox>
+
+            <!-- Nom -->
+            <VBox spacing="6">
+                <Label text="NOM" styleClass="card-section-title"/>
+                <TextField fx:id="nomField" promptText="Votre nom" styleClass="edit-field"/>
+            </VBox>
+
+            <!-- Biographie -->
+            <VBox spacing="6">
+                <Label text="BIOGRAPHIE" styleClass="card-section-title"/>
+                <TextArea fx:id="bioField" promptText="Parlez de vous..." prefHeight="100" wrapText="true" styleClass="edit-area"/>
+            </VBox>
+
+            <!-- Centres d'intérêt (pour Amateur et Admin) -->
+            <VBox fx:id="interessSection" spacing="6">
+                <Label fx:id="interessLabel" text="CENTRES D'INTÉRÊT" styleClass="card-section-title"/>
+                <TextField fx:id="interessField" promptText="Séparés par des virgules" styleClass="edit-field"/>
+            </VBox>
+
+            <!-- Buttons -->
+            <HBox spacing="12" style="-fx-padding: 12 0 0 0;">
+                <Button fx:id="cancelBtn" text="Annuler" styleClass="btn-secondary" prefWidth="120"/>
+                <Button fx:id="saveBtn" text="Enregistrer" styleClass="btn-edit-profile" prefWidth="120"/>
+            </HBox>
+        </VBox>
+    </VBox>
+</ScrollPane>
+
+

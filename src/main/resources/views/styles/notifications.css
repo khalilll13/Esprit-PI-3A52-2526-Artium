@@ -1,0 +1,183 @@
+/* Professional Notifications Menu Styles */
+
+/* Button Styling */
+.notifications-menu-button {
+    -fx-padding: 0 12 0 12;
+    -fx-background-radius: 20;
+    -fx-border-radius: 20;
+    -fx-background-color: #f0f2ff;
+    -fx-border-color: #d4d9e1;
+    -fx-text-fill: #4252b8;
+    -fx-font-weight: 700;
+    -fx-font-size: 16px;
+    -fx-border-width: 1;
+    -fx-effect: dropshadow(gaussian, rgba(66, 82, 184, 0.12), 8, 0, 0, 2);
+    -fx-cursor: hand;
+}
+
+.notifications-menu-button:hover {
+    -fx-background-color: #e8ebff;
+    -fx-border-color: #c4cbe1;
+    -fx-effect: dropshadow(gaussian, rgba(66, 82, 184, 0.18), 12, 0, 0, 3);
+}
+
+.notifications-menu-button:pressed {
+    -fx-translate-y: 1;
+}
+
+.notifications-menu-button:showing {
+    -fx-background-color: #e3e8ff;
+    -fx-border-color: #bfc6ff;
+    -fx-effect: dropshadow(gaussian, rgba(66, 82, 184, 0.20), 14, 0, 0, 4);
+}
+
+.notifications-menu-button > .arrow-button,
+.notifications-menu-button > .arrow-button > .arrow {
+    -fx-padding: 0;
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
+}
+
+/* Context Menu Styling */
+.context-menu.notifications-context-menu {
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 14;
+    -fx-border-color: #d9dce3;
+    -fx-border-radius: 14;
+    -fx-border-width: 1;
+    -fx-padding: 8;
+    -fx-effect: dropshadow(gaussian, rgba(31, 45, 70, 0.18), 20, 0.16, 0, 6);
+}
+
+/* Menu Items */
+.context-menu.notifications-context-menu .menu-item {
+    -fx-background-color: transparent;
+    -fx-background-radius: 10;
+    -fx-padding: 10 14 10 14;
+    -fx-font-size: 13px;
+    -fx-text-fill: #243146;
+    -fx-font-weight: 500;
+}
+
+.context-menu.notifications-context-menu .menu-item:hover,
+.context-menu.notifications-context-menu .menu-item:focused {
+    -fx-background-color: #f0f2ff;
+    -fx-background-radius: 10;
+}
+
+.context-menu.notifications-context-menu .menu-item > .label {
+    -fx-text-fill: #243146;
+    -fx-font-size: 13px;
+    -fx-font-weight: 500;
+}
+
+/* Header Item */
+.context-menu.notifications-context-menu .menu-item.notifications-header {
+    -fx-font-weight: 700;
+    -fx-text-fill: #1f2d3d;
+    -fx-padding: 12 14 8 14;
+    -fx-font-size: 14px;
+    -fx-background-color: transparent;
+}
+
+.context-menu.notifications-context-menu .menu-item.notifications-header:hover,
+.context-menu.notifications-context-menu .menu-item.notifications-header:focused {
+    -fx-background-color: transparent;
+}
+
+/* Notification Items */
+.context-menu.notifications-context-menu .menu-item.notifications-item {
+    -fx-padding: 10 14 10 14;
+    -fx-font-size: 12px;
+    -fx-text-fill: #243146;
+}
+
+.context-menu.notifications-context-menu .menu-item.notifications-item:hover {
+    -fx-background-color: #f5f7ff;
+}
+
+/* Separator */
+.context-menu.notifications-context-menu .separator {
+    -fx-padding: 4 0;
+}
+
+.context-menu.notifications-context-menu .separator:horizontal .line {
+    -fx-border-color: #e2e8f2;
+    -fx-border-width: 1 0 0 0;
+}
+
+/* ==================== DARK MODE STYLES ==================== */
+
+/* Dark Mode Button */
+.root.dark-mode .notifications-menu-button,
+.dark-mode .notifications-menu-button {
+    -fx-background-color: #324261;
+    -fx-border-color: #46557a;
+    -fx-text-fill: #8ea8ff;
+    -fx-effect: dropshadow(gaussian, rgba(142, 168, 255, 0.12), 8, 0, 0, 2);
+}
+
+.root.dark-mode .notifications-menu-button:hover,
+.dark-mode .notifications-menu-button:hover {
+    -fx-background-color: #3a4a72;
+    -fx-border-color: #566780;
+    -fx-effect: dropshadow(gaussian, rgba(142, 168, 255, 0.18), 12, 0, 0, 3);
+}
+
+.root.dark-mode .notifications-menu-button:showing,
+.dark-mode .notifications-menu-button:showing {
+    -fx-background-color: #404f7e;
+    -fx-border-color: #6878a0;
+    -fx-effect: dropshadow(gaussian, rgba(142, 168, 255, 0.20), 14, 0, 0, 4);
+}
+
+/* Dark Mode Context Menu */
+.root.dark-mode .context-menu.notifications-context-menu,
+.dark-mode .context-menu.notifications-context-menu {
+    -fx-background-color: #1f2a40;
+    -fx-border-color: #3f4b6c;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.30), 20, 0.16, 0, 6);
+}
+
+.root.dark-mode .context-menu.notifications-context-menu .menu-item,
+.dark-mode .context-menu.notifications-context-menu .menu-item {
+    -fx-text-fill: #dbe6ff;
+}
+
+.root.dark-mode .context-menu.notifications-context-menu .menu-item:hover,
+.root.dark-mode .context-menu.notifications-context-menu .menu-item:focused,
+.dark-mode .context-menu.notifications-context-menu .menu-item:hover,
+.dark-mode .context-menu.notifications-context-menu .menu-item:focused {
+    -fx-background-color: #2d3956;
+}
+
+.root.dark-mode .context-menu.notifications-context-menu .menu-item > .label,
+.dark-mode .context-menu.notifications-context-menu .menu-item > .label {
+    -fx-text-fill: #dbe6ff;
+}
+
+.root.dark-mode .context-menu.notifications-context-menu .menu-item.notifications-header,
+.dark-mode .context-menu.notifications-context-menu .menu-item.notifications-header {
+    -fx-text-fill: #edf2ff;
+}
+
+.root.dark-mode .context-menu.notifications-context-menu .separator:horizontal .line,
+.dark-mode .context-menu.notifications-context-menu .separator:horizontal .line {
+    -fx-border-color: #3f4b6c;
+}
+
+/* Transitions and Effects */
+.notifications-menu-button {
+    -fx-transition: all 0.3s ease-in-out;
+}
+
+/* Responsive sizing */
+.notifications-menu-button {
+    -fx-min-width: 40;
+    -fx-min-height: 40;
+    -fx-pref-width: 40;
+    -fx-pref-height: 40;
+    -fx-max-width: 40;
+    -fx-max-height: 40;
+}
+

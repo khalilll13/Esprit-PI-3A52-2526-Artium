@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<ScrollPane fitToWidth="true" pannable="true" style="-fx-background-color: #f3f4f6;" xmlns="http://javafx.com/javafx/20.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.amateur.EventsfrontController">
+    <content>
+        <VBox spacing="0.0">
+            <!-- header area (was BorderPane.top) -->
+            <VBox spacing="20.0" style="-fx-background-color: #ffffff; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 10, 0, 0, 2); -fx-padding: 30px 40px 20px 40px;">
+                <HBox alignment="CENTER_LEFT" spacing="16.0">
+                    <VBox spacing="6.0" HBox.hgrow="ALWAYS">
+                        <Label text="Découvrir les Évènements" style="-fx-font-size: 32px; -fx-font-weight: 900; -fx-text-fill: #111827;" />
+                        <Label text="Explorez les évènements disponibles et trouvez celui qui vous plaît." style="-fx-font-size: 15px; -fx-text-fill: #6b7280;" />
+                    </VBox>
+                </HBox>
+
+                <HBox spacing="12.0" alignment="CENTER_LEFT">
+                    <Label text="✨ Event Idea AI Powered" style="-fx-text-fill: #8b5cf6; -fx-font-weight: bold; -fx-font-size: 15px; -fx-padding: 0 16px 0 0;" />
+                    <TextField fx:id="searchField" promptText="Rechercher par titre ou description..." style="-fx-background-color: #f9fafb; -fx-border-color: #e5e7eb; -fx-border-radius: 8px; -fx-background-radius: 8px; -fx-padding: 12px 16px; -fx-font-size: 14px; -fx-text-fill: #1f2937;" HBox.hgrow="ALWAYS" />
+                    <Button mnemonicParsing="false" onAction="#onSearchClick" text="Rechercher" style="-fx-background-color: #1f2937; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 12px 24px; -fx-background-radius: 8px; -fx-cursor: hand;" />
+                </HBox>
+
+                <HBox spacing="12.0" style="-fx-padding: 10px 0 0 0;">
+                    <ToggleButton fx:id="allTabButton" mnemonicParsing="false" onAction="#onAllTabClick" text="Tous" styleClass="amateur-tab-button" />
+                    <ToggleButton fx:id="expositionTabButton" mnemonicParsing="false" onAction="#onExpositionTabClick" text="Exposition" styleClass="amateur-tab-button" />
+                    <ToggleButton fx:id="concertTabButton" mnemonicParsing="false" onAction="#onConcertTabClick" text="Concert" styleClass="amateur-tab-button" />
+                    <ToggleButton fx:id="spectacleTabButton" mnemonicParsing="false" onAction="#onSpectacleTabClick" text="Spectacle" styleClass="amateur-tab-button" />
+                    <ToggleButton fx:id="conferenceTabButton" mnemonicParsing="false" onAction="#onConferenceTabClick" text="Conférence" styleClass="amateur-tab-button" />
+                </HBox>
+            </VBox>
+
+            <!-- content area (was BorderPane.center) -->
+            <VBox spacing="16.0" style="-fx-padding: 30px 40px 40px 40px;" VBox.vgrow="ALWAYS">
+                <Label fx:id="emptyStateLabel" text="Aucun évènement disponible." style="-fx-font-size: 16px; -fx-text-fill: #6b7280; -fx-font-style: italic;" visible="false" />
+
+                <!-- GridPane directly inside the page content; ScrollPane root will scroll the whole page -->
+                <GridPane fx:id="eventsGridPane" hgap="24.0" vgap="24.0" maxWidth="Infinity">
+                    <columnConstraints>
+                        <ColumnConstraints percentWidth="33.333" hgrow="ALWAYS" />
+                        <ColumnConstraints percentWidth="33.333" hgrow="ALWAYS" />
+                        <ColumnConstraints percentWidth="33.333" hgrow="ALWAYS" />
+                    </columnConstraints>
+                    <padding>
+                        <Insets bottom="10.0" left="4.0" right="4.0" top="10.0" />
+                    </padding>
+                </GridPane>
+            </VBox>
+        </VBox>
+    </content>
+</ScrollPane>

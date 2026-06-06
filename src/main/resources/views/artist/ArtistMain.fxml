@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane xmlns="http://javafx.com/javafx/20.0.2"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:id="rootPane"
+            fx:controller="controllers.artist.ArtistMainController"
+            prefHeight="820.0"
+            prefWidth="1280.0"
+            styleClass="artist-root">
+    <top>
+        <fx:include fx:id="navbarInclude" source="NavbarArtiste.fxml"/>
+    </top>
+    <center>
+        <ScrollPane fitToWidth="true" hbarPolicy="NEVER" styleClass="artist-scroll" vbarPolicy="AS_NEEDED">
+            <content>
+                <HBox spacing="18.0">
+                    <padding>
+                        <Insets top="18.0" right="18.0" bottom="18.0" left="18.0"/>
+                    </padding>
+                    <VBox spacing="14.0" styleClass="artist-left-column" HBox.hgrow="ALWAYS">
+                        <fx:include fx:id="profileHeaderInclude" source="ProfileHeader.fxml"/>
+                        <StackPane fx:id="artistContentArea" minHeight="400.0" styleClass="artist-page-host" VBox.vgrow="ALWAYS"/>
+                    </VBox>
+                    <fx:include fx:id="sidebarArtisteInclude" source="SidebarArtiste.fxml"/>
+                </HBox>
+            </content>
+        </ScrollPane>
+    </center>
+    <bottom>
+        <fx:include fx:id="globalPlayerInclude" source="../components/GlobalPlayer.fxml"/>
+    </bottom>
+</BorderPane>

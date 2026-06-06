@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Priority?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<ScrollPane fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED" styleClass="oeuvres-feed-scroll" xmlns="http://javafx.com/javafx/20.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.OeuvreDetailsPopupController">
+    <content>
+        <VBox spacing="10.0" styleClass="oeuvres-feed-list">
+            <padding>
+                <Insets top="12.0" right="12.0" bottom="12.0" left="12.0"/>
+            </padding>
+
+            <VBox spacing="10.0" styleClass="oeuvre-post-card">
+                <HBox alignment="CENTER_LEFT" spacing="10.0">
+                    <StackPane fx:id="avatarPane" styleClass="oeuvre-post-avatar">
+                        <Label fx:id="avatarLetterLabel" styleClass="oeuvre-post-avatar-text" text="A"/>
+                    </StackPane>
+                    <VBox spacing="1.0">
+                        <Label fx:id="authorLabel" styleClass="oeuvre-post-author" text="Artiste"/>
+                        <Label fx:id="metaLabel" styleClass="oeuvre-post-specialite" text="Collection"/>
+                    </VBox>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <Label fx:id="dateLabel" styleClass="oeuvre-post-date" text="-"/>
+                </HBox>
+
+                <Label fx:id="titleLabel" styleClass="oeuvre-post-title" text="Sans titre"/>
+                <Label fx:id="descriptionLabel" styleClass="oeuvre-post-description" text="Aucune description" wrapText="true"/>
+                <Label fx:id="tagsLabel" styleClass="oeuvre-post-tags" text="#Type #Collection"/>
+
+                <StackPane fx:id="imageWrapper" prefHeight="380.0" styleClass="oeuvre-post-image-wrapper">
+                    <ImageView fx:id="imageView" fitHeight="360.0" fitWidth="760.0" preserveRatio="true" visible="false" managed="false"/>
+                    <Label fx:id="noImageLabel" styleClass="oeuvre-post-image-placeholder" text="Aucune image"/>
+                </StackPane>
+
+                <HBox fx:id="statsRow" spacing="14.0" styleClass="oeuvre-post-stats"/>
+
+                <VBox spacing="8.0" styleClass="oeuvre-post-comments-box">
+                    <Label fx:id="commentsTitleLabel" styleClass="oeuvre-post-comments-title" text="Commentaires"/>
+                    <VBox fx:id="commentsListBox" spacing="6.0"/>
+                    <Label fx:id="moreCommentsLabel" styleClass="oeuvre-post-comments-more" text="" visible="false" managed="false"/>
+                </VBox>
+            </VBox>
+        </VBox>
+    </content>
+</ScrollPane>
+
+

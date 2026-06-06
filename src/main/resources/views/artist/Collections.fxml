@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox spacing="12.0" styleClass="page-root collections-page" xmlns="http://javafx.com/javafx/20.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.artist.CollectionsController">
+    <padding><Insets bottom="12.0" left="12.0" right="12.0" top="12.0" /></padding>
+
+    <VBox spacing="10.0" styleClass="collections-body-card" VBox.vgrow="ALWAYS">
+        <padding><Insets bottom="12.0" left="12.0" right="12.0" top="12.0" /></padding>
+
+        <HBox alignment="CENTER_LEFT" spacing="10.0" styleClass="collections-toolbar">
+            <StackPane styleClass="collections-search-wrap">
+                <TextField fx:id="searchField" minWidth="320.0" prefHeight="34.0" prefWidth="320.0" maxWidth="320.0" promptText="Rechercher par titre ou description" styleClass="collections-search-field" />
+                <Label mouseTransparent="true" styleClass="collections-search-icon" text="⌕" StackPane.alignment="CENTER_RIGHT" />
+            </StackPane>
+            <Region HBox.hgrow="ALWAYS" />
+            <Button fx:id="addCollectionButton" mnemonicParsing="false" onAction="#onAddCollectionClick" styleClass="collections-add-button" text="Ajouter Collection" />
+        </HBox>
+
+        <Label fx:id="emptyStateLabel" styleClass="page-subtitle-small" text="Chargement des collections..." wrapText="true" />
+        <VBox fx:id="collectionsContainer" spacing="18.0" VBox.vgrow="ALWAYS" />
+    </VBox>
+</VBox>

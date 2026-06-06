@@ -1,0 +1,330 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.scene.image.ImageView?>
+
+<BorderPane xmlns="http://javafx.com/javafx/20.0.2"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="controllers.artist.EditProfileArtisteController"
+            style="-fx-background-color: #eef0f7;">
+
+    <center>
+        <ScrollPane fitToWidth="true" hbarPolicy="NEVER"
+                    style="-fx-background-color: transparent;
+                           -fx-background: transparent;
+                           -fx-border-color: transparent;">
+            <padding>
+                <Insets top="20" right="24" bottom="24" left="24"/>
+            </padding>
+
+            <VBox spacing="20">
+
+                <!-- TITRE PAGE -->
+                <VBox spacing="4">
+                    <Label text="Modifier le Profil"
+                           style="-fx-font-size: 26px;
+                                  -fx-font-weight: bold;
+                                  -fx-text-fill: #1a1a2e;"/>
+                    <Label text="Mettez à jour vos informations"
+                           style="-fx-font-size: 13px;
+                                  -fx-text-fill: #9090a0;"/>
+                </VBox>
+
+                <!-- CARTE PHOTO -->
+                <VBox style="-fx-background-color: white;
+                             -fx-background-radius: 16px;
+                             -fx-border-color: #e8e8f0;
+                             -fx-border-width: 1px;
+                             -fx-border-radius: 16px;
+                             -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 10, 0, 0, 2);">
+                    <padding>
+                        <Insets top="24" right="28" bottom="24" left="28"/>
+                    </padding>
+
+                    <HBox spacing="20" alignment="CENTER_LEFT">
+
+                        <!-- Avatar circulaire -->
+                        <StackPane minWidth="90" minHeight="90" maxWidth="90" maxHeight="90">
+                            <Circle radius="45"
+                                    fill="#dde0f0"
+                                    stroke="#c8cce8"
+                                    strokeWidth="2"/>
+                            <Label fx:id="avatarLabel"
+                                   text="RZ"
+                                   style="-fx-font-size: 22px;
+                                          -fx-font-weight: bold;
+                                          -fx-text-fill: #5B3DE8;"/>
+                            <ImageView fx:id="profileImageView" fitWidth="90" fitHeight="90" visible="false" preserveRatio="false">
+                                <clip>
+                                    <Circle radius="45" centerX="45" centerY="45"/>
+                                </clip>
+                            </ImageView>
+                        </StackPane>
+
+                        <VBox spacing="10">
+                            <Label text="Photo de Profil"
+                                   style="-fx-font-size: 15px;
+                                          -fx-font-weight: bold;
+                                          -fx-text-fill: #1a1a2e;"/>
+                            <Button text="Changer la photo"
+                                    onAction="#handleUploadPhoto"
+                                    style="-fx-background-color: white;
+                                           -fx-text-fill: #5B3DE8;
+                                           -fx-font-size: 13px;
+                                           -fx-font-weight: bold;
+                                           -fx-border-color: #c8c0f8;
+                                           -fx-border-width: 1.5px;
+                                           -fx-border-radius: 8px;
+                                           -fx-background-radius: 8px;
+                                           -fx-padding: 8 18 8 18;
+                                           -fx-cursor: hand;"/>
+                        </VBox>
+
+                    </HBox>
+                </VBox>
+
+                <!-- CARTE FORMULAIRE -->
+                <VBox style="-fx-background-color: white;
+                             -fx-background-radius: 16px;
+                             -fx-border-color: #e8e8f0;
+                             -fx-border-width: 1px;
+                             -fx-border-radius: 16px;
+                             -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 10, 0, 0, 2);">
+                    <padding>
+                        <Insets top="28" right="28" bottom="28" left="28"/>
+                    </padding>
+
+                    <VBox spacing="0">
+
+                        <!-- NOM + PRÉNOM -->
+                        <GridPane hgap="20" vgap="0">
+                            <VBox.margin><Insets bottom="18"/></VBox.margin>
+                            <columnConstraints>
+                                <ColumnConstraints hgrow="ALWAYS" percentWidth="50"/>
+                                <ColumnConstraints hgrow="ALWAYS" percentWidth="50"/>
+                            </columnConstraints>
+
+                            <VBox spacing="7" GridPane.columnIndex="0">
+                                <Label text="NOM"
+                                       style="-fx-font-size: 11px;
+                                              -fx-font-weight: bold;
+                                              -fx-text-fill: #5B3DE8;"/>
+                                <TextField fx:id="nomField"
+                                           style="-fx-background-color: white;
+                                                  -fx-border-color: #dcdce8;
+                                                  -fx-border-width: 1.5px;
+                                                  -fx-border-radius: 10px;
+                                                  -fx-background-radius: 10px;
+                                                  -fx-padding: 11 14 11 14;
+                                                  -fx-font-size: 14px;
+                                                  -fx-text-fill: #1a1a2e;"/>
+                            </VBox>
+
+                            <VBox spacing="7" GridPane.columnIndex="1">
+                                <Label text="PRÉNOM"
+                                       style="-fx-font-size: 11px;
+                                              -fx-font-weight: bold;
+                                              -fx-text-fill: #5B3DE8;"/>
+                                <TextField fx:id="prenomField"
+                                           style="-fx-background-color: white;
+                                                  -fx-border-color: #dcdce8;
+                                                  -fx-border-width: 1.5px;
+                                                  -fx-border-radius: 10px;
+                                                  -fx-background-radius: 10px;
+                                                  -fx-padding: 11 14 11 14;
+                                                  -fx-font-size: 14px;
+                                                  -fx-text-fill: #1a1a2e;"/>
+                            </VBox>
+                        </GridPane>
+
+                        <!-- EMAIL + VILLE -->
+                        <GridPane hgap="20" vgap="0">
+                            <VBox.margin><Insets bottom="18"/></VBox.margin>
+                            <columnConstraints>
+                                <ColumnConstraints hgrow="ALWAYS" percentWidth="50"/>
+                                <ColumnConstraints hgrow="ALWAYS" percentWidth="50"/>
+                            </columnConstraints>
+
+                            <VBox spacing="7" GridPane.columnIndex="0">
+                                <Label text="EMAIL"
+                                       style="-fx-font-size: 11px;
+                                              -fx-font-weight: bold;
+                                              -fx-text-fill: #5B3DE8;"/>
+                                <TextField fx:id="emailField"
+                                           style="-fx-background-color: white;
+                                                  -fx-border-color: #dcdce8;
+                                                  -fx-border-width: 1.5px;
+                                                  -fx-border-radius: 10px;
+                                                  -fx-background-radius: 10px;
+                                                  -fx-padding: 11 14 11 14;
+                                                  -fx-font-size: 14px;
+                                                  -fx-text-fill: #1a1a2e;"/>
+                            </VBox>
+
+                            <VBox spacing="7" GridPane.columnIndex="1">
+                                <Label text="VILLE"
+                                       style="-fx-font-size: 11px;
+                                              -fx-font-weight: bold;
+                                              -fx-text-fill: #5B3DE8;"/>
+                                <TextField fx:id="villeField"
+                                           style="-fx-background-color: white;
+                                                  -fx-border-color: #dcdce8;
+                                                  -fx-border-width: 1.5px;
+                                                  -fx-border-radius: 10px;
+                                                  -fx-background-radius: 10px;
+                                                  -fx-padding: 11 14 11 14;
+                                                  -fx-font-size: 14px;
+                                                  -fx-text-fill: #1a1a2e;"/>
+                            </VBox>
+                        </GridPane>
+
+                        <!-- DATE NAISSANCE + CENTRE D'INTÉRÊT -->
+                        <GridPane hgap="20" vgap="0">
+                            <VBox.margin><Insets bottom="18"/></VBox.margin>
+                            <columnConstraints>
+                                <ColumnConstraints hgrow="ALWAYS" percentWidth="50"/>
+                                <ColumnConstraints hgrow="ALWAYS" percentWidth="50"/>
+                            </columnConstraints>
+
+                            <VBox spacing="7" GridPane.columnIndex="0">
+                                <Label text="DATE DE NAISSANCE"
+                                       style="-fx-font-size: 11px;
+                                              -fx-font-weight: bold;
+                                              -fx-text-fill: #5B3DE8;"/>
+                                <DatePicker fx:id="dateNaissancePicker"
+                                            maxWidth="Infinity"
+                                            style="-fx-background-color: white;
+                                                   -fx-border-color: #dcdce8;
+                                                   -fx-border-width: 1.5px;
+                                                   -fx-border-radius: 10px;
+                                                   -fx-background-radius: 10px;
+                                                   -fx-font-size: 14px;"/>
+                            </VBox>
+
+                            <VBox spacing="7" GridPane.columnIndex="1">
+                                <Label text="SPÉCIALITÉ"
+                                       style="-fx-font-size: 11px;
+                                              -fx-font-weight: bold;
+                                              -fx-text-fill: #5B3DE8;"/>
+                                <ComboBox fx:id="specialiteCombo"
+                                          maxWidth="Infinity"
+                                          style="-fx-background-color: white;
+                                                 -fx-border-color: #dcdce8;
+                                                 -fx-border-width: 1.5px;
+                                                 -fx-border-radius: 10px;
+                                                 -fx-background-radius: 10px;
+                                                 -fx-font-size: 14px;"/>
+                            </VBox>
+                        </GridPane>
+
+                        <!-- BIOGRAPHIE -->
+                        <VBox spacing="7">
+                            <VBox.margin><Insets bottom="28"/></VBox.margin>
+                            <Label text="BIOGRAPHIE"
+                                   style="-fx-font-size: 11px;
+                                          -fx-font-weight: bold;
+                                          -fx-text-fill: #5B3DE8;"/>
+                            <TextArea fx:id="bioArea"
+                                      prefRowCount="4"
+                                      wrapText="true"
+                                      style="-fx-background-color: white;
+                                             -fx-border-color: #dcdce8;
+                                             -fx-border-width: 1.5px;
+                                             -fx-border-radius: 10px;
+                                             -fx-background-radius: 10px;
+                                             -fx-padding: 11 14 11 14;
+                                             -fx-font-size: 14px;
+                                             -fx-text-fill: #1a1a2e;"/>
+                        </VBox>
+
+                        <!-- SÉPARATEUR -->
+                        <Separator style="-fx-opacity: 0.5;">
+                            <VBox.margin><Insets bottom="24"/></VBox.margin>
+                        </Separator>
+
+                        <!-- MOT DE PASSE -->
+                        <Label text="CHANGER LE MOT DE PASSE"
+                               style="-fx-font-size: 11px;
+                                      -fx-font-weight: bold;
+                                      -fx-text-fill: #5B3DE8;">
+                            <VBox.margin><Insets bottom="12"/></VBox.margin>
+                        </Label>
+
+                        <GridPane hgap="16" vgap="0">
+                            <VBox.margin><Insets bottom="28"/></VBox.margin>
+                            <columnConstraints>
+                                <ColumnConstraints hgrow="ALWAYS" percentWidth="33.3"/>
+                                <ColumnConstraints hgrow="ALWAYS" percentWidth="33.3"/>
+                                <ColumnConstraints hgrow="ALWAYS" percentWidth="33.4"/>
+                            </columnConstraints>
+
+                            <PasswordField fx:id="oldPasswordField"
+                                           promptText="Ancien mot de passe"
+                                           GridPane.columnIndex="0"
+                                           style="-fx-background-color: white;
+                                                  -fx-border-color: #dcdce8;
+                                                  -fx-border-width: 1.5px;
+                                                  -fx-border-radius: 10px;
+                                                  -fx-background-radius: 10px;
+                                                  -fx-padding: 11 14 11 14;
+                                                  -fx-font-size: 13px;"/>
+                            <PasswordField fx:id="newPasswordField"
+                                           promptText="Nouveau mot de passe"
+                                           GridPane.columnIndex="1"
+                                           style="-fx-background-color: white;
+                                                  -fx-border-color: #dcdce8;
+                                                  -fx-border-width: 1.5px;
+                                                  -fx-border-radius: 10px;
+                                                  -fx-background-radius: 10px;
+                                                  -fx-padding: 11 14 11 14;
+                                                  -fx-font-size: 13px;"/>
+                            <PasswordField fx:id="confirmPasswordField"
+                                           promptText="Confirmation"
+                                           GridPane.columnIndex="2"
+                                           style="-fx-background-color: white;
+                                                  -fx-border-color: #dcdce8;
+                                                  -fx-border-width: 1.5px;
+                                                  -fx-border-radius: 10px;
+                                                  -fx-background-radius: 10px;
+                                                  -fx-padding: 11 14 11 14;
+                                                  -fx-font-size: 13px;"/>
+                        </GridPane>
+
+                        <!-- BOUTONS -->
+                        <HBox spacing="12" alignment="CENTER_LEFT">
+                            <Button text="Annuler"
+                                    onAction="#handleCancel"
+                                    style="-fx-background-color: white;
+                                           -fx-text-fill: #5B3DE8;
+                                           -fx-font-size: 13px;
+                                           -fx-font-weight: bold;
+                                           -fx-border-color: #c8c0f8;
+                                           -fx-border-width: 1.5px;
+                                           -fx-border-radius: 10px;
+                                           -fx-background-radius: 10px;
+                                           -fx-padding: 11 24 11 24;
+                                           -fx-cursor: hand;"/>
+                            <Button fx:id="saveButton"
+                                    text="Enregistrer"
+                                    onAction="#handleSave"
+                                    style="-fx-background-color: #5B3DE8;
+                                           -fx-text-fill: white;
+                                           -fx-font-size: 13px;
+                                           -fx-font-weight: bold;
+                                           -fx-border-radius: 10px;
+                                           -fx-background-radius: 10px;
+                                           -fx-padding: 11 28 11 28;
+                                           -fx-cursor: hand;"/>
+                        </HBox>
+
+                    </VBox>
+                </VBox>
+
+            </VBox>
+        </ScrollPane>
+    </center>
+
+</BorderPane>

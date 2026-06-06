@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox fx:id="sidebarRoot" prefWidth="260.0" spacing="4.0" styleClass="sidebar" xmlns="http://javafx.com/javafx/20.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.SidebarController">
+    <padding>
+        <Insets bottom="14.0" left="12.0" right="12.0" top="16.0" />
+    </padding>
+
+    <HBox alignment="CENTER_LEFT" spacing="8.0" styleClass="sidebar-brand">
+        <ImageView fitHeight="34.0" fitWidth="34.0" preserveRatio="true">
+            <Image url="@assets/PNG Porcelain Icon.png" />
+        </ImageView>
+        <Label styleClass="brand-label" text="Artium" />
+    </HBox>
+
+    <Button fx:id="dashboardButton" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#onDashboardClick" prefHeight="38.0" styleClass="nav-item" text="Tableau de bord" />
+
+    <Button fx:id="usersGroupButton" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#onUsersGroupClick" prefHeight="38.0" styleClass="nav-item" text="Utilisateurs" />
+    <VBox fx:id="usersSubMenu" spacing="3.0" styleClass="sub-menu">
+        <Button fx:id="artistesButton" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#onArtistesClick" prefHeight="34.0" styleClass="nav-sub-item" text="Artistes" />
+        <Button fx:id="amateursButton" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#onAmateursClick" prefHeight="34.0" styleClass="nav-sub-item" text="Amateurs" />
+    </VBox>
+
+    <Button fx:id="oeuvresButton" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#onOeuvresClick" prefHeight="38.0" styleClass="nav-item" text="Oeuvres" />
+    <Button fx:id="livresButton" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#onLivresClick" prefHeight="38.0" styleClass="nav-item" text="Bibliotheque" />
+    <Button fx:id="musiquesButton" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#onMusiquesClick" prefHeight="38.0" styleClass="nav-item" text="Musique" />
+
+    <Button fx:id="eventsGroupButton" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#onEventsGroupClick" prefHeight="38.0" styleClass="nav-item" text="Evenements" />
+    <VBox fx:id="eventsSubMenu" spacing="3.0" styleClass="sub-menu">
+        <Button fx:id="evenementsButton" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#onEvenementsClick" prefHeight="34.0" styleClass="nav-sub-item" text="Evenements" />
+        <Button fx:id="galeriesButton" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#onGaleriesClick" prefHeight="34.0" styleClass="nav-sub-item" text="Galeries" />
+    </VBox>
+
+    <Button fx:id="reclamationsButton" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#onReclamationsClick" prefHeight="38.0" styleClass="nav-item" text="Reclamations" />
+
+    <Region fx:id="sidebarSpacer" VBox.vgrow="ALWAYS" />
+    <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#onLogoutClick" prefHeight="38.0" style="-fx-text-fill: #ffdf00; -fx-font-weight: 800;" styleClass="nav-item" text="🚪 Se déconnecter" />
+</VBox>
+
+

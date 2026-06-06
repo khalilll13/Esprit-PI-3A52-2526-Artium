@@ -1,0 +1,251 @@
+/* Styles spécifiques à la page Réclamations (Espace Artiste)
+   Objectif: reproduire le rendu “card + onglets + formulaire” de la maquette.
+   Cette feuille est volontairement locale pour ne pas impacter les autres pages.
+*/
+
+.page-root {
+    -fx-background-color: transparent;
+}
+
+.reclamations-card {
+    -fx-background-color: white;
+    -fx-background-radius: 12;
+    -fx-border-color: #dee2e6;
+    -fx-border-radius: 12;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 10, 0, 0, 2);
+}
+
+/* -------- TabPane (onglets comme la maquette) -------- */
+.reclamations-tabs {
+    -fx-background-color: transparent;
+}
+
+.reclamations-tabs > .tab-header-area {
+    -fx-padding: 0 0 10 0;
+}
+
+.reclamations-tabs > .tab-header-area > .headers-region {
+    -fx-background-color: transparent;
+}
+
+.reclamations-tabs > .tab-header-area > .tab-header-background {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent transparent #e5e7eb transparent;
+    -fx-border-width: 0 0 1 0;
+}
+
+.reclamations-tabs .tab {
+    -fx-background-color: transparent;
+    -fx-padding: 10 14;
+}
+
+.reclamations-tabs .tab .tab-label {
+    -fx-text-fill: #6c757d;
+    -fx-font-size: 13px;
+    -fx-font-weight: 600;
+}
+
+.reclamations-tabs .tab:selected .tab-label {
+    -fx-text-fill: #0d6efd;
+}
+
+.reclamations-tabs .tab:selected {
+    -fx-border-color: transparent transparent #0d6efd transparent;
+    -fx-border-width: 0 0 3 0;
+}
+
+.reclamations-tabs > .tab-content-area {
+    -fx-background-color: transparent;
+    -fx-padding: 12 0 0 0;
+}
+
+/* -------- Formulaire -------- */
+.form-title {
+    -fx-font-size: 16px;
+    -fx-font-weight: 700;
+    -fx-text-fill: #111827;
+}
+
+.form-label {
+    -fx-text-fill: #6c757d;
+    -fx-font-size: 12px;
+    -fx-font-weight: 600;
+}
+
+.input-control {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #d6deea;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-padding: 8 10;
+}
+
+.input-control:focused {
+    -fx-border-color: #0d6efd;
+    -fx-effect: dropshadow(gaussian, rgba(13,110,253,0.18), 10, 0.2, 0, 0);
+}
+
+.form-validation-error {
+    -fx-text-fill: #dc2626;
+    -fx-font-size: 12px;
+    -fx-font-weight: 500;
+    -fx-padding: 4 0 0 0;
+}
+
+Label.form-validation-error {
+    -fx-text-fill: #dc2626;
+}
+
+/* TextArea: forcer le fond/bordure sur le contenu interne */
+.text-area.input-control {
+    -fx-padding: 6 10;
+}
+
+.text-area.input-control .content {
+    -fx-background-color: #ffffff;
+}
+
+/* -------- Boutons -------- */
+.btn-secondary {
+    -fx-background-color: #ffffff;
+    -fx-text-fill: #111827;
+    -fx-border-color: #d1d5db;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-font-weight: 600;
+    -fx-padding: 8 14;
+    -fx-cursor: hand;
+}
+
+.btn-primary {
+    -fx-background-color: #2f2ccf; /* bleu/violet proche de la maquette */
+    -fx-text-fill: white;
+    -fx-background-radius: 8;
+    -fx-font-weight: 700;
+    -fx-padding: 8 16;
+    -fx-cursor: hand;
+}
+
+.btn-primary:hover {
+    -fx-background-color: #2623b9;
+}
+
+.btn-secondary:hover {
+    -fx-background-color: #f3f4f6;
+}
+
+.type-filter-btn {
+    -fx-background-color: #e9ecef;
+    -fx-text-fill: #243146;
+    -fx-border-color: #cfd5dc;
+    -fx-border-radius: 999;
+    -fx-background-radius: 999;
+    -fx-font-weight: 700;
+    -fx-padding: 8 18;
+    -fx-cursor: hand;
+}
+
+.type-filter-btn:hover {
+    -fx-background-color: #dde2e8;
+}
+
+.type-filter-btn.type-filter-active {
+    -fx-background-color: #d9d8ff;
+    -fx-text-fill: #2f2ccf;
+    -fx-border-color: #a9b1ff;
+}
+
+/* -------- Etat vide / infos -------- */
+.empty-hint {
+    -fx-text-fill: #6c757d;
+    -fx-font-size: 13px;
+}
+
+/* -------- Cards (Mes Réclamations) -------- */
+.my-reclamation-card {
+    -fx-background-color: white;
+    -fx-background-radius: 12;
+    -fx-border-color: #e6ebf3;
+    -fx-border-radius: 12;
+    -fx-effect: dropshadow(gaussian, rgba(60,60,60,0.06), 10, 0, 0, 2);
+    -fx-padding: 14;
+}
+
+.my-reclamation-title {
+    -fx-font-size: 13px;
+    -fx-font-weight: 700;
+    -fx-text-fill: #111827;
+}
+
+.my-reclamation-meta {
+    -fx-text-fill: #6b7280;
+    -fx-font-size: 12px;
+}
+
+.status-badge {
+    -fx-padding: 4 10;
+    -fx-background-radius: 999;
+    -fx-font-weight: 700;
+    -fx-font-size: 12px;
+}
+
+.status-badge.nontraite {
+    -fx-background-color: #ffebee;
+    -fx-text-fill: #b71c1c;
+}
+
+.status-badge.traite {
+    -fx-background-color: #e8f7ee;
+    -fx-text-fill: #197c43;
+}
+
+.dots-button {
+    -fx-background-color: transparent;
+    -fx-border-color: #d1d5db;
+    -fx-border-radius: 6;
+    -fx-background-radius: 6;
+    -fx-font-weight: 700;
+    -fx-padding: 4 10;
+    -fx-cursor: hand;
+}
+
+.dots-button:hover {
+    -fx-background-color: #f3f4f6;
+}
+
+.reclamation-actions-menu {
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 10;
+    -fx-border-color: #dbe5f2;
+    -fx-border-radius: 10;
+    -fx-border-width: 1;
+    -fx-padding: 4;
+    -fx-effect: dropshadow(gaussian, rgba(31, 45, 70, 0.16), 12, 0.15, 0, 3);
+}
+
+.reclamation-actions-menu .menu-item {
+    -fx-background-color: transparent;
+    -fx-background-radius: 8;
+    -fx-padding: 7 12 7 12;
+}
+
+.reclamation-actions-menu .menu-item > .label {
+    -fx-font-size: 13px;
+    -fx-font-weight: 600;
+    -fx-text-fill: #243146;
+}
+
+.reclamation-actions-menu .menu-item:focused,
+.reclamation-actions-menu .menu-item:hover {
+    -fx-background-color: #eaf2ff;
+}
+
+.reclamation-actions-menu .menu-item.reclamation-actions-delete > .label {
+    -fx-text-fill: #d12f3f;
+}
+
+.reclamation-actions-menu .menu-item.reclamation-actions-delete:focused,
+.reclamation-actions-menu .menu-item.reclamation-actions-delete:hover {
+    -fx-background-color: #fff0f3;
+}
+

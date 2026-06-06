@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Priority?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox alignment="CENTER" spacing="12.0" styleClass="page-root collections-page" xmlns="http://javafx.com/javafx/20.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.artist.StatistiquesArtisteController">
+    <padding><Insets bottom="12.0" left="12.0" right="12.0" top="12.0" /></padding>
+
+    <!-- Main Card -->
+    <VBox alignment="TOP_LEFT" maxWidth="1200.0" spacing="16.0" styleClass="collections-body-card" VBox.vgrow="ALWAYS">
+        <padding><Insets bottom="20.0" left="20.0" right="20.0" top="20.0" /></padding>
+
+        <!-- Title -->
+        <Label styleClass="stats-main-title" text="Statistiques de mes oeuvres" />
+
+        <!-- Chart Section with Navigation -->
+        <VBox spacing="12.0" styleClass="collections-body-card">
+            <padding>
+                <Insets bottom="16.0" left="16.0" right="16.0" top="16.0" />
+            </padding>
+
+            <!-- Header with Navigation -->
+            <HBox spacing="12.0" alignment="CENTER_LEFT">
+                <Label fx:id="chartTitleLabel" styleClass="stats-chart-title" text="🎨 Repartition des commentaires par collection" HBox.hgrow="ALWAYS" />
+
+                <Region HBox.hgrow="ALWAYS" />
+
+                <Label text="Attribut" styleClass="stats-attribute-prefix" />
+                <Button fx:id="prevButton" text="‹" styleClass="stats-nav-arrow" prefWidth="22.0" />
+                <Label fx:id="attributeLabel" text="Commentaires" styleClass="stats-attribute-value" />
+                <Button fx:id="nextButton" text="›" styleClass="stats-nav-arrow" prefWidth="22.0" />
+            </HBox>
+
+            <!-- Chart Container -->
+            <StackPane fx:id="pieChartContainer" prefHeight="300.0" VBox.vgrow="ALWAYS" />
+        </VBox>
+
+        <!-- New Row for Comments Received per Day -->
+        <VBox spacing="12.0" styleClass="collections-body-card">
+            <padding>
+                <Insets bottom="16.0" left="16.0" right="16.0" top="16.0" />
+            </padding>
+
+            <!-- Header with Month Navigation -->
+            <HBox spacing="12.0" alignment="CENTER_LEFT">
+                <Label styleClass="stats-chart-title" text="📈 Commentaires recus par jour" HBox.hgrow="ALWAYS" />
+
+                <Region HBox.hgrow="ALWAYS" />
+
+                <Label text="Mois" styleClass="stats-attribute-prefix" />
+                <Button fx:id="prevMonthButton" text="‹" styleClass="stats-nav-arrow" prefWidth="22.0" />
+                <Label fx:id="monthLabel" text="Apr 2026" styleClass="stats-attribute-value" />
+                <Button fx:id="nextMonthButton" text="›" styleClass="stats-nav-arrow" prefWidth="22.0" />
+            </HBox>
+
+            <!-- Line Chart Container -->
+            <StackPane fx:id="commentsLineChartContainer" prefHeight="280.0" VBox.vgrow="ALWAYS" />
+        </VBox>
+
+        <!-- Top 3 Amateurs Card -->
+        <VBox spacing="12.0" styleClass="collections-body-card">
+            <padding>
+                <Insets bottom="16.0" left="16.0" right="16.0" top="16.0" />
+            </padding>
+
+            <HBox spacing="12.0" alignment="CENTER_LEFT">
+                <Label styleClass="stats-chart-title" text="🏆 Top 3 Amateurs de mes oeuvres" HBox.hgrow="ALWAYS" />
+            </HBox>
+
+            <VBox fx:id="topAmateursContainer" spacing="10.0" VBox.vgrow="ALWAYS" alignment="CENTER" minHeight="120.0">
+                <Label text="Chargement des amateurs..." styleClass="stats-attribute-prefix" />
+            </VBox>
+        </VBox>
+
+    </VBox>
+
+</VBox>

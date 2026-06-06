@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Hyperlink?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml/1"
+			fx:controller="controllers.InscriptionController"
+			stylesheets="@../styles/auth.css"
+			styleClass="auth-root">
+	<fx:define>
+		<ToggleGroup fx:id="roleToggleGroup"/>
+	</fx:define>
+
+	<center>
+		<StackPane fx:id="landingShell">
+			<!-- Asymmetrical Gallery Layout -->
+			<HBox fx:id="landingCard" spacing="100" alignment="CENTER" maxWidth="1200">
+				<padding>
+					<Insets top="80" right="80" bottom="80" left="80"/>
+				</padding>
+				
+				<!-- Left Editorial Hero -->
+				<VBox fx:id="landingHero" spacing="40" alignment="CENTER_LEFT" prefWidth="450" HBox.hgrow="ALWAYS" styleClass="auth-glass-card">
+					<StackPane alignment="CENTER_LEFT" styleClass="auth-hero-logo-wrap">
+						<ImageView fitWidth="180" preserveRatio="true" smooth="true" cache="true" styleClass="auth-hero-logo">
+							<image>
+								<Image url="@../images/logo2.png"/>
+							</image>
+						</ImageView>
+					</StackPane>
+					<VBox spacing="10">
+						<Label text="Rejoignez" wrapText="true" styleClass="auth-hero-title"/>
+						<Label text="L'Exposition." wrapText="true" styleClass="auth-hero-title"/>
+					</VBox>
+					<Label text="Créez votre profil Artium. Une toile vierge n'attend que votre créativité et vos œuvres." wrapText="true" styleClass="auth-hero-text"/>
+					<HBox spacing="20" styleClass="auth-chip-row">
+						<Label text="Minimal" styleClass="auth-chip"/>
+						<Label text="Épuré" styleClass="auth-chip"/>
+						<Label text="Inspirant" styleClass="auth-chip"/>
+					</HBox>
+				</VBox>
+
+				<!-- Right Minimalist Form with ScrollPane -->
+				<VBox alignment="CENTER_LEFT" prefWidth="550" HBox.hgrow="NEVER">
+					<ScrollPane fitToWidth="true" hbarPolicy="NEVER" styleClass="auth-scroll" VBox.vgrow="ALWAYS">
+						<content>
+							<StackPane>
+								<VBox fx:id="signupCard" spacing="30" maxWidth="600" alignment="CENTER_LEFT" styleClass="auth-glass-card">
+									<padding>
+										<Insets top="10" right="20" bottom="30" left="10"/>
+									</padding>
+
+									<VBox spacing="8">
+										<Label text="Nouveau Profil" styleClass="auth-panel-kicker"/>
+										<Label text="Inscription" styleClass="auth-title"/>
+									</VBox>
+
+									<HBox spacing="15" styleClass="auth-stepper">
+										<Label fx:id="stepOneBadge" text="1" styleClass="auth-step-badge"/>
+										<Label fx:id="stepTwoBadge" text="2" styleClass="auth-step-badge"/>
+										<Label fx:id="stepThreeBadge" text="3" styleClass="auth-step-badge"/>
+									</HBox>
+
+									<VBox fx:id="stepOnePane" spacing="24">
+										<GridPane hgap="24" vgap="24">
+											<columnConstraints>
+												<ColumnConstraints percentWidth="50" hgrow="ALWAYS"/>
+												<ColumnConstraints percentWidth="50" hgrow="ALWAYS"/>
+											</columnConstraints>
+
+											<VBox spacing="8" GridPane.rowIndex="0" GridPane.columnIndex="0">
+												<Label text="Nom" styleClass="auth-field-label"/>
+												<TextField fx:id="nomField" promptText="Nom" styleClass="auth-input"/>
+											</VBox>
+
+											<VBox spacing="8" GridPane.rowIndex="0" GridPane.columnIndex="1">
+												<Label text="Prénom" styleClass="auth-field-label"/>
+												<TextField fx:id="prenomField" promptText="Prénom" styleClass="auth-input"/>
+											</VBox>
+
+											<VBox spacing="8" GridPane.rowIndex="1" GridPane.columnIndex="0">
+												<Label text="Date de naissance" styleClass="auth-field-label"/>
+												<DatePicker fx:id="dateNaissancePicker" promptText="jj/mm/aaaa" styleClass="auth-input"/>
+											</VBox>
+
+											<VBox spacing="8" GridPane.rowIndex="1" GridPane.columnIndex="1">
+												<Label text="Téléphone" styleClass="auth-field-label"/>
+												<TextField fx:id="phoneField" promptText="+216 XX XXX XXX" styleClass="auth-input"/>
+											</VBox>
+
+											<VBox spacing="8" GridPane.rowIndex="2" GridPane.columnIndex="0" GridPane.columnSpan="2">
+												<Label text="Ville" styleClass="auth-field-label"/>
+												<TextField fx:id="villeField" promptText="Votre ville" styleClass="auth-input"/>
+											</VBox>
+										</GridPane>
+									</VBox>
+
+									<VBox fx:id="stepTwoPane" spacing="24" visible="false" managed="false">
+										<GridPane hgap="24" vgap="24">
+											<columnConstraints>
+												<ColumnConstraints percentWidth="50" hgrow="ALWAYS"/>
+												<ColumnConstraints percentWidth="50" hgrow="ALWAYS"/>
+											</columnConstraints>
+
+											<VBox spacing="8" GridPane.rowIndex="0" GridPane.columnIndex="0" GridPane.columnSpan="2">
+												<Label text="Adresse e-mail" styleClass="auth-field-label"/>
+												<TextField fx:id="emailField" promptText="nom@exemple.com" styleClass="auth-input"/>
+											</VBox>
+
+											<VBox spacing="8" GridPane.rowIndex="1" GridPane.columnIndex="0">
+												<Label text="Mot de passe" styleClass="auth-field-label"/>
+												<PasswordField fx:id="passwordField" promptText="Sécurisé" styleClass="auth-input"/>
+											</VBox>
+
+											<VBox spacing="8" GridPane.rowIndex="1" GridPane.columnIndex="1">
+												<Label text="Confirmation" styleClass="auth-field-label"/>
+												<PasswordField fx:id="confirmPasswordField" promptText="Répéter" styleClass="auth-input"/>
+											</VBox>
+										</GridPane>
+									</VBox>
+
+									<VBox fx:id="stepThreePane" spacing="24" visible="false" managed="false">
+										<HBox spacing="20">
+											<ToggleButton text="Amateur" toggleGroup="$roleToggleGroup" selected="true" styleClass="auth-role-toggle"/>
+											<ToggleButton text="Artiste" toggleGroup="$roleToggleGroup" styleClass="auth-role-toggle"/>
+										</HBox>
+
+										<GridPane hgap="24" vgap="24">
+											<columnConstraints>
+												<ColumnConstraints percentWidth="50" hgrow="ALWAYS"/>
+												<ColumnConstraints percentWidth="50" hgrow="ALWAYS"/>
+											</columnConstraints>
+
+											<VBox fx:id="specialiteContainer" spacing="8" GridPane.rowIndex="0" GridPane.columnIndex="0">
+												<Label text="Spécialité" styleClass="auth-field-label"/>
+												<ComboBox fx:id="specialiteComboBox" promptText="Choisir" maxWidth="Infinity" styleClass="auth-input"/>
+											</VBox>
+
+											<VBox fx:id="centreInteretContainer" spacing="8" GridPane.rowIndex="0" GridPane.columnIndex="0">
+												<Label text="Intérêt" styleClass="auth-field-label"/>
+												<ComboBox fx:id="centreInteretComboBox" promptText="Choisir" maxWidth="Infinity" styleClass="auth-input"/>
+											</VBox>
+
+											<VBox spacing="8" GridPane.rowIndex="1" GridPane.columnIndex="0" GridPane.columnSpan="2">
+												<Label text="Biographie" styleClass="auth-field-label"/>
+												<TextArea fx:id="biographieArea" promptText="Votre histoire..." prefRowCount="3" wrapText="true" styleClass="auth-textarea"/>
+											</VBox>
+										</GridPane>
+
+										<VBox spacing="10">
+											<Label text="Photo d'exposition" styleClass="auth-field-label"/>
+											<HBox spacing="20" alignment="CENTER_LEFT">
+												<StackPane styleClass="auth-photo-preview">
+													<Label fx:id="photoPlaceholderLabel" text="Vide" styleClass="auth-photo-placeholder"/>
+												</StackPane>
+												<VBox spacing="10" HBox.hgrow="ALWAYS">
+													<Label fx:id="photoPathLabel" text="Sélectionnez une image." wrapText="true" styleClass="auth-subtitle"/>
+													<Button text="Parcourir" onAction="#onBrowsePhoto" styleClass="auth-secondary-button"/>
+												</VBox>
+											</HBox>
+										</VBox>
+									</VBox>
+
+									<Label fx:id="messageLabel" text="" styleClass="auth-message" wrapText="true"/>
+
+									<HBox spacing="16" alignment="CENTER_LEFT">
+										<Button fx:id="previousButton" text="← Accueil" onAction="#onPreviousStep" styleClass="auth-secondary-button"/>
+										<Region HBox.hgrow="ALWAYS"/>
+										<Button fx:id="nextButton" text="Suivant →" onAction="#onNextStep" styleClass="auth-primary-button"/>
+										<Button fx:id="submitButton" text="Terminer" onAction="#onSubmit" styleClass="auth-primary-button" visible="false" managed="false"/>
+									</HBox>
+
+									<HBox alignment="CENTER_LEFT" spacing="8">
+										<Label text="Déjà un compte ?" styleClass="auth-subtitle"/>
+										<Hyperlink text="Connexion" onAction="#onBackToLanding" styleClass="auth-link-button"/>
+									</HBox>
+								</VBox>
+							</StackPane>
+						</content>
+					</ScrollPane>
+				</VBox>
+
+			</HBox>
+		</StackPane>
+	</center>
+</BorderPane>

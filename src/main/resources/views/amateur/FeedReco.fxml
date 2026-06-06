@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox alignment="CENTER" spacing="14.0" styleClass="amateur-page-card" xmlns="http://javafx.com/javafx/20.0.2" xmlns:fx="http://javafx.com/fxml/1">
+    <padding>
+        <Insets bottom="28.0" left="28.0" right="28.0" top="28.0" />
+    </padding>
+    <Label styleClass="page-title" text="Recommandations" />
+    <Label styleClass="page-subtitle" text="Structure de la page de recommandations basée sur le centre d'intérêt." wrapText="true" />
+    <StackPane minHeight="220.0" prefHeight="260.0" styleClass="empty-state-card" VBox.vgrow="ALWAYS">
+        <Label styleClass="empty-state-title" text="Aucune recommandation pour le moment" />
+    </StackPane>
+</VBox>
+

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane xmlns="http://javafx.com/javafx/20.0.2" xmlns:fx="http://javafx.com/fxml/1">
+    <top>
+        <VBox spacing="8.0" styleClass="amateur-page-card">
+            <padding>
+                <Insets bottom="20.0" left="24.0" right="24.0" top="24.0" />
+            </padding>
+            <Label styleClass="page-title" text="Favoris" />
+            <Label styleClass="page-subtitle" text="Structure de la grille des favoris amateur." wrapText="true" />
+        </VBox>
+    </top>
+    <center>
+        <VBox spacing="14.0" styleClass="amateur-page-card">
+            <padding>
+                <Insets bottom="24.0" left="24.0" right="24.0" top="0.0" />
+            </padding>
+            <TabPane prefHeight="420.0">
+                <tabs>
+                    <Tab closable="false" text="Toutes les oeuvres">
+                        <content>
+                            <StackPane styleClass="empty-state-card">
+                                <Label text="Grille de toutes les oeuvres en favoris" />
+                            </StackPane>
+                        </content>
+                    </Tab>
+                    <Tab closable="false" text="Peintures">
+                        <content>
+                            <StackPane styleClass="empty-state-card">
+                                <Label text="Grille des peintures en favoris" />
+                            </StackPane>
+                        </content>
+                    </Tab>
+                    <Tab closable="false" text="Sculptures">
+                        <content>
+                            <StackPane styleClass="empty-state-card">
+                                <Label text="Grille des sculptures en favoris" />
+                            </StackPane>
+                        </content>
+                    </Tab>
+                    <Tab closable="false" text="Photographies">
+                        <content>
+                            <StackPane styleClass="empty-state-card">
+                                <Label text="Grille des photographies en favoris" />
+                            </StackPane>
+                        </content>
+                    </Tab>
+                </tabs>
+            </TabPane>
+        </VBox>
+    </center>
+</BorderPane>
+

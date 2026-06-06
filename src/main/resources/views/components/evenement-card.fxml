@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox prefWidth="320.0" spacing="10.0" styleClass="gallery-card" xmlns="http://javafx.com/javafx/20.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.EvenementCardController">
+    <padding>
+        <Insets bottom="12.0" left="12.0" right="12.0" top="12.0" />
+    </padding>
+
+    <HBox alignment="CENTER_LEFT" spacing="10.0">
+        <VBox spacing="3.0" HBox.hgrow="ALWAYS">
+            <Label fx:id="titreLabel" styleClass="gallery-name" text="Titre evenement" wrapText="true" />
+            <Label fx:id="typeLabel" styleClass="gallery-capacity" text="Type: -" />
+        </VBox>
+        <Button fx:id="detailsButton" mnemonicParsing="false" onAction="#onToggleDetails" styleClass="secondary-action-button" text="Voir details" />
+    </HBox>
+
+    <Label fx:id="statutLabel" styleClass="gallery-meta" text="Statut: -" wrapText="true" />
+    <Label fx:id="dateDebutLabel" styleClass="gallery-meta" text="Debut: -" wrapText="true" />
+
+    <HBox alignment="CENTER_RIGHT" spacing="8.0">
+        <Button mnemonicParsing="false" onAction="#onDeleteClick" styleClass="danger-action-button" text="Supprimer" />
+    </HBox>
+
+    <VBox fx:id="detailsBox" managed="false" spacing="6.0" styleClass="gallery-details" visible="false">
+        <padding>
+            <Insets bottom="8.0" left="8.0" right="8.0" top="8.0" />
+        </padding>
+        <Label fx:id="descriptionLabel" styleClass="gallery-meta" text="Description: -" wrapText="true" />
+        <Label fx:id="dateFinLabel" styleClass="gallery-meta" text="Fin: -" wrapText="true" />
+        <Label fx:id="dateCreationLabel" styleClass="gallery-meta" text="Creation: -" wrapText="true" />
+        <Label fx:id="capaciteLabel" styleClass="gallery-meta" text="Capacite max: -" wrapText="true" />
+        <Label fx:id="prixLabel" styleClass="gallery-meta" text="Prix ticket: -" wrapText="true" />
+        <Label fx:id="relationLabel" styleClass="gallery-meta" text="Galerie ID: - | Artiste ID: -" wrapText="true" />
+    </VBox>
+</VBox>
+
+

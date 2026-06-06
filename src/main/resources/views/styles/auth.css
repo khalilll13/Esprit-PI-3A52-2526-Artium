@@ -1,0 +1,309 @@
+/* Cache les barres de défilement tout en gardant le scroll actif */
+.scroll-bar:horizontal, 
+.scroll-bar:vertical {
+    -fx-opacity: 0;
+    -fx-pref-width: 0;
+    -fx-max-width: 0;
+    -fx-pref-height: 0;
+    -fx-max-height: 0;
+    -fx-padding: 0;
+}
+.scroll-bar:horizontal .track,
+.scroll-bar:horizontal .thumb,
+.scroll-bar:vertical .track,
+.scroll-bar:vertical .thumb {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}
+.scroll-pane > .corner {
+    -fx-background-color: transparent;
+}
+
+/* =========================================================================
+   ARTIUM : LIGHT GALLERY MINIMALIST DESIGN (Auth & Landing)
+   ========================================================================= */
+
+/* --- ROOT & CANVAS --- */
+.auth-root {
+    -fx-font-family: "Exo 2", sans-serif;
+    -fx-background-color: #FAFAFC; /* Toile très légèrement grisée pour adoucir */
+}
+
+/* On supprime toutes les boîtes, ombres et bordures classiques */
+.auth-landing-shell,
+.auth-signup-shell {
+    -fx-padding: 0;
+}
+
+.auth-card,
+.auth-landing-card,
+.auth-landing-card-fluid,
+.auth-signup-card {
+    -fx-background-color: transparent;
+    -fx-background-radius: 0;
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+    -fx-effect: none;
+}
+
+/* --- GLASSMORPHISM CARDS --- */
+.auth-glass-card {
+    -fx-background-color: rgba(255, 255, 255, 0.50); /* Transparence idéale (50%) */
+    -fx-background-radius: 24;
+    -fx-border-radius: 24;
+    -fx-border-color: rgba(255, 255, 255, 0.5); /* Reflet ajusté */
+    -fx-border-width: 1.5;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.06), 20, 0.1, 0, 8);
+    -fx-padding: 40;
+}
+
+.auth-landing-hero-fluid,
+.auth-landing-hero,
+.auth-signup-hero {
+    -fx-background-color: transparent;
+}
+
+/* --- TYPOGRAPHY (EDITORIAL STYLE) --- */
+.auth-title,
+.auth-panel-title,
+.auth-login-title,
+.auth-landing-title,
+.auth-hero-title {
+    -fx-font-family: "Exo 2", sans-serif;
+    -fx-font-size: 36px; /* Plus petit pour moins de hauteur */
+    -fx-text-fill: #273c95; /* Deep Royal Blue from logo */
+    -fx-font-weight: normal;
+    -fx-line-spacing: 0.1em;
+}
+
+.auth-subtitle,
+.auth-panel-text,
+.auth-login-subtitle,
+.auth-landing-text,
+.auth-hero-text {
+    -fx-font-size: 16px;
+    -fx-text-fill: #666666;
+    -fx-font-weight: 300;
+    -fx-line-spacing: 0.5em;
+}
+
+.auth-panel-kicker,
+.auth-section-title {
+    -fx-text-fill: #5164d9; /* Accent Blue */
+    -fx-font-size: 14px;
+    -fx-font-weight: 800;
+    -fx-letter-spacing: 0.2em; /* Ne marche pas tjrs en FX, mais intention là */
+}
+
+/* --- LOGO EXPOSITION --- */
+.auth-hero-logo-wrap {
+    -fx-background-color: transparent;
+    -fx-padding: 0;
+    -fx-border-color: transparent;
+}
+.auth-hero-logo {
+    -fx-effect: none;
+}
+
+/* --- FORM FIELDS (MINIMALIST) --- */
+.auth-field-label {
+    -fx-text-fill: #999999;
+    -fx-font-size: 13px;
+    -fx-font-weight: 600;
+    -fx-text-transform: uppercase;
+}
+
+.auth-input {
+    -fx-background-color: transparent;
+    -fx-background-radius: 0;
+    -fx-border-radius: 0;
+    -fx-border-color: transparent transparent #D1D5DB transparent; /* Border bottom only */
+    -fx-border-width: 0 0 1 0;
+    -fx-padding: 12 0 12 0; /* Padding seulement haut/bas */
+    -fx-font-size: 16px;
+    -fx-text-fill: #273c95;
+}
+
+.auth-input:focused {
+    -fx-border-color: transparent transparent #273c95 transparent;
+    -fx-border-width: 0 0 2 0;
+    -fx-effect: none;
+}
+
+.combo-box-base.auth-input {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent transparent #D1D5DB transparent;
+    -fx-border-width: 0 0 1 0;
+}
+.combo-box-base.auth-input:focused {
+    -fx-border-color: transparent transparent #273c95 transparent;
+    -fx-border-width: 0 0 2 0;
+    -fx-effect: none;
+}
+
+.auth-textarea {
+    -fx-pref-row-count: 3;
+    -fx-border-color: #D1D5DB;
+    -fx-border-width: 1;
+    -fx-padding: 12;
+}
+.auth-textarea:focused {
+    -fx-border-color: #273c95;
+    -fx-border-width: 2;
+}
+
+/* --- BUTTONS (ARTISTIC) --- */
+.auth-primary-button {
+    -fx-background-color: #273c95; /* Deep Royal Blue */
+    -fx-text-fill: #FFFFFF;
+    -fx-background-radius: 6; /* Slightly rounded for softness */
+    -fx-font-family: "Exo 2", sans-serif;
+    -fx-font-weight: 700;
+    -fx-font-size: 14px;
+    -fx-padding: 10 20;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(39, 60, 149, 0.2), 10, 0.1, 0, 4);
+}
+
+.auth-primary-button:hover {
+    -fx-background-color: linear-gradient(to right, #5164d9, #38bdf8); /* Vibrant blue gradient */
+    -fx-text-fill: #FFFFFF;
+    -fx-effect: dropshadow(gaussian, rgba(81, 100, 217, 0.3), 14, 0.15, 0, 5);
+}
+
+.auth-secondary-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #273c95;
+    -fx-background-radius: 6;
+    -fx-border-radius: 6;
+    -fx-border-color: #273c95;
+    -fx-border-width: 1.5;
+    -fx-padding: 10 20;
+    -fx-font-size: 13px;
+    -fx-font-weight: 600;
+    -fx-cursor: hand;
+}
+.auth-secondary-button:hover {
+    -fx-background-color: #273c95;
+    -fx-text-fill: #FFFFFF;
+}
+
+.auth-google-button {
+    -fx-background-color: #FFFFFF;
+    -fx-text-fill: #273c95;
+    -fx-background-radius: 6;
+    -fx-border-radius: 6;
+    -fx-border-color: #D1D5DB;
+    -fx-border-width: 1.5;
+    -fx-padding: 10 20;
+    -fx-font-size: 13px;
+    -fx-font-weight: 600;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.05), 8, 0, 0, 2);
+}
+.auth-google-button:hover {
+    -fx-border-color: #273c95;
+    -fx-background-color: #FAFAFC;
+}
+
+.auth-link-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #5164d9;
+    -fx-font-weight: 600;
+    -fx-padding: 0;
+}
+.auth-link-button:hover {
+    -fx-text-fill: #38bdf8;
+}
+
+/* --- STEPPER (Minimalist Dots or Numbers) --- */
+.auth-step-badge {
+    -fx-min-width: 30;
+    -fx-min-height: 30;
+    -fx-alignment: center;
+    -fx-background-color: transparent;
+    -fx-border-color: #DDDDDD;
+    -fx-border-radius: 999;
+    -fx-text-fill: #999999;
+    -fx-font-weight: 600;
+}
+.auth-step-badge.active {
+    -fx-border-color: #273c95;
+    -fx-border-width: 2;
+    -fx-text-fill: #273c95;
+}
+.auth-step-badge.done {
+    -fx-border-color: #273c95;
+    -fx-background-color: #273c95;
+    -fx-text-fill: #FFFFFF;
+}
+
+/* --- OR DIVIDER --- */
+.auth-or-line {
+    -fx-background-color: #EEEEEE;
+    -fx-pref-height: 1;
+}
+.auth-or-label {
+    -fx-text-fill: #999999;
+    -fx-font-style: italic;
+    -fx-font-family: "Exo 2", sans-serif;
+}
+
+/* --- MESSAGES --- */
+.auth-message {
+    -fx-min-height: 20;
+    -fx-font-weight: 400;
+    -fx-font-size: 13px;
+}
+.auth-message.error {
+    -fx-text-fill: #FF3366;
+}
+.auth-message.success {
+    -fx-text-fill: #00CC66;
+}
+
+/* --- CHIPS (Minimal) --- */
+.auth-chip {
+    -fx-background-color: transparent;
+    -fx-text-fill: #000000;
+    -fx-padding: 4 0;
+    -fx-font-size: 13px;
+    -fx-font-weight: 600;
+    -fx-border-color: transparent transparent #000000 transparent;
+    -fx-border-width: 0 0 1 0;
+}
+
+/* --- SCROLLPANE --- */
+.auth-scroll,
+.auth-scroll > .viewport {
+    -fx-background-color: transparent;
+}
+
+/* --- ROLE TOGGLE --- */
+.auth-role-toggle {
+    -fx-background-color: transparent;
+    -fx-text-fill: #999999;
+    -fx-font-size: 18px;
+    -fx-font-family: "Exo 2", sans-serif;
+    -fx-padding: 0 16 8 0;
+    -fx-border-color: transparent;
+    -fx-cursor: hand;
+}
+.auth-role-toggle:selected {
+    -fx-text-fill: #273c95;
+    -fx-border-color: transparent transparent #5164d9 transparent;
+    -fx-border-width: 0 0 2 0;
+    -fx-background-color: transparent;
+}
+
+/* --- PHOTO PREVIEW --- */
+.auth-photo-preview {
+    -fx-min-width: 120;
+    -fx-min-height: 120;
+    -fx-background-color: #F8F8F8;
+    -fx-border-color: #DDDDDD;
+}
+.auth-photo-placeholder {
+    -fx-text-fill: #999999;
+    -fx-font-family: "Exo 2", sans-serif;
+}

@@ -1,0 +1,348 @@
+/* Artium Studio — thème bleu professionnel */
+
+.studio-root {
+    -fx-background-color: #0b1120;
+    -fx-font-family: "Segoe UI", "Inter", sans-serif;
+    -fx-font-size: 13px;
+}
+
+.studio-split {
+    -fx-background-color: #0f172a;
+}
+
+.studio-track-panel {
+    -fx-background-color: #111827;
+    -fx-border-color: #1e3a5f;
+    -fx-border-width: 0 1 0 0;
+    -fx-min-width: 190;
+}
+
+.studio-track-info {
+    -fx-text-fill: #94a3b8;
+    -fx-font-size: 11px;
+}
+
+/* ——— En-tête ——— */
+.studio-header {
+    -fx-background-color: linear-gradient(to right, #0f172a, #1e293b);
+    -fx-padding: 10 18;
+    -fx-border-color: #1e40af;
+    -fx-border-width: 0 0 1 0;
+}
+
+.studio-brand {
+    -fx-font-size: 17px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #f8fafc;
+}
+
+.studio-subtitle {
+    -fx-font-size: 11px;
+    -fx-text-fill: #60a5fa;
+}
+
+.studio-track-name {
+    -fx-font-size: 13px;
+    -fx-text-fill: #38bdf8;
+    -fx-font-weight: bold;
+}
+
+.studio-section-label {
+    -fx-font-size: 10px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #64748b;
+    -fx-padding: 4 8 4 0;
+    -fx-min-width: 88;
+}
+
+.studio-cat-label {
+    -fx-font-size: 10px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #3b82f6;
+    -fx-padding: 6 10 4 4;
+    -fx-background-color: rgba(37, 99, 235, 0.12);
+    -fx-background-radius: 4;
+}
+
+/* ——— Barres d'outils ——— */
+.studio-toolbar-scroll {
+    -fx-background-color: #0f172a;
+    -fx-border-color: #1e293b;
+    -fx-border-width: 0 0 1 0;
+}
+
+.studio-toolbar-scroll > .viewport {
+    -fx-background-color: #0f172a;
+}
+
+.studio-tool-flow {
+    -fx-background-color: transparent;
+    -fx-padding: 6 14;
+    -fx-alignment: CENTER;
+}
+
+/* Bouton de base */
+.studio-btn {
+    -fx-background-color: #1e293b;
+    -fx-text-fill: #e2e8f0;
+    -fx-background-radius: 5;
+    -fx-border-color: #334155;
+    -fx-border-radius: 5;
+    -fx-border-width: 1;
+    -fx-padding: 6 12;
+    -fx-font-size: 11px;
+    -fx-cursor: hand;
+    -fx-min-height: 30;
+    -fx-pref-height: 30;
+}
+
+.studio-btn:hover {
+    -fx-background-color: #2563eb;
+    -fx-border-color: #3b82f6;
+    -fx-text-fill: white;
+}
+
+.studio-btn:disabled {
+    -fx-opacity: 0.45;
+    -fx-cursor: default;
+}
+
+/* Catégories de boutons */
+.studio-btn-cat-history {
+    -fx-border-color: #475569;
+}
+.studio-btn-cat-clipboard {
+    -fx-border-color: #0369a1;
+}
+.studio-btn-cat-edit {
+    -fx-border-color: #1d4ed8;
+}
+.studio-btn-cat-view {
+    -fx-border-color: #0891b2;
+}
+.studio-btn-cat-tracks {
+    -fx-border-color: #7c3aed;
+}
+.studio-btn-cat-ai {
+    -fx-border-color: #059669;
+}
+.studio-btn-cat-fx {
+    -fx-border-color: #2563eb;
+    -fx-font-weight: bold;
+}
+
+.studio-btn-accent {
+    -fx-background-color: #1d4ed8;
+    -fx-border-color: #3b82f6;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+
+.studio-btn-accent:hover {
+    -fx-background-color: #2563eb;
+}
+
+/* ——— Transport Play / Pause ——— */
+.studio-transport-group {
+    -fx-background-color: #1e293b;
+    -fx-background-radius: 8;
+    -fx-border-color: #334155;
+    -fx-border-radius: 8;
+    -fx-border-width: 1;
+    -fx-padding: 4 8;
+    -fx-spacing: 6;
+}
+
+.studio-btn-play {
+    -fx-background-color: #16a34a;
+    -fx-border-color: #22c55e;
+    -fx-text-fill: white;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-min-width: 72;
+    -fx-pref-width: 72;
+    -fx-min-height: 36;
+    -fx-pref-height: 36;
+    -fx-background-radius: 6;
+    -fx-border-radius: 6;
+}
+
+.studio-btn-play:hover {
+    -fx-background-color: #22c55e;
+}
+
+.studio-btn-pause {
+    -fx-background-color: #2563eb;
+    -fx-border-color: #3b82f6;
+    -fx-text-fill: white;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-min-width: 72;
+    -fx-pref-width: 72;
+    -fx-min-height: 36;
+    -fx-pref-height: 36;
+    -fx-background-radius: 6;
+    -fx-border-radius: 6;
+}
+
+.studio-btn-pause:hover {
+    -fx-background-color: #3b82f6;
+}
+
+.studio-btn-stop {
+    -fx-background-color: #334155;
+    -fx-border-color: #475569;
+    -fx-text-fill: #f1f5f9;
+    -fx-min-width: 64;
+    -fx-min-height: 36;
+    -fx-pref-height: 36;
+}
+
+.studio-btn-stop:hover {
+    -fx-background-color: #475569;
+}
+
+.studio-kbd-hint {
+    -fx-text-fill: #64748b;
+    -fx-font-size: 10px;
+    -fx-font-style: italic;
+}
+
+/* ——— Zone centrale ——— */
+.studio-wave-area {
+    -fx-background-color: #080f1e;
+}
+
+.studio-time-bar {
+    -fx-background-color: #0f172a;
+    -fx-padding: 5 14;
+    -fx-border-color: #1e293b;
+    -fx-border-width: 1 0 0 0;
+}
+
+.studio-time-code {
+    -fx-font-family: "Consolas", monospace;
+    -fx-font-size: 13px;
+    -fx-text-fill: #38bdf8;
+}
+
+.studio-time-duration {
+    -fx-font-family: "Consolas", monospace;
+    -fx-font-size: 13px;
+    -fx-text-fill: #64748b;
+}
+
+.studio-status {
+    -fx-text-fill: #94a3b8;
+    -fx-font-size: 12px;
+}
+
+.studio-analysis {
+    -fx-text-fill: #64748b;
+    -fx-font-size: 11px;
+}
+
+/* ——— Onglets ——— */
+.studio-tab-pane {
+    -fx-background-color: #0f172a;
+}
+
+.studio-tab-pane > .tab-header-area {
+    -fx-background-color: #111827;
+}
+
+.studio-tab-pane > .tab-header-area > .headers-region > .tab {
+    -fx-background-color: #1e293b;
+    -fx-background-radius: 4 4 0 0;
+    -fx-padding: 7 10;
+}
+
+.studio-tab-pane > .tab-header-area > .headers-region > .tab:selected {
+    -fx-background-color: #2563eb;
+}
+
+.studio-tab-pane > .tab-header-area > .headers-region > .tab .tab-label {
+    -fx-text-fill: #cbd5e1;
+    -fx-font-size: 11px;
+}
+
+.studio-tab-pane > .tab-header-area > .headers-region > .tab:selected .tab-label {
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+
+.studio-tab-pane > .tab-content-area {
+    -fx-background-color: #0f172a;
+    -fx-border-color: #1e293b;
+    -fx-border-width: 1 0 0 0;
+}
+
+.studio-panel {
+    -fx-background-color: #0f172a;
+    -fx-padding: 12;
+}
+
+.studio-panel .label.title {
+    -fx-font-size: 10px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #64748b;
+}
+
+.studio-panel-scroll {
+    -fx-background: #0f172a;
+    -fx-background-color: #0f172a;
+}
+
+.studio-panel-scroll > .viewport {
+    -fx-background-color: #0f172a;
+}
+
+/* ——— Contrôles ——— */
+.studio-slider .track {
+    -fx-background-color: #334155;
+    -fx-pref-height: 4;
+}
+
+.studio-slider .thumb {
+    -fx-background-color: #3b82f6;
+    -fx-pref-width: 14;
+    -fx-pref-height: 14;
+}
+
+.studio-slider-value {
+    -fx-font-family: "Consolas", monospace;
+    -fx-font-size: 11px;
+    -fx-text-fill: #60a5fa;
+}
+
+.studio-check-box {
+    -fx-text-fill: #cbd5e1;
+}
+
+.studio-check-box:selected .mark {
+    -fx-background-color: #3b82f6;
+}
+
+.studio-combo-box {
+    -fx-background-color: #1e293b;
+    -fx-border-color: #334155;
+}
+
+.studio-toggle:selected {
+    -fx-background-color: #2563eb;
+    -fx-text-fill: white;
+}
+
+.studio-transport {
+    -fx-background-color: #111827;
+    -fx-border-color: #1e40af;
+    -fx-border-width: 1 0 0 0;
+}
+
+.studio-progress .bar {
+    -fx-background-color: #3b82f6;
+}
+
+.studio-separator .line {
+    -fx-border-color: #334155;
+}

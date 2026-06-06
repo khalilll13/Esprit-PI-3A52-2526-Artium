@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.geometry.Insets?>
+
+<ScrollPane fx:controller="controllers.ProfileController"
+            xmlns:fx="http://javafx.com/fxml"
+            fitToWidth="true"
+            hbarPolicy="NEVER"
+            styleClass="dash-clean-scroll"
+            stylesheets="@../styles/dashboard.css, @../styles/profile.css">
+
+    <HBox spacing="30" alignment="TOP_CENTER" styleClass="profile-root" style="-fx-padding: 40; -fx-background-color: #FAFAFC;">
+        
+        <!-- ================= LEFT CARD: ADMIN IDENTITY ================= -->
+        <VBox styleClass="admin-profile-card" spacing="25" prefWidth="380" minWidth="380" maxWidth="380" alignment="TOP_CENTER">
+            
+            <Region prefHeight="10" />
+            
+            <!-- Avatar -->
+            <StackPane styleClass="avatar-ring-outer" prefWidth="150" prefHeight="150">
+                <Circle fx:id="avatarPlaceholder" radius="70" styleClass="avatar-placeholder"/>
+                <Label fx:id="avatarInitial" text="A" styleClass="avatar-initial" style="-fx-font-size: 40px;"/>
+                <ImageView fx:id="profileAvatar" fitWidth="140" fitHeight="140" preserveRatio="false" visible="false">
+                    <clip><Circle radius="70" centerX="70" centerY="70"/></clip>
+                </ImageView>
+            </StackPane>
+            
+            <!-- Names & Role -->
+            <VBox alignment="CENTER" spacing="12">
+                <Label fx:id="fullNameLabel" styleClass="profile-fullname" wrapText="true" textAlignment="CENTER" text="Système Administrateur"/>
+                <Label fx:id="roleLabel" styleClass="profile-role-badge" text="ADMINISTRATEUR"/>
+            </VBox>
+            
+            <!-- Contact Info List -->
+            <VBox spacing="16" alignment="CENTER_LEFT" style="-fx-padding: 20 40 20 40; -fx-background-color: #f8fafc; -fx-background-radius: 16;">
+                <HBox spacing="15" alignment="CENTER_LEFT">
+                    <Label text="✉" style="-fx-text-fill: #38bdf8; -fx-font-size: 16px;"/>
+                    <Label fx:id="emailLabel" text="admin@artium.local" style="-fx-text-fill: #475569; -fx-font-size: 14px; -fx-font-weight: 600;"/>
+                </HBox>
+                <HBox spacing="15" alignment="CENTER_LEFT">
+                    <Label text="☏" style="-fx-text-fill: #38bdf8; -fx-font-size: 16px;"/>
+                    <Label fx:id="telLabel" text="00000000" style="-fx-text-fill: #475569; -fx-font-size: 14px; -fx-font-weight: 600;"/>
+                </HBox>
+                <HBox spacing="15" alignment="CENTER_LEFT">
+                    <Label text="📍" style="-fx-text-fill: #38bdf8; -fx-font-size: 16px;"/>
+                    <Label fx:id="villeLabel" text="Tunis" style="-fx-text-fill: #475569; -fx-font-size: 14px; -fx-font-weight: 600;"/>
+                </HBox>
+            </VBox>
+            
+            <Region VBox.vgrow="ALWAYS"/>
+            
+            <!-- Action -->
+            <Button fx:id="editProfileBtn" text="MODIFIER LE PROFIL" maxWidth="Infinity" styleClass="primary-action-button" style="-fx-padding: 14;" onAction="#onEditProfile"/>
+            
+            <Region prefHeight="10" />
+        </VBox>
+
+        <!-- ================= RIGHT CARD: KANBAN TO-DO ================= -->
+        <VBox styleClass="admin-todo-card" spacing="25" HBox.hgrow="ALWAYS" minWidth="600">
+            
+            <!-- Header -->
+            <HBox alignment="CENTER_LEFT" spacing="20">
+                <Label text="Mes Tâches" style="-fx-font-family: 'Georgia', serif; -fx-font-size: 32px; -fx-text-fill: #273c95; -fx-font-weight: 800;"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <TextField fx:id="newTaskInput" promptText="Nouvelle tâche rapide..." styleClass="edit-field" style="-fx-pref-width: 250; -fx-background-radius: 20; -fx-border-radius: 20;"/>
+                <Button text="Ajouter" styleClass="primary-action-button" style="-fx-background-radius: 20;" onAction="#onAddTask"/>
+            </HBox>
+            
+            <!-- Kanban Board -->
+            <HBox spacing="25" VBox.vgrow="ALWAYS" style="-fx-min-height: 500;">
+                
+                <!-- Column TODO -->
+                <VBox spacing="15" styleClass="kanban-column" HBox.hgrow="ALWAYS">
+                    <HBox alignment="CENTER" style="-fx-background-color: #f1f5f9; -fx-padding: 10; -fx-background-radius: 12;">
+                        <Label text="À Faire" style="-fx-font-weight: 800; -fx-text-fill: #64748b;"/>
+                    </HBox>
+                    <ScrollPane fitToWidth="true" styleClass="dash-clean-scroll" VBox.vgrow="ALWAYS">
+                        <VBox fx:id="todoBox" spacing="12"/>
+                    </ScrollPane>
+                </VBox>
+                
+                <!-- Column DOING -->
+                <VBox spacing="15" styleClass="kanban-column" HBox.hgrow="ALWAYS">
+                    <HBox alignment="CENTER" style="-fx-background-color: #fff7ed; -fx-padding: 10; -fx-background-radius: 12;">
+                        <Label text="En Cours" style="-fx-font-weight: 800; -fx-text-fill: #ea580c;"/>
+                    </HBox>
+                    <ScrollPane fitToWidth="true" styleClass="dash-clean-scroll" VBox.vgrow="ALWAYS">
+                        <VBox fx:id="doingBox" spacing="12"/>
+                    </ScrollPane>
+                </VBox>
+                
+                <!-- Column DONE -->
+                <VBox spacing="15" styleClass="kanban-column" HBox.hgrow="ALWAYS">
+                    <HBox alignment="CENTER" style="-fx-background-color: #f0fdf4; -fx-padding: 10; -fx-background-radius: 12;">
+                        <Label text="Terminé" style="-fx-font-weight: 800; -fx-text-fill: #16a34a;"/>
+                    </HBox>
+                    <ScrollPane fitToWidth="true" styleClass="dash-clean-scroll" VBox.vgrow="ALWAYS">
+                        <VBox fx:id="doneBox" spacing="12"/>
+                    </ScrollPane>
+                </VBox>
+                
+            </HBox>
+            
+        </VBox>
+    </HBox>
+</ScrollPane>

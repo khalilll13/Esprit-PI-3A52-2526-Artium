@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<ScrollPane fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED" styleClass="dashboard-scroll oeuvres-scroll" xmlns="http://javafx.com/javafx/20.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.OeuvresAdminController">
+    <content>
+        <VBox spacing="8.0" styleClass="page-root" stylesheets="@../styles/dashboardevent.css">
+            <padding>
+                <Insets bottom="20.0" left="26.0" right="20.0" top="24.0" />
+            </padding>
+
+            <VBox maxWidth="1.7976931348623157E308" spacing="14.0" styleClass="oeuvres-page-card">
+                <padding>
+                    <Insets bottom="18.0" left="18.0" right="18.0" top="18.0" />
+                </padding>
+
+                <HBox alignment="CENTER_LEFT" spacing="10.0" styleClass="oeuvres-toolbar">
+                    <StackPane styleClass="oeuvres-search-wrap">
+                        <TextField fx:id="searchField" minWidth="430.0" prefHeight="34.0" prefWidth="430.0" maxWidth="430.0" promptText="Rechercher oeuvre (titre, collection, artiste)" styleClass="oeuvres-search-field" />
+                        <Label mouseTransparent="true" styleClass="oeuvres-search-icon" text="⌕" StackPane.alignment="CENTER_RIGHT" />
+                    </StackPane>
+                    <Region HBox.hgrow="ALWAYS" />
+                    <Label styleClass="section-subtitle" text="Trier par" />
+                    <ComboBox fx:id="sortCombo" prefWidth="190.0" promptText="Commentaires" styleClass="oeuvres-select" />
+                    <Label styleClass="section-subtitle" text="Filtrer" />
+                    <ComboBox fx:id="filterCombo" prefWidth="170.0" promptText="Tous types" styleClass="oeuvres-select" />
+                </HBox>
+
+                <Label fx:id="emptyStateLabel" styleClass="section-subtitle" text="Aucune oeuvre." visible="false" managed="false" />
+
+                <FlowPane fx:id="oeuvresCardsWrap" hgap="10.0" prefWrapLength="980.0" vgap="10.0" styleClass="oeuvres-cards-wrap" />
+            </VBox>
+        </VBox>
+    </content>
+</ScrollPane>
+

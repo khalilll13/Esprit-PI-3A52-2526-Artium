@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Tooltip?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.SVGPath?>
+
+<VBox alignment="CENTER" spacing="12.0" styleClass="amateur-page-card collections-page" xmlns="http://javafx.com/javafx/20.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.amateur.FeedController">
+    <padding><Insets bottom="12.0" left="12.0" right="12.0" top="12.0" /></padding>
+
+    <VBox alignment="CENTER" maxWidth="860.0" spacing="10.0" styleClass="collections-body-card" VBox.vgrow="ALWAYS">
+        <padding><Insets bottom="12.0" left="12.0" right="12.0" top="12.0" /></padding>
+
+        <HBox alignment="CENTER" spacing="10.0" styleClass="oeuvres-feed-toolbar">
+            <StackPane styleClass="oeuvres-search-wrap">
+                <TextField fx:id="searchField" minWidth="430.0" prefHeight="40.0" prefWidth="430.0" maxWidth="430.0" promptText="Rechercher oeuvre (titre, collection, artiste)" styleClass="oeuvres-search-field" />
+                <HBox alignment="CENTER_RIGHT" spacing="0" pickOnBounds="false" maxWidth="-Infinity" StackPane.alignment="CENTER_RIGHT">
+                    <Button fx:id="qrCodeSearchButton" onAction="#onQrCodeSearchClick" styleClass="qr-search-button-inner">
+                        <graphic>
+                            <SVGPath content="M4 4h6v6H4V4zm2 2v2h2V6H6zm8-2h6v6h-6V4zm2 2v2h2V6h-2zM4 14h6v6H4v-6zm2 2v2h2v-2H6zm10 0v2h2v-2h-2zm2-2h2v2h-2v-2zm-2 4h2v2h-2v-2zm-2-2h2v2h-2v-2zm0 2h2v2h-2v-2z" />
+                        </graphic>
+                        <tooltip>
+                            <Tooltip text="Chercher par QR code" />
+                        </tooltip>
+                    </Button>
+                    <Label mouseTransparent="true" styleClass="oeuvres-search-icon" text="⌕" />
+                </HBox>
+            </StackPane>
+        </HBox>
+
+        <Label fx:id="emptyStateLabel" styleClass="page-subtitle-small" text="Chargement des oeuvres..." wrapText="true" />
+
+        <ScrollPane fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="NEVER" styleClass="oeuvres-feed-scroll" VBox.vgrow="ALWAYS">
+            <VBox fx:id="oeuvresContainer" alignment="CENTER" fillWidth="false" spacing="12.0" styleClass="oeuvres-feed-list" />
+        </ScrollPane>
+    </VBox>
+</VBox>
+

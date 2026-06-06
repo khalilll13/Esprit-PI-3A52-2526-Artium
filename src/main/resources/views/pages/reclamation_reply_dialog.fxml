@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox spacing="16.0" styleClass="reply-dialog-root" xmlns="http://javafx.com/javafx/20.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.pages.reclamations.ReclamationReplyDialogController">
+    <padding>
+        <Insets bottom="18" left="18" right="18" top="18" />
+    </padding>
+
+    <!-- Header (titre + X) -->
+    <HBox alignment="CENTER_LEFT" spacing="6">
+        <Label styleClass="reply-dialog-title" text="Repondre a la reclamation" />
+        <Label fx:id="reclamationIdLabel" styleClass="reply-dialog-title" text="#-" />
+        <HBox HBox.hgrow="ALWAYS" />
+    </HBox>
+
+    <!-- Contenu -->
+    <VBox spacing="8">
+        <Label styleClass="reply-dialog-section-title" text="Contenu" />
+        <TextArea fx:id="reclamationTexteArea" prefRowCount="4" styleClass="reply-dialog-input" wrapText="true" />
+    </VBox>
+
+    <!-- Champs de reponse (ajout multi) -->
+    <VBox fx:id="replyFieldsBox" spacing="10" />
+
+    <!-- Controle de saisie: affiche les erreurs de validation avant les actions -->
+    <Label fx:id="validationErrorLabel" managed="false" visible="false" wrapText="true" styleClass="reply-validation-error" />
+
+    <!-- Actions (Enregistrer / Fermer / +) -->
+    <HBox alignment="CENTER_LEFT" spacing="12">
+        <Button fx:id="aiSuggestBtn" onAction="#onGenerateAiSuggestion" styleClass="reply-secondary" text="Suggérer IA" />
+        <Button fx:id="saveBtn" onAction="#onSave" styleClass="reply-primary" text="Enregistrer" />
+        <Button fx:id="cancelBtn" onAction="#onCancel" styleClass="reply-secondary" text="Fermer" />
+        <HBox HBox.hgrow="ALWAYS" />
+    </HBox>
+
+
+    <Separator />
+
+    <!-- Reponses existantes -->
+    <VBox spacing="10">
+        <Label styleClass="reply-dialog-section-title" text="Reponses existantes" />
+        <ListView fx:id="historyList" prefHeight="240" styleClass="reply-dialog-history" />
+
+        <HBox alignment="CENTER_LEFT" spacing="10">
+            <Button fx:id="deleteBtn" onAction="#onDeleteReponse" styleClass="reply-danger" text="Supprimer" />
+            <Button fx:id="updateBtn" onAction="#onUpdate" styleClass="reply-secondary" text="Mettre a jour" />
+        </HBox>
+    </VBox>
+</VBox>

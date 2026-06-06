@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox spacing="14.0" styleClass="page-root" stylesheets="@../styles/dashboardevent.css" xmlns="http://javafx.com/javafx/20.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.GaleriesController">
+    <padding>
+        <Insets bottom="18.0" left="18.0" right="18.0" top="16.0" />
+    </padding>
+    <HBox alignment="CENTER_LEFT">
+        <VBox spacing="4.0" HBox.hgrow="ALWAYS">
+            <Label styleClass="page-title" text="Gestion des galeries" />
+            <Label styleClass="page-subtitle" text="Recherche, filtre et gestion complete des galeries" />
+        </VBox>
+        <Button fx:id="addGalerieButton" mnemonicParsing="false" onAction="#onAddGalerieClick" styleClass="primary-action-button" text="Ajouter galerie" />
+    </HBox>
+
+    <VBox spacing="12.0" styleClass="list-card">
+        <padding>
+            <Insets bottom="14.0" left="14.0" right="14.0" top="14.0" />
+        </padding>
+
+        <HBox alignment="CENTER_LEFT" spacing="10.0">
+            <TextField fx:id="rechercheField" promptText="Rechercher galerie (nom, adresse)" styleClass="gallery-search-field" HBox.hgrow="ALWAYS" />
+            <Label text="Trier par" />
+            <ComboBox fx:id="filtreComboBox" prefWidth="190.0" styleClass="gallery-sort-combo" />
+        </HBox>
+
+        <Label fx:id="emptyStateLabel" managed="false" styleClass="section-subtitle" text="Aucune galerie trouvee." visible="false" />
+
+        <ScrollPane fitToWidth="true" hbarPolicy="NEVER" styleClass="gallery-scroll" VBox.vgrow="ALWAYS">
+            <GridPane fx:id="galeriesListContainer" hgap="12.0" styleClass="gallery-flow" vgap="12.0">
+                <padding>
+                    <Insets bottom="6.0" left="2.0" right="2.0" top="6.0" />
+                </padding>
+            </GridPane>
+        </ScrollPane>
+    </VBox>
+</VBox>

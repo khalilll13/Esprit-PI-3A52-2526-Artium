@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+
+<StackPane
+        fx:id="rootPane"
+        xmlns="http://javafx.com/javafx/20.0.2"
+        xmlns:fx="http://javafx.com/fxml/1"
+        fx:controller="controllers.amateur.BookReaderController"
+        style="-fx-background-color: black; -fx-padding: 0;">
+
+    <HBox fx:id="bookContainer" alignment="CENTER" spacing="0" StackPane.alignment="CENTER">
+
+        <!-- Left Page Area -->
+        <StackPane fx:id="leftPageArea" onMouseClicked="#onLeftPageClick" HBox.hgrow="ALWAYS">
+            <StackPane fx:id="leftPageWrapper" alignment="CENTER">
+                <ImageView fx:id="leftPageImage" pickOnBounds="true" preserveRatio="true"/>
+                <Label fx:id="leftPageNumber" visible="false"/>
+            </StackPane>
+        </StackPane>
+
+        <!-- Right Page Area -->
+        <StackPane fx:id="rightPageArea" onMouseClicked="#onRightPageClick" HBox.hgrow="ALWAYS">
+            <StackPane fx:id="rightPageWrapper" alignment="CENTER">
+                <ImageView fx:id="rightPageImage" pickOnBounds="true" preserveRatio="true"/>
+                <Label fx:id="rightPageNumber" visible="false"/>
+            </StackPane>
+        </StackPane>
+
+    </HBox>
+
+    <!-- Invisible elements required by controller bindings -->
+    <StackPane fx:id="bookmarkRibbon" visible="false" managed="false"/>
+    <StackPane fx:id="controlsOverlay" visible="false" managed="false"/>
+    <StackPane fx:id="loadingOverlay" visible="false" managed="false" style="-fx-background-color: transparent;"/>
+    <Label fx:id="titleLabel" visible="false" managed="false"/>
+    <Label fx:id="pageLabel" visible="false" managed="false"/>
+    <Button fx:id="prevButton" visible="false" managed="false"/>
+    <Button fx:id="nextButton" visible="false" managed="false"/>
+    <Button fx:id="bookmarkButton" visible="false" managed="false"/>
+    <Button fx:id="exitButton" visible="false" managed="false"/>
+
+</StackPane>

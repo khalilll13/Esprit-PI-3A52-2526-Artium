@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox spacing="10" xmlns="http://javafx.com/javafx/20.0.2" xmlns:fx="http://javafx.com/fxml/1"
+	  fx:controller="controllers.pages.reclamations.ReclamationCardController"
+	  styleClass="reclamation-card" style="-fx-padding: 14;">
+
+	<children>
+		<!-- Top row: statut + menu -->
+		<HBox alignment="CENTER_LEFT" spacing="10">
+			<Label fx:id="statutLabel" text="Statut" styleClass="reclamation-status-badge" />
+			<Region HBox.hgrow="ALWAYS" />
+			<Button fx:id="dotsButton" text="⋮" mnemonicParsing="false" styleClass="dots-button" />
+		</HBox>
+
+		<!-- Texte (tronqué) -->
+		<Label fx:id="texteLabel" text="Texte..."
+				style="-fx-font-size: 13; -fx-text-fill: #1f2937;" wrapText="false" />
+
+		<!-- Infos -->
+		<HBox spacing="14" alignment="CENTER_LEFT">
+			<Label text="Date:" style="-fx-text-fill: #6b7280;" />
+			<Label fx:id="dateLabel" text="--/--/----" style="-fx-text-fill: #111827;" />
+			<Label text="Utilisateur:" style="-fx-text-fill: #6b7280;" />
+			<Label fx:id="userLabel" text="User" style="-fx-text-fill: #111827;" />
+			<Label text="Type:" style="-fx-text-fill: #6b7280;" />
+			<Label fx:id="typeLabel" text="Type" style="-fx-text-fill: #111827;" />
+		</HBox>
+	</children>
+</VBox>
+

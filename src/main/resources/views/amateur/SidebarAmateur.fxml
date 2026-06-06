@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.SVGPath?>
+
+<VBox maxWidth="280.0" minWidth="280.0" prefWidth="280.0" spacing="0.0" styleClass="amateur-left-sidebar" xmlns="http://javafx.com/javafx/20.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.amateur.SidebarAmateurController">
+    <VBox spacing="0.0" styleClass="new-sidebar-container" VBox.vgrow="ALWAYS">
+        
+        <!-- Logo / Brand Removed (Moved to Navbar) -->
+
+        <!-- Navigation -->
+        <VBox spacing="8.0" styleClass="new-sidebar-nav">
+            <padding>
+                <Insets bottom="20.0" left="20.0" right="20.0" top="10.0" />
+            </padding>
+            
+            <Button fx:id="feedButton" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#onFeedClick" styleClass="new-nav-item" text="Fil d'actualités">
+                <graphic>
+                    <SVGPath content="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" fill="transparent" strokeWidth="1.8" styleClass="nav-icon" />
+                </graphic>
+            </Button>
+            
+            <Button fx:id="favorisButton" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#onFavorisClick" styleClass="new-nav-item" text="Favoris">
+                <graphic>
+                    <SVGPath content="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" fill="transparent" strokeWidth="1.8" styleClass="nav-icon" />
+                </graphic>
+            </Button>
+            
+            <Button fx:id="evenementsButton" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#onEvenementsClick" styleClass="new-nav-item" text="Évènements">
+                <graphic>
+                    <SVGPath content="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" fill="transparent" strokeWidth="1.8" styleClass="nav-icon" />
+                </graphic>
+            </Button>
+            
+            <Button fx:id="bibliothequeButton" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#onBibliothequeClick" styleClass="new-nav-item" text="Bibliothèque">
+                <graphic>
+                    <SVGPath content="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" fill="transparent" strokeWidth="1.8" styleClass="nav-icon" />
+                </graphic>
+            </Button>
+            
+            <Button fx:id="reclamationsButton" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#onReclamationsClick" styleClass="new-nav-item" text="Réclamations">
+                <graphic>
+                    <SVGPath content="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" fill="transparent" strokeWidth="1.8" styleClass="nav-icon" />
+                </graphic>
+            </Button>
+        </VBox>
+
+        <Region VBox.vgrow="ALWAYS" />
+
+        <!-- User Profile Compact -->
+        <VBox styleClass="new-sidebar-footer">
+            <padding>
+                <Insets bottom="24.0" left="20.0" right="20.0" top="20.0" />
+            </padding>
+            <HBox alignment="CENTER_LEFT" spacing="12.0" styleClass="new-profile-card">
+                <StackPane prefHeight="42.0" prefWidth="42.0" styleClass="new-avatar-wrap">
+                    <ImageView fx:id="profileImageView" fitHeight="42.0" fitWidth="42.0" pickOnBounds="true" preserveRatio="false" styleClass="new-avatar-image" visible="false" />
+                    <Label fx:id="avatarFallbackLabel" styleClass="new-avatar-symbol" text="👤" />
+                </StackPane>
+                <VBox alignment="CENTER_LEFT" spacing="0.0" HBox.hgrow="ALWAYS">
+                    <Label fx:id="nameLabel" styleClass="new-profile-name" text="Utilisateur" />
+                    <Label fx:id="roleLabel" styleClass="new-profile-role" text="Amateur" />
+                </VBox>
+                <Button mnemonicParsing="false" onAction="#onEditProfileClick" styleClass="new-settings-btn">
+                    <graphic>
+                        <SVGPath content="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z M15 12a3 3 0 11-6 0 3 3 0 016 0z" fill="transparent" strokeWidth="1.5" styleClass="settings-icon" />
+                    </graphic>
+                </Button>
+            </HBox>
+            <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#onLogoutClick" styleClass="new-logout-btn" text="Se déconnecter">
+                <VBox.margin><Insets top="16.0" /></VBox.margin>
+                <graphic>
+                    <SVGPath content="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" fill="transparent" strokeWidth="1.8" styleClass="logout-icon" />
+                </graphic>
+            </Button>
+        </VBox>
+
+        <!-- Hidden old fields to prevent NullPointerException -->
+        <VBox managed="false" visible="false">
+            <Label fx:id="bioLabel" />
+            <Label fx:id="villeValueLabel" />
+            <Label fx:id="dateNaissanceValueLabel" />
+        </VBox>
+    </VBox>
+</VBox>

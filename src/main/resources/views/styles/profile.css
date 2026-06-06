@@ -1,0 +1,370 @@
+/* Cache les barres de défilement tout en gardant le scroll actif */
+.scroll-bar:horizontal, 
+.scroll-bar:vertical {
+    -fx-opacity: 0;
+    -fx-pref-width: 0;
+    -fx-max-width: 0;
+    -fx-pref-height: 0;
+    -fx-max-height: 0;
+    -fx-padding: 0;
+}
+.scroll-bar:horizontal .track,
+.scroll-bar:horizontal .thumb,
+.scroll-bar:vertical .track,
+.scroll-bar:vertical .thumb {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}
+.scroll-pane > .corner {
+    -fx-background-color: transparent;
+}
+
+/* ═══════════════════════════════════════
+   🌟 PROFILE - MODERN UI
+   ═══════════════════════════════════════ */
+
+.profile-root {
+    -fx-background-color: #f1f5f9;
+}
+
+/* Scroll clean */
+.profile-scroll,
+.profile-scroll > .viewport {
+    -fx-background-color: transparent;
+}
+
+/* ═════════ HERO ═════════ */
+.profile-hero {
+    -fx-background-color: linear-gradient(to right, #6366f1, #818cf8);
+    -fx-pref-height: 140;
+    -fx-background-radius: 0 0 20 20;
+
+    /* effet moderne soft */
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.12), 20, 0.2, 0, 4);
+}
+
+/* Avatar */
+.avatar-placeholder {
+    -fx-fill: linear-gradient(to bottom right, #6366f1, #4f46e5);
+}
+
+.avatar-initial {
+    -fx-text-fill: white;
+    -fx-font-size: 28px;
+    -fx-font-weight: bold;
+}
+
+.avatar-ring-outer {
+    -fx-background-color: white;
+    -fx-background-radius: 999;
+    -fx-padding: 8;
+    -fx-effect: dropshadow(gaussian, rgba(39, 60, 149, 0.08), 20, 0, 0, 8);
+}
+
+.profile-identity {
+    -fx-padding: 70 20 20 20;
+}
+
+/* Bouton photo */
+.edit-photo-btn {
+    -fx-background-color: rgba(255,255,255,0.2);
+    -fx-text-fill: white;
+    -fx-font-size: 16px;
+    -fx-background-radius: 50;
+    -fx-padding: 8 14;
+    -fx-font-weight: bold;
+    -fx-border-color: rgba(255,255,255,0.4);
+    -fx-border-radius: 50;
+}
+
+.edit-photo-btn:hover {
+    -fx-background-color: rgba(255,255,255,0.35);
+}
+
+/* ═════════ IDENTITY ═════════ */
+.profile-identity {
+    -fx-padding: 90 20 20 20;
+    -fx-alignment: center;
+}
+
+.profile-fullname {
+    -fx-font-size: 22px;
+    -fx-font-family: "Exo 2", sans-serif;
+    -fx-font-weight: 800;
+    -fx-text-fill: #273c95;
+    -fx-alignment: center;
+    -fx-text-alignment: center;
+}
+
+.profile-role-badge {
+    -fx-background-color: #38bdf8;
+    -fx-text-fill: white;
+    -fx-padding: 6 20;
+    -fx-background-radius: 999;
+    -fx-font-size: 12px;
+    -fx-font-weight: 800;
+}
+
+.meta-chip {
+    -fx-background-color: white;
+    -fx-padding: 6 14;
+    -fx-background-radius: 20;
+    -fx-border-color: #e2e8f0;
+    -fx-border-radius: 20;
+    -fx-text-fill: #475569;
+    -fx-font-size: 11px;
+}
+
+/* ═════════ STATS ═════════ */
+.stats-row {
+    -fx-background-color: white;
+    -fx-background-radius: 20;
+    -fx-padding: 10;
+    -fx-spacing: 10;
+    -fx-margin: 20;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 15, 0.2, 0, 4);
+}
+
+.stat-card {
+    -fx-background-color: transparent;
+    -fx-padding: 20;
+    -fx-alignment: center;
+}
+
+.stat-card:hover {
+    -fx-background-color: #f1f5f9;
+    -fx-background-radius: 12;
+}
+
+.stat-number {
+    -fx-font-size: 26px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1e293b;
+}
+
+.stat-label {
+    -fx-font-size: 11px;
+    -fx-text-fill: #64748b;
+}
+
+.stat-statut {
+    -fx-font-size: 16px;
+    -fx-font-weight: 600;
+}
+
+.statut-dot-actif {
+    -fx-fill: #22c55e;
+}
+
+/* ═════════ CONTENT ═════════ */
+.profile-content-grid {
+    -fx-padding: 30 40;
+    -fx-spacing: 30;
+}
+
+/* Cards */
+.info-card {
+    -fx-background-color: white;
+    -fx-background-radius: 16;
+    -fx-padding: 22;
+    -fx-spacing: 12;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.06), 12, 0.2, 0, 3);
+}
+
+.info-card:hover {
+    -fx-effect: dropshadow(gaussian, rgba(79,70,229,0.2), 20, 0.3, 0, 6);
+}
+
+/* Titles */
+.card-section-title {
+    -fx-text-fill: #4f46e5;
+    -fx-font-weight: bold;
+    -fx-font-size: 11px;
+}
+
+/* Text */
+.card-body-text {
+    -fx-text-fill: #475569;
+    -fx-font-size: 13px;
+}
+
+/* Info grid */
+.info-key {
+    -fx-text-fill: #94a3b8;
+    -fx-font-size: 11px;
+}
+
+.info-val {
+    -fx-text-fill: #0f172a;
+    -fx-font-weight: 600;
+    -fx-font-size: 13px;
+}
+
+/* ═════════ BUTTON ═════════ */
+.btn-edit-profile {
+    -fx-background-color: linear-gradient(to right, #4f46e5, #6366f1);
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-padding: 14;
+    -fx-background-radius: 10;
+    -fx-cursor: hand;
+}
+
+.btn-edit-profile:hover {
+    -fx-background-color: linear-gradient(to right, #4338ca, #4f46e5);
+}
+
+/* ═════════ FORM ELEMENTS ═════════ */
+
+/* Secondary button */
+.btn-secondary {
+    -fx-background-color: white;
+    -fx-text-fill: #4f46e5;
+    -fx-font-weight: bold;
+    -fx-padding: 12 18;
+    -fx-background-radius: 10;
+    -fx-border-color: #c7d2fe;
+    -fx-border-radius: 10;
+    -fx-cursor: hand;
+}
+
+.btn-secondary:hover {
+    -fx-background-color: #eef2ff;
+    -fx-border-color: #6366f1;
+}
+
+/* Input fields */
+.edit-field {
+    -fx-background-color: #f8fafc;
+    -fx-border-color: #e2e8f0;
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+    -fx-padding: 12 14;
+    -fx-font-size: 13px;
+    -fx-text-fill: #0f172a;
+    -fx-prompt-text-fill: #94a3b8;
+}
+
+.edit-field:hover {
+    -fx-border-color: #c7d2fe;
+    -fx-background-color: white;
+}
+
+.edit-field:focused {
+    -fx-border-color: #4f46e5;
+    -fx-background-color: white;
+    -fx-effect: dropshadow(gaussian, rgba(79,70,229,0.15), 10, 0.2, 0, 0);
+}
+
+/* TextArea */
+.edit-area {
+    -fx-background-color: #f8fafc;
+    -fx-border-color: #e2e8f0;
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+    -fx-font-size: 13px;
+    -fx-text-fill: #0f172a;
+    -fx-prompt-text-fill: #94a3b8;
+    -fx-padding: 8;
+}
+
+.edit-area:hover {
+    -fx-border-color: #c7d2fe;
+    -fx-background-color: white;
+}
+
+.edit-area:focused {
+    -fx-border-color: #4f46e5;
+    -fx-background-color: white;
+    -fx-effect: dropshadow(gaussian, rgba(79,70,229,0.15), 10, 0.2, 0, 0);
+}
+
+/* internal textarea viewport */
+.edit-area .content {
+    -fx-background-color: transparent;
+    -fx-background-radius: 10;
+}
+
+/* Better labels */
+.label {
+    -fx-font-smoothing-type: lcd;
+}
+
+/* Better image preview */
+#photoPreview {
+    -fx-background-radius: 100;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 12, 0.2, 0, 3);
+}
+
+/* Button press effect */
+.button:pressed {
+    -fx-scale-x: 0.98;
+    -fx-scale-y: 0.98;
+}
+
+/* Smooth card transition effect */
+.info-card:hover {
+    -fx-translate-y: -2;
+}
+
+/* ═════════ NOUVELLES CLASSES POUR LE KANBAN ET LE PROFIL ═════════ */
+
+.admin-profile-card {
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 24;
+    -fx-border-color: rgba(39, 60, 149, 0.08);
+    -fx-border-radius: 24;
+    -fx-border-width: 1;
+    -fx-effect: none;
+    -fx-padding: 30;
+}
+
+.admin-todo-card {
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 24;
+    -fx-border-color: rgba(39, 60, 149, 0.08);
+    -fx-border-radius: 24;
+    -fx-border-width: 1;
+    -fx-effect: none;
+    -fx-padding: 30;
+}
+
+.kanban-column {
+    -fx-background-color: rgba(250, 250, 252, 0.5);
+    -fx-background-radius: 16;
+    -fx-border-color: rgba(39, 60, 149, 0.04);
+    -fx-border-radius: 16;
+    -fx-padding: 10;
+}
+
+.task-card {
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 12;
+    -fx-border-color: rgba(39, 60, 149, 0.06);
+    -fx-border-radius: 12;
+    -fx-padding: 14;
+    -fx-effect: dropshadow(gaussian, rgba(39, 60, 149, 0.03), 10, 0, 0, 4);
+}
+
+.task-card:hover {
+    -fx-border-color: rgba(56, 189, 248, 0.3);
+    -fx-effect: dropshadow(gaussian, rgba(39, 60, 149, 0.06), 15, 0, 0, 6);
+    -fx-translate-y: -1;
+}
+
+.task-btn {
+    -fx-background-color: transparent;
+    -fx-text-fill: #94a3b8;
+    -fx-cursor: hand;
+    -fx-padding: 4;
+}
+
+.task-btn:hover {
+    -fx-background-color: #f1f5f9;
+    -fx-background-radius: 4;
+}
+
+.task-btn-delete:hover {
+    -fx-background-color: #fee2e2;
+    -fx-text-fill: #ef4444;
+}

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import org.controlsfx.control.RangeSlider?>
+
+<VBox spacing="14.0" styleClass="page-root" stylesheets="@../styles/dashboardevent.css" xmlns="http://javafx.com/javafx/20.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.EvenementsController">
+    <padding>
+        <Insets bottom="18.0" left="18.0" right="18.0" top="16.0" />
+    </padding>
+
+    <VBox spacing="4.0">
+        <Label styleClass="page-title" text="Gestion des evenements" />
+        <Label styleClass="page-subtitle" text="Affichage et suppression des evenements" />
+    </VBox>
+
+    <VBox spacing="12.0" styleClass="list-card">
+        <padding>
+            <Insets bottom="14.0" left="14.0" right="14.0" top="14.0" />
+        </padding>
+
+        <HBox alignment="CENTER_LEFT" fillHeight="false" maxWidth="1.7976931348623157E308" spacing="18.0" styleClass="events-filter-row">
+            <VBox maxWidth="1.7976931348623157E308" prefWidth="0.0" spacing="8.0" styleClass="events-filter-block" HBox.hgrow="ALWAYS">
+                <Label styleClass="events-filter-title" text="Recherche" />
+                <TextField fx:id="rechercheField" maxWidth="1.7976931348623157E308" promptText="Titre ou type" styleClass="events-search-field" />
+            </VBox>
+
+            <VBox maxWidth="1.7976931348623157E308" prefWidth="0.0" spacing="8.0" styleClass="events-filter-block" HBox.hgrow="ALWAYS">
+                <Label styleClass="events-filter-title" text="Ordonner par" />
+                <ComboBox fx:id="filtreComboBox" maxWidth="1.7976931348623157E308" styleClass="events-sort-combo" />
+            </VBox>
+
+            <VBox maxWidth="1.7976931348623157E308" prefWidth="0.0" spacing="8.0" styleClass="events-filter-block" HBox.hgrow="ALWAYS">
+                <Label fx:id="capaciteRangeLabel" styleClass="events-filter-title" text="Capacite: 0 - 1000" />
+                <RangeSlider fx:id="capaciteRangeSlider" blockIncrement="10.0" highValue="1000.0" lowValue="0.0" max="1000.0" maxWidth="1.7976931348623157E308" min="0.0" showTickLabels="false" showTickMarks="false" styleClass="filter-slider filter-range-slider" />
+            </VBox>
+
+            <VBox maxWidth="1.7976931348623157E308" prefWidth="0.0" spacing="8.0" styleClass="events-filter-block" HBox.hgrow="ALWAYS">
+                <Label fx:id="prixRangeLabel" styleClass="events-filter-title" text="Prix: 0 - 500 DT" />
+                <RangeSlider fx:id="prixRangeSlider" blockIncrement="5.0" highValue="500.0" lowValue="0.0" max="500.0" maxWidth="1.7976931348623157E308" min="0.0" showTickLabels="false" showTickMarks="false" styleClass="filter-slider filter-range-slider" />
+            </VBox>
+        </HBox>
+
+        <Label fx:id="emptyStateLabel" managed="false" styleClass="section-subtitle" text="Aucun evenement trouve." visible="false" />
+
+        <ScrollPane fitToWidth="true" hbarPolicy="NEVER" styleClass="gallery-scroll" VBox.vgrow="ALWAYS">
+            <GridPane fx:id="evenementsListContainer" hgap="12.0" styleClass="gallery-flow" vgap="12.0">
+                <padding>
+                    <Insets bottom="6.0" left="2.0" right="2.0" top="6.0" />
+                </padding>
+            </GridPane>
+        </ScrollPane>
+    </VBox>
+</VBox>
+

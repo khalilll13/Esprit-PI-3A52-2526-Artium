@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.Hyperlink?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="controllers.ConnexionController"
+            stylesheets="@../styles/auth.css"
+            styleClass="auth-root">
+    <center>
+        <StackPane fx:id="landingShell">
+            <!-- Asymmetrical Gallery Layout -->
+            <HBox fx:id="landingCard" spacing="60" alignment="CENTER" maxWidth="1100">
+                <padding>
+                    <Insets top="40" right="60" bottom="40" left="60"/>
+                </padding>
+                
+                <!-- Left Editorial Hero -->
+                <VBox fx:id="landingHero" spacing="40" alignment="CENTER_LEFT" prefWidth="450" HBox.hgrow="ALWAYS" styleClass="auth-glass-card">
+                    <StackPane alignment="CENTER_LEFT" styleClass="auth-hero-logo-wrap">
+                        <ImageView fitWidth="180" preserveRatio="true" smooth="true" cache="true" styleClass="auth-hero-logo">
+                            <image>
+                                <Image url="@../images/logo2.png"/>
+                            </image>
+                        </ImageView>
+                    </StackPane>
+                    <VBox spacing="10">
+                        <Label text="Galerie Artium." wrapText="true" styleClass="auth-hero-title"/>
+                        <Label text="Votre Espace." wrapText="true" styleClass="auth-hero-title"/>
+                    </VBox>
+                    <Label text="Connectez-vous pour retrouver votre sélection personnelle et explorer l'art sous une perspective résolument minimaliste." wrapText="true" styleClass="auth-hero-text"/>
+                    <HBox spacing="20" styleClass="auth-chip-row">
+                        <Label text="Minimal" styleClass="auth-chip"/>
+                        <Label text="Épuré" styleClass="auth-chip"/>
+                        <Label text="Inspirant" styleClass="auth-chip"/>
+                    </HBox>
+                </VBox>
+
+                <!-- Right Minimalist Form -->
+                <VBox fx:id="loginCard" spacing="12" alignment="CENTER_LEFT" prefWidth="450" HBox.hgrow="NEVER" styleClass="auth-glass-card">
+                    
+                    <VBox spacing="2">
+                        <Label text="Identification" styleClass="auth-panel-kicker"/>
+                        <Label text="Connexion" styleClass="auth-title"/>
+                    </VBox>
+
+                    <VBox spacing="10">
+                        <VBox spacing="4">
+                            <Label text="Adresse e-mail" styleClass="auth-field-label"/>
+                            <TextField fx:id="emailField" promptText="nom@exemple.com" onAction="#onLogin" styleClass="auth-input"/>
+                        </VBox>
+                        <VBox spacing="4">
+                            <HBox alignment="BOTTOM_LEFT">
+                                <Label text="Mot de passe" styleClass="auth-field-label"/>
+                                <Region HBox.hgrow="ALWAYS"/>
+                                <Hyperlink text="Oublié ?" onAction="#onForgotPassword" styleClass="auth-link-button"/>
+                            </HBox>
+                            <PasswordField fx:id="passwordField" promptText="••••••••" onAction="#onLogin" styleClass="auth-input"/>
+                        </VBox>
+                    </VBox>
+
+                    <HBox spacing="12" alignment="CENTER_LEFT">
+                        <CheckBox fx:id="rememberMeCheckBox" text="Garder ma session active"/>
+                    </HBox>
+
+                    <VBox spacing="8">
+                        <Button text="Accéder à l'espace" onAction="#onLogin" styleClass="auth-primary-button" maxWidth="Infinity"/>
+                        <Button text="Continuer avec Google" onAction="#onGoogleLogin" styleClass="auth-google-button" maxWidth="Infinity"/>
+                    </VBox>
+
+                    <VBox spacing="6">
+                        <Label fx:id="messageLabel" text="" wrapText="true" styleClass="auth-message"/>
+                        <HBox alignment="CENTER_LEFT" spacing="6">
+                            <Label text="Nouveau visiteur ?" styleClass="auth-subtitle"/>
+                            <Hyperlink text="Créer un compte" onAction="#onCreateAccount" styleClass="auth-link-button"/>
+                        </HBox>
+                        <Hyperlink text="← Retour à l'accueil" onAction="#onBackToLanding" styleClass="auth-link-button"/>
+                    </VBox>
+                </VBox>
+            </HBox>
+        </StackPane>
+    </center>
+</BorderPane>

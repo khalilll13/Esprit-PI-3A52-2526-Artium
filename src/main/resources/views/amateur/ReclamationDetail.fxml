@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane xmlns="http://javafx.com/javafx/20.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.amateur.ReclamationDetailController">
+    <top>
+        <VBox spacing="8.0" styleClass="amateur-page-card">
+            <padding>
+                <Insets bottom="20.0" left="24.0" right="24.0" top="24.0" />
+            </padding>
+            <HBox spacing="10.0">
+                <Button mnemonicParsing="false" text="← Retour" />
+                <Label styleClass="page-title" text="Réclamation #1" />
+            </HBox>
+            <Label styleClass="page-subtitle" text="Détail de la réclamation et réponses administratives." wrapText="true" />
+        </VBox>
+    </top>
+    <center>
+        <VBox spacing="14.0" styleClass="amateur-page-card">
+            <padding>
+                <Insets bottom="24.0" left="24.0" right="24.0" top="0.0" />
+            </padding>
+            <StackPane minHeight="180.0" styleClass="empty-state-card">
+                <Label text="Texte complet de la réclamation" />
+            </StackPane>
+            <Label text="Réponses de l'administration" />
+            <StackPane minHeight="220.0" styleClass="empty-state-card">
+                <Label text="Fil de réponses administratives" />
+            </StackPane>
+        </VBox>
+    </center>
+</BorderPane>
+

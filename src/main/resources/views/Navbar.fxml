@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.MenuButton?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.SeparatorMenuItem?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<HBox alignment="CENTER_LEFT" prefHeight="66.0" spacing="12.0"
+      styleClass="navbar"
+      xmlns="http://javafx.com/javafx/20.0.2"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="controllers.NavbarController">
+    <padding>
+        <Insets bottom="12.0" left="20.0" right="20.0" top="12.0"/>
+    </padding>
+    <!-- ── Bouton sidebar ── -->
+    <Button fx:id="sidebarToggleButton"
+            mnemonicParsing="false"
+            onAction="#onSidebarToggle"
+            prefHeight="38.0" prefWidth="38.0"
+            styleClass="icon-button"
+            text="☰"/>
+    <!-- ── Espace fixe pour aligner la recherche à gauche ── -->
+    <Region prefWidth="30.0"/>
+
+    <!-- ── Global Search ── -->
+    <HBox alignment="CENTER" styleClass="global-search-container" prefWidth="400">
+        <Label text="🔍" style="-fx-text-fill: #94a3b8; -fx-font-size: 14px; -fx-padding: 0 10 0 15;"/>
+        <TextField fx:id="globalSearchField" promptText="Rechercher utilisateurs, œuvres, galeries..." HBox.hgrow="ALWAYS" styleClass="global-search-field"/>
+    </HBox>
+
+    <Region HBox.hgrow="ALWAYS"/>
+
+    <!-- ── Menu avatar ── -->
+    <MenuButton fx:id="userMenuButton"
+                contentDisplay="LEFT"
+                mnemonicParsing="false"
+                prefHeight="40.0"
+                styleClass="avatar-menu">
+        <graphic>
+            <StackPane styleClass="navbar-avatar-ring">
+                <ImageView fx:id="navbarAvatarImageView"
+                           fitHeight="34.0" fitWidth="34.0"
+                           preserveRatio="false"
+                           styleClass="navbar-avatar-image">
+                    <image>
+                        <Image url="@images/logo2.png"/>
+                    </image>
+                </ImageView>
+            </StackPane>
+        </graphic>
+        <items>
+            <MenuItem mnemonicParsing="false"
+                      onAction="#onProfileClick"
+                      styleClass="avatar-dropdown-item"
+                      text="👤  Mon profil"/>
+            <SeparatorMenuItem styleClass="avatar-dropdown-separator"/>
+            <MenuItem id="logoutMenuItem"
+                      mnemonicParsing="false"
+                      onAction="#onLogoutClick"
+                      styleClass="avatar-dropdown-item"
+                      text="🚪  Se déconnecter"/>
+        </items>
+    </MenuButton>
+</HBox>

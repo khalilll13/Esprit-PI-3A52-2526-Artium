@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox spacing="12.0" styleClass="gallery-form-root" xmlns="http://javafx.com/javafx/20.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.GalerieFormController">
+    <padding>
+        <Insets bottom="16.0" left="16.0" right="16.0" top="16.0" />
+    </padding>
+
+    <Label fx:id="formTitleLabel" styleClass="section-title" text="Ajouter une galerie" />
+
+    <VBox spacing="6.0">
+        <Label text="Nom *" />
+        <TextField fx:id="nomField" promptText="Nom de la galerie" styleClass="gallery-search-field" />
+    </VBox>
+
+    <VBox spacing="6.0">
+        <Label text="Adresse *" />
+        <TextField fx:id="adresseField" promptText="Adresse" styleClass="gallery-search-field" />
+    </VBox>
+
+    <HBox spacing="10.0">
+        <VBox spacing="6.0" HBox.hgrow="ALWAYS">
+            <Label text="Localisation *" />
+            <TextField fx:id="localisationField" promptText="Ville / zone" styleClass="gallery-search-field" />
+        </VBox>
+        <VBox spacing="6.0" HBox.hgrow="ALWAYS">
+            <Label text="Capacite max *" />
+            <TextField fx:id="capaciteField" promptText="Ex: 120" styleClass="gallery-search-field" />
+        </VBox>
+    </HBox>
+
+    <VBox spacing="6.0">
+        <Label text="Description" />
+        <TextArea fx:id="descriptionArea" prefRowCount="4" promptText="Description de la galerie" styleClass="gallery-form-text-area" wrapText="true" />
+    </VBox>
+
+    <Label fx:id="validationErrorLabel" managed="false" styleClass="form-validation-error" visible="false" wrapText="true" />
+
+    <HBox alignment="CENTER_RIGHT" spacing="8.0">
+        <Button mnemonicParsing="false" onAction="#onCancelClick" prefWidth="120.0" styleClass="secondary-action-button" text="Fermer" />
+        <Button mnemonicParsing="false" onAction="#onSaveClick" prefWidth="120.0" styleClass="primary-action-button" text="Enregistrer" />
+    </HBox>
+</VBox>
+

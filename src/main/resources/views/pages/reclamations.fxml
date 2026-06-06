@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox spacing="14.0" styleClass="page-root" stylesheets="@../styles/dashboardevent.css" xmlns="http://javafx.com/javafx/20.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.pages.reclamations.ReclamationsController">
+    <padding>
+        <Insets bottom="18.0" left="18.0" right="18.0" top="16.0" />
+    </padding>
+
+    <!-- Header page (comme Galeries) -->
+    <HBox alignment="CENTER_LEFT">
+        <VBox spacing="4.0" HBox.hgrow="ALWAYS">
+            <Label styleClass="page-title" text="Liste des reclamations" />
+        </VBox>
+    </HBox>
+
+    <!-- Card wrapper (comme Galeries) -->
+    <VBox spacing="12.0" styleClass="list-card" VBox.vgrow="ALWAYS">
+        <padding>
+            <Insets bottom="14.0" left="14.0" right="14.0" top="14.0" />
+        </padding>
+
+        <HBox spacing="10" alignment="CENTER_LEFT">
+            <ToggleButton fx:id="tabAll" text="Tous les types" selected="true" styleClass="reclamation-tab">
+                <toggleGroup>
+                    <ToggleGroup fx:id="typeTabsGroup" />
+                </toggleGroup>
+            </ToggleButton>
+            <ToggleButton fx:id="tabPaiement" text="Paiement" toggleGroup="$typeTabsGroup" styleClass="reclamation-tab" />
+            <ToggleButton fx:id="tabOeuvre" text="Oeuvre" toggleGroup="$typeTabsGroup" styleClass="reclamation-tab" />
+            <ToggleButton fx:id="tabEvenement" text="Evènement" toggleGroup="$typeTabsGroup" styleClass="reclamation-tab" />
+            <ToggleButton fx:id="tabCompte" text="Compte" toggleGroup="$typeTabsGroup" styleClass="reclamation-tab" />
+        </HBox>
+
+        <HBox alignment="CENTER_LEFT" spacing="10.0">
+            <TextField fx:id="searchField" promptText="Rechercher reclamation (texte, utilisateur)" HBox.hgrow="ALWAYS" styleClass="reclamation-search-field" />
+            <ComboBox fx:id="dateFilter" promptText="Toutes les dates" prefWidth="180" styleClass="reclamation-filter-combo" />
+            <ComboBox fx:id="statutFilter" promptText="Tous les statuts" prefWidth="180" styleClass="reclamation-filter-combo" />
+        </HBox>
+
+        <Label fx:id="emptyStateLabel" managed="false" styleClass="section-subtitle" text="Aucune reclamation trouvee." visible="false" />
+
+        <ScrollPane fitToWidth="true" hbarPolicy="NEVER" styleClass="reclamations-scroll" VBox.vgrow="ALWAYS">
+            <content>
+                <!-- une card par ligne -->
+                <GridPane fx:id="cardsContainer" hgap="0" vgap="10" style="-fx-padding: 0;" />
+            </content>
+        </ScrollPane>
+    </VBox>
+</VBox>
+
