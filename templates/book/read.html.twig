@@ -1,0 +1,113 @@
+{% extends 'base_amateur.html.twig' %}
+
+{% block title %}Lecture — {{ livre.titre }}{% endblock %}
+
+{% block amateur_content %}
+<div class="container mt-4">
+    <h2>{{ livre.titre }}</h2>
+
+    <div class="mb-3">
+        <button class="btn btn-secondary" id="prev">Previous</button>
+        <button class="btn btn-secondary" id="next">Next</button>
+        <span>Page: <span id="page_num"></span> / <span id="page_count"></span></span>
+    </div>
+
+    <canvas id="pdf-render" style="width:100%;border:1px solid #ddd"></canvas>
+</div>
+
+{% if livre.fichierPdf %}
+<script src="{{ asset('pdfjs/pdf.js') }}"></script>
+<script>
+    const url = "{{ path('livre_pdf', {'id': livre.id}) }}";
+
+    pdfjsLib.GlobalWorkerOptions.workerSrc =
+        "{{ asset('pdfjs/pdf.worker.js') }}";
+
+    let pdfDoc = null,
+        pageNum = 1,
+        pageIsRendering = false,
+        pageNumPending = null,
+        scale = 1.5,
+        canvas = document.querySelector('#pdf-render'),
+        ctx = canvas.getContext('2d');
+
+    const renderPage = num => {
+        pageIsRendering = true;
+
+        pdfDoc.getPage(num).then(page => {
+            const viewport = page.getViewport({ scale });
+            canvas.height = viewport.height;
+            canvas.width = viewport.width;
+
+            const renderCtx = {
+                canvasContext: ctx,
+                viewport
+            };
+
+            page.render(renderCtx).promise.then(() => {
+                pageIsRendering = false;
+
+                if (pageNumPending !== null) {
+                    renderPage(pageNumPending);
+                    pageNumPending = null;
+                }
+            });
+
+            document.querySelector('#page_num').textContent = num;
+        }).catch(err => {
+            console.error('Error rendering page', err);
+            document.querySelector('#pdf-render').style.display = 'none';
+            const errEl = document.createElement('div');
+            errEl.className = 'alert alert-danger';
+            errEl.textContent = 'Impossible d\'afficher la page du PDF.';
+            document.querySelector('.container').appendChild(errEl);
+        });
+    };
+
+    const queueRenderPage = num => {
+        if (pageIsRendering) {
+            pageNumPending = num;
+        } else {
+            renderPage(num);
+        }
+    };
+
+    const showPrevPage = () => {
+        if (pageNum <= 1) return;
+        pageNum--;
+        queueRenderPage(pageNum);
+    };
+
+    const showNextPage = () => {
+        if (pageNum >= pdfDoc.numPages) return;
+        pageNum++;
+        queueRenderPage(pageNum);
+    };
+
+    pdfjsLib.getDocument(url).promise.then(pdfDoc_ => {
+        pdfDoc = pdfDoc_;
+        document.querySelector('#page_count').textContent = pdfDoc.numPages;
+        renderPage(pageNum);
+    }).catch(err => {
+        console.error('Error loading PDF', err);
+        document.querySelector('#pdf-render').style.display = 'none';
+        const errEl = document.createElement('div');
+        errEl.className = 'alert alert-warning';
+        errEl.textContent = 'PDF introuvable ou impossible à charger.';
+        document.querySelector('.container').appendChild(errEl);
+    });
+
+    document.querySelector('#prev').addEventListener('click', showPrevPage);
+    document.querySelector('#next').addEventListener('click', showNextPage);
+</script>
+{% else %}
+<script>
+  const canvas = document.querySelector('#pdf-render');
+  if (canvas) canvas.style.display = 'none';
+  const msg = document.createElement('div');
+  msg.className = 'alert alert-info';
+  msg.textContent = 'Aucun PDF disponible pour ce livre.';
+  document.querySelector('.container').appendChild(msg);
+</script>
+{% endif %}
+{% endblock %}

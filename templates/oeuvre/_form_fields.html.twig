@@ -1,0 +1,79 @@
+{{ form_start(form, {
+    'attr': {
+        'id': 'offcanvasOeuvreFormFields',
+        'class': 'offcanvas-form',
+        'novalidate': 'novalidate',
+        'data-turbo': 'false'
+    }
+}) }}
+
+<div class="container-fluid">
+
+    {# Titre #}
+    <div class="mb-3">
+        {{ form_label(form.titre, null, {'label_attr': {'class': 'form-label fw-semibold'}}) }}
+        {{ form_widget(form.titre, {'attr': {'class': (form.titre.vars.errors|length > 0) ? 'form-control is-invalid' : 'form-control'}}) }}
+        {% if form.titre.vars.errors|length > 0 %}
+            <div class="invalid-feedback d-block">{{ form_errors(form.titre) }}</div>
+        {% endif %}
+    </div>
+
+    {# Date #}
+    <div class="row">
+        <div class="col-md-12 mb-3">
+            {{ form_label(form.date_creation, null, {'label_attr': {'class': 'form-label fw-semibold'}}) }}
+            {{ form_widget(form.date_creation, {'attr': {'class': (form.date_creation.vars.errors|length > 0) ? 'form-control is-invalid' : 'form-control'}}) }}
+            {% if form.date_creation.vars.errors|length > 0 %}
+                <div class="invalid-feedback d-block">{{ form_errors(form.date_creation) }}</div>
+            {% endif %}
+        </div>
+    </div>
+
+    {# Description #}
+    <div class="mb-3">
+        {{ form_label(form.description, null, {'label_attr': {'class': 'form-label fw-semibold'}}) }}
+        {{ form_widget(form.description, {'attr': {'class': (form.description.vars.errors|length > 0) ? 'form-control is-invalid' : 'form-control', 'rows': 4}}) }}
+        {% if form.description.vars.errors|length > 0 %}
+            <div class="invalid-feedback d-block">{{ form_errors(form.description) }}</div>
+        {% endif %}
+    </div>
+
+    {# Image Upload #}
+    <div class="mb-3">
+        {{ form_label(form.image, null, {'label_attr': {'class': 'form-label fw-semibold'}}) }}
+        {{ form_widget(form.image, {'attr': {'class': 'form-control'}}) }}
+        <div class="form-text">Formats acceptés : JPG, PNG</div>
+        {% if tempImagePresent|default(false) %}
+            <div class="alert alert-info mt-2 mb-0">
+                {% if tempImageName is not empty %}
+                    Fichier temporaire sélectionné: <strong>{{ tempImageName }}</strong>
+                {% else %}
+                    Une image a été sélectionnée et sera conservée si la validation réussit.
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
+
+    {# Collection #}
+    <div class="mb-4">
+        {{ form_label(form.collection, null, {'label_attr': {'class': 'form-label fw-semibold'}}) }}
+        {{ form_widget(form.collection, {'attr': {'class': (form.collection.vars.errors|length > 0) ? 'form-select is-invalid' : 'form-select'}}) }}
+        {% if form.collection.vars.errors|length > 0 %}
+            <div class="invalid-feedback d-block">{{ form_errors(form.collection) }}</div>
+        {% endif %}
+    </div>
+
+    {# Buttons #}
+    <div class="d-flex gap-2 mt-4">
+        <button type="submit" class="btn btn-primary flex-grow-1">
+            <i class="bi bi-check-lg me-1"></i> Enregistrer
+        </button>
+        <button type="button" class="btn btn-outline-secondary flex-grow-1" data-bs-dismiss="offcanvas">
+            <i class="bi bi-x-lg me-1"></i> Fermer
+        </button>
+    </div>
+
+</div>
+
+{{ form_end(form) }}
+

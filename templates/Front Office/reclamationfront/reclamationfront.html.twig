@@ -1,0 +1,360 @@
+{% extends 'base_amateur.html.twig' %}
+
+{% block title %}{{ 'Réclamations'|trans }}{% endblock %}
+
+{% block amateur_content %}
+    <!-- Card START -->
+    <div class="card h-100">
+        <!-- Card header START -->
+        <div class="card-header d-sm-flex align-items-center text-center justify-content-sm-between border-0 pb-0">
+            <h1 class="h4 card-title">Réclamations</h1>
+        </div>
+        <!-- Card header END -->
+        <!-- Card body START -->
+        <div class="card-body">
+            <!-- Tab nav line -->
+            <ul class="nav nav-tabs nav-bottom-line justify-content-center justify-content-md-start">
+                <li class="nav-item"> <a class="nav-link {% if (search_query|default('')) is empty and (selected_statut|default('')) is empty and (selected_type|default('')) is empty %}active{% endif %}" data-bs-toggle="tab" href="#tab-1"> <i class="bi bi-pencil-square pe-1"></i>Envoyer Réclamation </a> </li>
+                <li class="nav-item"> <a class="nav-link {% if (search_query|default('')) is not empty or (selected_statut|default('')) is not empty or (selected_type|default('')) is not empty %}active{% endif %}" data-bs-toggle="tab" href="#tab-2"> <i class="bi bi-list-check pe-1"></i>Mes Réclamations </a> </li>
+            </ul>
+
+            <!-- Tab content START -->
+            <div class="tab-content mb-0 pb-0">
+                
+                <!-- Submit Reclamation Tab START -->
+                <div class="tab-pane fade {% if (search_query|default('')) is empty and (selected_statut|default('')) is empty and (selected_type|default('')) is empty %}show active{% endif %}" id="tab-1">
+                    <div class="card mt-4">
+                        <!-- Title START -->
+                        <div class="card-header border-0 pb-0">
+                            <h5 class="card-title mb-0">Soumettre une Réclamation</h5>
+                        </div>
+                        <!-- Title END -->
+                        <!-- Form START -->
+                        <div class="card-body">
+                            {{ form_start(form, {'attr': {'class': 'row g-3', 'novalidate': 'novalidate', 'enctype': 'multipart/form-data', 'data-turbo': 'false'}}) }}
+                                <div class="col-12">
+                                    {{ form_errors(form) }}
+                                </div>
+
+                                <div class="col-12">
+                                    {{ form_label(form.type, 'Type') }}
+                                    {% set type_has_errors = form.type.vars.errors|length > 0 %}
+                                    {{ form_widget(form.type, {'attr': {'class': 'form-select' ~ (type_has_errors ? ' is-invalid' : '')}}) }}
+                                    {% for error in form.type.vars.errors %}
+                                        <div class="invalid-feedback d-block">{{ error.message }}</div>
+                                    {% endfor %}
+                                </div>
+
+                                <div class="col-12">
+                                    {{ form_label(form.texte, 'Description') }}
+                                    {% set texte_has_errors = form.texte.vars.errors|length > 0 %}
+                                    {{ form_widget(form.texte, {
+                                        'attr': {
+                                            'class': 'form-control' ~ (texte_has_errors ? ' is-invalid' : ''),
+                                            'rows': 5,
+                                            'placeholder': 'Decrivez votre probleme en detail...'
+                                        }
+                                    }) }}
+                                    {% for error in form.texte.vars.errors %}
+                                        <div class="invalid-feedback d-block">{{ error.message }}</div>
+                                    {% endfor %}
+                                </div>
+
+                                <div class="col-12">
+                                    {{ form_label(form.file, 'Fichier joint (optionnel)') }}
+                                    {% set file_has_errors = form.file.vars.errors|length > 0 %}
+                                    {{ form_widget(form.file, {
+                                        'attr': {
+                                            'class': 'form-control' ~ (file_has_errors ? ' is-invalid' : '')
+                                        }
+                                    }) }}
+                                    <div class="form-text">Formats acceptés: PDF, JPG, JPEG, PNG (Max: 5MB)</div>
+                                    {% for error in form.file.vars.errors %}
+                                        <div class="invalid-feedback d-block">{{ error.message }}</div>
+                                    {% endfor %}
+                                </div>
+
+
+                                <div class="col-12 text-end">
+                                    <button type="reset" class="btn btn-outline-secondary me-2">Reinitialiser</button>
+                                    <button type="submit" class="btn btn-primary">Envoyer la reclamation</button>
+                                </div>
+                            {{ form_end(form) }}
+                        </div>
+                        <!-- Form END -->
+                    </div>
+                </div>
+                <!-- Submit Reclamation Tab END -->
+
+                <!-- My Reclamations Tab START -->
+                <div class="tab-pane fade {% if (search_query|default('')) is not empty or (selected_statut|default('')) is not empty or (selected_type|default('')) is not empty %}show active{% endif %}" id="tab-2">
+                    <div class="mt-4">
+                        <!-- Search and Filter -->
+                        <form class="row g-1 mb-4" method="get" id="filterForm" data-turbo="false">
+                            <div class="col-md-3">
+                                <input type="search" name="q" id="searchInput" class="form-control" placeholder="Rechercher" value="{{ search_query|default('') }}">
+                            </div>
+                            <div class="col-md-3">
+                                <select name="statut" id="statutSelect" class="form-select">
+                                    <option value="" {% if (selected_statut|default('')) is empty %}selected{% endif %}>Filtrer par statut</option>
+                                    <option value="Traitée" {% if (selected_statut|default('')) == 'Traitée' %}selected{% endif %}>Traité</option>
+                                    <option value="Non traitée" {% if (selected_statut|default('')) == 'Non traitée' %}selected{% endif %}>Non traité</option>
+                                    <option value="Archivée" {% if (selected_statut|default('')) == 'Archivée' %}selected{% endif %}>Archivé</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <select name="type" id="typeSelect" class="form-select">
+                                    <option value="" {% if (selected_type|default('')) is empty %}selected{% endif %}>Filtrer par catégorie</option>
+                                    <option value="Paiement" {% if (selected_type|default('')) == 'Paiement' %}selected{% endif %}>Paiement</option>
+                                    <option value="Oeuvre" {% if (selected_type|default('')) == 'Oeuvre' %}selected{% endif %}>Oeuvre</option>
+                                    <option value="Evènement" {% if (selected_type|default('')) == 'Evènement' %}selected{% endif %}>Evènement</option>
+                                    <option value="Compte" {% if (selected_type|default('')) == 'Compte' %}selected{% endif %}>Compte</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <input type="date" name="date_from" id="dateInput" class="form-control" value="{{ date_from|default('') }}">
+                            </div>
+                        </form>
+
+                        <script>
+                            document.addEventListener('DOMContentLoaded', function() {
+                                const searchInput = document.getElementById('searchInput');
+                                const statutSelect = document.getElementById('statutSelect');
+                                const typeSelect = document.getElementById('typeSelect');
+                                const dateInput = document.getElementById('dateInput');
+                                const filterForm = document.getElementById('filterForm');
+
+                                if (!filterForm) {
+                                    return;
+                                }
+
+                                function debounce(fn, delay) {
+                                    let timer = null;
+                                    return function(...args) {
+                                        if (timer) {
+                                            clearTimeout(timer);
+                                        }
+                                        timer = setTimeout(() => fn.apply(this, args), delay);
+                                    };
+                                }
+
+                                async function loadReclamations(url) {
+                                    const response = await fetch(url, {
+                                        headers: {
+                                            'X-Requested-With': 'XMLHttpRequest'
+                                        }
+                                    });
+
+                                    if (!response.ok) {
+                                        return;
+                                    }
+
+                                    const html = await response.text();
+                                    const parser = new DOMParser();
+                                    const doc = parser.parseFromString(html, 'text/html');
+                                    const incoming = doc.querySelector('#reclamationsContent');
+                                    const current = document.querySelector('#reclamationsContent');
+
+                                    if (incoming && current) {
+                                        current.innerHTML = incoming.innerHTML;
+                                    }
+                                }
+
+                                const submitForm = () => {
+                                    const params = new URLSearchParams(new FormData(filterForm));
+                                    const url = `${window.location.pathname}?${params.toString()}`;
+                                    history.replaceState(null, '', url);
+                                    loadReclamations(url);
+                                };
+
+                                filterForm.addEventListener('submit', function(event) {
+                                    event.preventDefault();
+                                    submitForm();
+                                });
+
+                                filterForm.addEventListener('keydown', function(event) {
+                                    if (event.key === 'Enter') {
+                                        event.preventDefault();
+                                        submitForm();
+                                    }
+                                });
+
+                                filterForm.submit = () => submitForm();
+                                filterForm.requestSubmit = () => submitForm();
+
+                                if (searchInput) {
+                                    searchInput.addEventListener('input', debounce(submitForm, 400));
+                                }
+
+                                if (statutSelect) {
+                                    statutSelect.addEventListener('change', submitForm);
+                                }
+
+                                if (typeSelect) {
+                                    typeSelect.addEventListener('change', submitForm);
+                                }
+
+                                if (dateInput) {
+                                    dateInput.addEventListener('change', submitForm);
+                                }
+                            });
+                        </script>
+                        
+                        <!-- Reclamations List -->
+                        <div id="reclamationsContent">
+                            <div class="row g-3">
+                            {% if reclamations is empty %}
+                                <div class="col-12">
+                                    <div class="text-center py-5">
+                                        <i class="bi bi-inbox" style="font-size: 3rem; color: #ccc;"></i>
+                                        <h6 class="mt-3 text-muted">Aucune reclamation trouvee</h6>
+                                        <p class="small text-muted">Vous n'avez pas encore soumis de reclamation.</p>
+                                    </div>
+                                </div>
+                            {% else %}
+                                {% for reclamation in reclamations %}
+                                    {% set reponsesCount = response_counts[reclamation.id]|default(0) %}
+                                    <div class="col-12">
+                                        <div class="card">
+                                            <div class="card-body">
+                                                <div class="row align-items-center">
+                                                    <div class="col-md-8">
+                                                        <div class="d-flex align-items-start gap-3">
+                                                            <div>
+                                                                {% if reclamation.statut and reclamation.statut.value == 'Non traitée' %}
+                                                                    <span class="badge bg-warning text-dark">Non traitee</span>
+                                                                {% elseif reclamation.statut and reclamation.statut.value == 'En cours' %}
+                                                                    <span class="badge bg-info text-dark">En cours</span>
+                                                                {% else %}
+                                                                    <span class="badge bg-success">Traitee</span>
+                                                                {% endif %}
+                                                            </div>
+                                                            <div class="w-100">
+                                                                <h6 class="mb-1">{{ reclamation.texte|slice(0, 60) }}{% if reclamation.texte|length > 60 %}...{% endif %}</h6>
+                                                                <p class="mb-2 small text-muted">Type: <strong>{{ reclamation.type ? reclamation.type.value : '-' }}</strong></p>
+                                                                <p class="mb-0 small">{{ reclamation.texte }}</p>
+                                                                {% if reclamation.fileName %}
+                                                                    {% set fileUrl = reclamation.fileName starts with 'http' ? reclamation.fileName : 'http://127.0.0.1/img/' ~ reclamation.fileName %}
+                                                                    <div class="mt-2">
+                                                                        <a href="{{ fileUrl }}" 
+                                                                           target="_blank" 
+                                                                           class="btn btn-sm btn-outline-primary">
+                                                                            <i class="bi bi-file-earmark"></i> Fichier joint
+                                                                        </a>
+                                                                    </div>
+                                                                {% endif %}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-4 text-md-end">
+                                                        <div class="d-flex justify-content-md-end align-items-start gap-2">
+                                                            <div class="me-auto">
+                                                                <small class="text-muted">Creee le: <strong>{{ reclamation.dateCreation ? reclamation.dateCreation|date('d M Y') : '-' }}</strong></small>
+                                                                {% if reponsesCount > 0 %}
+                                                                    <div class="mt-1">
+                                                                        <span class="badge bg-success-soft text-success">
+                                                                            <i class="bi bi-chat-dots"></i> {{ reponsesCount }} reponse{{ reponsesCount > 1 ? 's' : '' }}
+                                                                        </span>
+                                                                    </div>
+                                                                {% endif %}
+                                                            </div>
+                                                            <div class="dropdown">
+                                                                <button class="btn btn-sm btn-outline-secondary" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Actions">
+                                                                    <i class="bi bi-three-dots"></i>
+                                                                </button>
+                                                                <ul class="dropdown-menu dropdown-menu-end">
+                                                                    <li>
+                                                                        <a class="dropdown-item" href="{{ path('app_reclamation_show', {'id': reclamation.id}) }}">
+                                                                            <i class="bi bi-chat-dots"></i> Voir reponses
+                                                                            {% if reponsesCount > 0 %}
+                                                                                <span class="badge bg-success ms-1">{{ reponsesCount }}</span>
+                                                                            {% endif %}
+                                                                        </a>
+                                                                    </li>
+                                                                    <li>
+                                                                        <a class="dropdown-item" href="#offcanvasEditReclamation-{{ reclamation.id }}" data-bs-toggle="offcanvas" data-bs-dismiss="dropdown" role="button" aria-controls="offcanvasEditReclamation-{{ reclamation.id }}">
+                                                                            Editer reclamation
+                                                                        </a>
+                                                                    </li>
+                                                                    <li><hr class="dropdown-divider"></li>
+                                                                    <li>
+                                                                        <form method="post" action="{{ path('app_reclamation_delete', {'id': reclamation.id}) }}" onsubmit="return confirm('Supprimer cette reclamation ?');">
+                                                                            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ reclamation.id) }}">
+                                                                            <button class="dropdown-item text-danger" type="submit">Supprimer reclamation</button>
+                                                                        </form>
+                                                                    </li>
+                                                                </ul>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {% set edit_form = edit_forms[reclamation.id] ?? null %}
+                                    {% set edit_errors = edit_form is not null and (edit_form.texte.vars.errors|length > 0 or edit_form.type.vars.errors|length > 0) %}
+                                    <div class="offcanvas offcanvas-end{{ edit_errors ? ' show' : '' }}" tabindex="-1" id="offcanvasEditReclamation-{{ reclamation.id }}" style="width: 600px">
+                                        <div class="offcanvas-body" data-simplebar>
+                                            <div class="offcanvas-header px-2 pt-0">
+                                                <h3 class="offcanvas-title">Editer reclamation</h3>
+                                                <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                                            </div>
+                                            <div class="container">
+                                                {% if edit_form %}
+                                                    {{ form_start(edit_form, { attr: { class: 'row g-3', 'novalidate': 'novalidate', 'data-turbo': 'false' } }) }}
+                                                        <div class="col-12">
+                                                            {{ form_errors(edit_form) }}
+                                                        </div>
+
+                                                        <div class="col-12">
+                                                            {{ form_label(edit_form.type, 'Type') }}
+                                                            {% set edit_type_has_errors = edit_form.type.vars.errors|length > 0 %}
+                                                            {{ form_widget(edit_form.type, {'attr': {'class': 'form-select' ~ (edit_type_has_errors ? ' is-invalid' : '')}}) }}
+                                                            {% for error in edit_form.type.vars.errors %}
+                                                                <div class="invalid-feedback d-block">{{ error.message }}</div>
+                                                            {% endfor %}
+                                                        </div>
+
+                                                        <div class="col-12">
+                                                            {{ form_label(edit_form.texte, 'Description') }}
+                                                            {% set edit_texte_has_errors = edit_form.texte.vars.errors|length > 0 %}
+                                                            {{ form_widget(edit_form.texte, {
+                                                                'attr': {
+                                                                    'class': 'form-control' ~ (edit_texte_has_errors ? ' is-invalid' : ''),
+                                                                    'rows': 5,
+                                                                    'placeholder': 'Decrivez votre probleme en detail...'
+                                                                }
+                                                            }) }}
+                                                            {% for error in edit_form.texte.vars.errors %}
+                                                                <div class="invalid-feedback d-block">{{ error.message }}</div>
+                                                            {% endfor %}
+                                                        </div>
+
+                                                        <div class="col-12 d-flex gap-2">
+                                                            <button class="btn btn-primary" type="submit">Enregistrer</button>
+                                                            <button type="button" class="btn btn-outline-primary" data-bs-dismiss="offcanvas" aria-label="Close">Fermer</button>
+                                                        </div>
+                                                    {{ form_end(edit_form) }}
+                                                {% else %}
+                                                    <div class="alert alert-warning mb-0">Formulaire indisponible.</div>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- My Reclamations Tab END -->
+            </div>
+            <!-- Tab content END -->
+        </div>
+        <!-- Card body END -->
+    </div>
+    <!-- Card END -->
+{% endblock %}
+
+

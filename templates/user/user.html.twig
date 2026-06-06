@@ -1,0 +1,49 @@
+{% extends 'base_admin.html.twig' %}
+
+{%block title %}{{ 'Amateurs'|trans }}{% endblock %}
+
+{% block admin_content %}
+   
+ 
+          <div class="row">
+            <!-- Page Header -->
+            <div class="col-lg-12 col-md-12 col-12">
+              <div class="border-bottom pb-3 mb-3 d-flex justify-content-between align-items-center">
+                <div class="d-flex flex-column gap-1">
+                  <h1 class="mb-0 h2 fw-bold">
+                    {{ page_title }}
+                    <span class="fs-5">(12,105)</span>
+                  </h1>
+                  <!-- Breadcrumb  -->
+                  <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                      <li class="breadcrumb-item">
+                        <a href="admin-dashboard.html">Tableau de bord</a>
+                      </li>
+                      <li class="breadcrumb-item"><a href="#">Utilisateurs</a></li>
+                      <li class="breadcrumb-item active" aria-current="page">{{ page_title }}</li>
+                    </ol>
+                  </nav>
+                </div>
+                <div class="nav btn-group" role="tablist">
+                  <button class="btn btn-outline-secondary active" data-bs-toggle="tab" data-bs-target="#tabPaneGrid" role="tab" aria-controls="tabPaneGrid" aria-selected="true">
+                    <span class="fe fe-grid"></span>
+                  </button>
+                  <button class="btn btn-outline-secondary" data-bs-toggle="tab" data-bs-target="#tabPaneList" role="tab" aria-controls="tabPaneList" aria-selected="false">
+                    <span class="fe fe-list"></span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-lg-12 col-md-12 col-12">
+      
+
+
+                 
+                      
+                    
+                  
+        
+{% endblock %}

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+
+<title>Oeuvre</title>
+
+{% block body %}
+    <h1>Oeuvre</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ oeuvre.id }}</td>
+            </tr>
+            <tr>
+                <th>Titre</th>
+                <td>{{ oeuvre.titre }}</td>
+            </tr>
+            <tr>
+                <th>Description</th>
+                <td>{{ oeuvre.description }}</td>
+            </tr>
+            <tr>
+                <th>Date_creation</th>
+                <td>{{ oeuvre.dateCreation ? oeuvre.dateCreation|date('Y-m-d') : '' }}</td>
+            </tr>
+            <tr>
+                <th>Image</th>
+                <td>{% if oeuvre.image %}
+                <img src="{{ path('oeuvre_image', {'id': oeuvre.id}) }}" alt="Image de l'œuvre" style="max-width:300px;">
+                {% else %}
+                <p>Aucune image disponible.</p>
+                {% endif %}</td>
+            </tr>
+            <tr>
+                <th>Type</th>
+                <td>{{ oeuvre.type.value  }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_oeuvre_index') }}">back to list</a>
+
+    <a href="{{ path('app_oeuvre_edit', {'id': oeuvre.id}) }}">edit</a>
+
+    {{ include('oeuvre/_delete_form.html.twig') }}
+{% endblock %}

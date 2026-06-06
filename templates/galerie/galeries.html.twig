@@ -1,0 +1,327 @@
+﻿{% extends 'base_admin.html.twig' %}
+
+{%block title %}{{ 'Galeries'|trans }}{% endblock %}
+
+{% form_theme new_form 'bootstrap_5_layout.html.twig' %}
+
+{% block admin_content %}
+{# BLOC 1 : EN-TÊTE DE PAGE #}
+{# Affiche le titre "Gestion des galeries" et le bouton "Ajouter Galerie" #}
+<div class="row">
+  <!-- Page Header -->
+  <div class="col-lg-12 col-md-12 col-12">
+    <div class="border-bottom pb-3 mb-3 d-flex align-items-center justify-content-between">
+      <div class="d-flex flex-column gap-1">
+        <h1 class="mb-0 h1 fw-bold">Gestion des galeries</h1>
+        <nav aria-label="breadcrumb">
+          <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+              <a href="admin-dashboard.html">Tableau de bord</a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">Galeries</li>
+          </ol>
+        </nav>
+      </div>
+      {# Bouton "Ajouter Galerie" qui ouvre l'offcanvas #offcanvasAddGalerie #}
+      <div>
+        <a href="#" class="btn btn-primary me-2" data-bs-toggle="offcanvas"
+          data-bs-target="#offcanvasAddGalerie">Ajouter Galerie</a>
+
+      </div>
+    </div>
+  </div>
+</div>
+<div class="row">
+  <div class="col-lg-12 col-md-12 col-12">
+    <!-- Card -->
+    <div class="card rounded-3">
+      <!-- Card Header avec barre de recherche -->
+      <div class="p-4 row">
+        {# BLOC 2 : RECHERCHE + TRI #}
+        <form class="row g-2 align-items-center" method="get" action="{{ path('galeries') }}" id="searchForm">
+          <input type="hidden" name="filter_field" value="nom">
+          <div class="col-12 col-md-6 col-lg-4">
+            <div class="position-relative">
+              <span class="position-absolute ps-3 search-icon" style="top: 50%; transform: translateY(-50%);">
+                <i class="fe fe-search"></i>
+              </span>
+              <input type="text" name="filter_value" id="searchInput" class="form-control ps-6" placeholder="Rechercher galerie"
+                value="{{ filter_value }}" autocomplete="off">
+            </div>
+          </div>
+          <div class="col-12 col-md-6 col-lg-5"></div>
+          <div class="col-12 col-md-6 col-lg-3 d-flex align-items-center justify-content-end gap-2">
+            <label class="mb-0">Filtrer par</label>
+            <select name="sort" class="form-select w-auto" onchange="this.form.submit()">
+              <option value="id_asc" {% if sort == 'id_asc' %}selected{% endif %}>ID (A-Z)</option>
+              <option value="id_desc" {% if sort == 'id_desc' %}selected{% endif %}>ID (Z-A)</option>
+              <option value="nom_asc" {% if sort == 'nom_asc' %}selected{% endif %}>Nom (A-Z)</option>
+              <option value="nom_desc" {% if sort == 'nom_desc' %}selected{% endif %}>Nom (Z-A)</option>
+              <option value="capacite_asc" {% if sort == 'capacite_asc' %}selected{% endif %}>Capacite (A-Z)</option>
+              <option value="capacite_desc" {% if sort == 'capacite_desc' %}selected{% endif %}>Capacite (Z-A)</option>
+            </select>
+          </div>
+        </form>
+      </div>
+      <div>
+        <div class="tab-content" id="tabContent">
+          {# BLOC 3 : TABLEAU PRINCIPAL (TAB AFFICHÉE) #}
+          <!-- Tab -->
+          <div class="tab-pane fade show active" id="all-post" role="tabpanel" aria-labelledby="all-post-tab">
+            <div class="table-responsive">
+              {# BLOC 3.1 : EN-TÊTES DU TABLEAU #}
+              <!-- Table -->
+              <table
+                class="table mb-0 text-nowrap table-centered table-hover table-with-checkbox table-centered table-hover">
+                <!-- Table Head -->
+                <thead class="table-light">
+                  <tr>
+                    <th>ID</th>
+                    <th>Nom</th>
+                    <th>Adresse</th>
+                    <th>Localisation</th>
+                    <th>Capacité maximale</th>
+                    <th>Description</th>
+                    <th class="text-end">Actions</th>
+                  </tr>
+                </thead>
+                {# BLOC 3.2 : BODY DU TABLEAU - BOUCLE SUR LES GALERIES #}
+                {# Pour chaque galerie paginée, on affiche une ligne #}
+                <tbody>
+                  {% for galerie in galeries %}
+                  <tr>
+                    {# Colonne NOM #}
+                    <td>{{ galerie.id }}</td>
+                    <td>
+                      <h5 class="mb-0">{{ galerie.nom }}</h5>
+                    </td>
+                    {# Colonne ADRESSE #}
+                    <td>{{ galerie.adresse }}</td>
+                    {# Colonne LOCALISATION #}
+                    <td>{{ galerie.localisation }}</td>
+                    {# Colonne CAPACITÉ MAX #}
+                    <td>{{ galerie.capaciteMax }}</td>
+                    {# Colonne DESCRIPTION (affiche '-' si vide) #}
+                    <td>{{ galerie.description ?: '-' }}</td>
+                    {# BLOC 3.3 : COLONNE ACTIONS (Edit/Delete) #}
+                    <td class="text-end">
+                      {# Dropdown menu pour chaque galerie #}
+                      <span class="dropdown dropstart">
+                        {# Bouton menu "..." qui ouvre le dropdown #}
+                        <a class="btn-icon btn btn-ghost btn-sm rounded-circle" href="#" role="button"
+                          id="galerieDropdown{{ galerie.id }}" data-bs-toggle="dropdown" data-bs-offset="-20,20"
+                          aria-expanded="false">
+                          <i class="fe fe-more-vertical"></i>
+                        </a>
+                        {# Menu déroulant avec actions #}
+                        <span class="dropdown-menu" aria-labelledby="galerieDropdown{{ galerie.id }}">
+                          <span class="dropdown-header">Actions</span>
+                          {# Bouton MODIFIER : ouvre l'offcanvas d'édition pour cette galerie #}
+                          {# L'offcanvas est créé plus bas (offcanvasEditGalerie{{ galerie.id }}) #}
+                          <button class="dropdown-item" type="button" data-bs-toggle="offcanvas"
+                            data-bs-target="#offcanvasEditGalerie{{ galerie.id }}">
+                            <i class="fe fe-edit dropdown-item-icon"></i>
+                            Modifier
+                          </button>
+                          {# Bouton SUPPRIMER : envoie un formulaire POST avec token CSRF #}
+                          {# Le paramètre ?page=X conserve la page actuelle après suppression #}
+                          <form method="post"
+                            action="{{ path('app_galerie_delete', {id: galerie.id, page: current_page}) }}"
+                            onsubmit="return confirm('Supprimer cette galerie ?');">
+                            {# Token CSRF pour sécurité anti-forgery #}
+                            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ galerie.id) }}">
+                            <button class="dropdown-item" type="submit">
+                              <i class="fe fe-trash dropdown-item-icon"></i>
+                              Supprimer
+                            </button>
+                          </form>
+                        </span>
+                      </span>
+                    </td>
+                  </tr>
+                  {% else %}
+                  {# Message si aucune galerie #}
+                  <tr>
+                    <td colspan="7" class="text-center text-muted">Aucune galerie trouvée.</td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Card Footer -->
+      {# BLOC 5 : PAGINATION DYNAMIQUE #}
+      {# Affiche les boutons de pagination uniquement si plus d'une page existe #}
+      <div class="card-footer">
+        <nav>
+          <ul class="pagination justify-content-center mb-0">
+            {# BLOC 5.1 : BOUTON PREVIOUS (Page précédente) #}
+            {# Désactivé si on est à la page 1 #}
+            <li class="page-item {{ current_page == 1 ? 'disabled' : '' }}">
+              <a class="page-link mx-1 rounded" href="{{ path('galeries', filter_params|merge({page: current_page - 1})) }}"
+                aria-label="Previous">
+                <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="currentColor"
+                  class="bi bi-chevron-left" viewBox="0 0 16 16">
+                  <path fill-rule="evenodd"
+                    d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z">
+                  </path>
+                </svg>
+              </a>
+            </li>
+            {# BLOC 5.2 : BOUTONS NUMÉROS DE PAGE #}
+            {# Boucle de 1 à total_pages et crée un bouton pour chaque page #}
+            {# La page actuelle est marquée comme 'active' #}
+            {% for p in 1..total_pages %}
+            <li class="page-item {{ p == current_page ? 'active' : '' }}">
+              <a class="page-link mx-1 rounded" href="{{ path('galeries', filter_params|merge({page: p})) }}">{{ p }}</a>
+            </li>
+            {% endfor %}
+            {# BLOC 5.3 : BOUTON NEXT (Page suivante) #}
+            {# Désactivé si on est à la dernière page #}
+            <li class="page-item {{ current_page == total_pages ? 'disabled' : '' }}">
+              <a class="page-link mx-1 rounded" href="{{ path('galeries', filter_params|merge({page: current_page + 1})) }}"
+                aria-label="Next">
+                <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="currentColor"
+                  class="bi bi-chevron-right" viewBox="0 0 16 16">
+                  <path fill-rule="evenodd"
+                    d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z">
+                  </path>
+                </svg>
+              </a>
+            </li>
+          </ul>
+        </nav>
+      </div>
+    </div>
+  </div>
+</div>
+{# BLOC 6 : OFFCANVAS D'AJOUT #}
+{# Panneau latéral qui glisse par la droite (offcanvas-end) quand on clique "Ajouter Galerie" #}
+{# Largeur : 600px, simplement barre, et contient le formulaire Symfony #}
+{# La classe 'show' le garde ouvert si le formulaire contient des erreurs de validation #}
+<div class="offcanvas offcanvas-end {% if show_add_form %}show{% endif %}" tabindex="-1" id="offcanvasAddGalerie" style="width: 600px">
+  <div class="offcanvas-body" data-simplebar>
+    {# En-têtes de l'offcanvas #}
+    <div class="offcanvas-header px-2 pt-0">
+      <h3 class="offcanvas-title">Ajouter une galerie</h3>
+      {# Bouton fermeture X #}
+      <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="container">
+      {# BLOC 6.1 : FORMULAIRE D'AJOUT (new_form) #}
+      {# Utilisation du formulaire Symfony GalerieType pré-construit dans le contrôleur #}
+      {# form_start : génère la balise <form> avec action="/galerie" et method="POST" #}
+        {# Les attributs 'row g-3' appliquent les classes Bootstrap pour le layout #}
+        {# novalidate : désactive la validation HTML5, seule la validation serveur est utilisée #}
+        {{ form_start(new_form, { attr: { class: 'row g-3', novalidate: 'novalidate' } }) }}
+        {# Colonne pleine : champ Nom #}
+        <div class="col-12">
+          {{ form_row(new_form.nom) }}
+        </div>
+        {# Colonne pleine : champ Adresse #}
+        <div class="col-12">
+          {{ form_row(new_form.adresse) }}
+        </div>
+        {# Colonne demi larg : champ Localisation #}
+        <div class="col-md-6 col-12">
+          {{ form_row(new_form.localisation) }}
+        </div>
+        {# Colonne demi larg : champ Capacité Max #}
+        <div class="col-md-6 col-12">
+          {{ form_row(new_form.capacite_max) }}
+        </div>
+        {# Colonne pleine : champ Description #}
+        <div class="col-12">
+          {{ form_row(new_form.description) }}
+        </div>
+        {# BLOC 6.2 : BOUTONS D'ACTION #}
+        {# Bouton Ajouter (submit) et Fermer (dismiss) #}
+        <div class="col-12 d-flex gap-2">
+          <button class="btn btn-primary" type="submit">Ajouter</button>
+          <button type="button" class="btn btn-outline-primary" data-bs-dismiss="offcanvas"
+            aria-label="Close">Fermer</button>
+        </div>
+        {{ form_end(new_form) }}
+    </div>
+  </div>
+</div>
+
+{# BLOC 7 : OFFCANVAS D'ÉDITION #}
+{# Une offcanvas par galerie, avec ID unique basé sur son ID : offcanvasEditGalerie{{ galerie.id }} #}
+{# Contient le formulaire d'édition pré-rempli avec les données de la galerie #}
+{# La classe 'show' le garde ouvert si le formulaire contient des erreurs de validation #}
+{% for galerie in galeries %}
+<div class="offcanvas offcanvas-end {% if show_edit_forms[galerie.id] | default(false) %}show{% endif %}" tabindex="-1" id="offcanvasEditGalerie{{ galerie.id }}" style="width: 600px">
+  <div class="offcanvas-body" data-simplebar>
+    {# En-têtes de l'offcanvas #}
+    <div class="offcanvas-header px-2 pt-0">
+      <h3 class="offcanvas-title">Modifier la galerie</h3>
+      {# Bouton fermeture X #}
+      <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="container">
+      {# BLOC 7.1 : APPLIQUER LE THÈME BOOTSTRAP AU FORMULAIRE #}
+      {# Chaque formulaire d'édition utilise le thème bootstrap_5_layout.html.twig #}
+      {% form_theme edit_forms[galerie.id] 'bootstrap_5_layout.html.twig' %}
+      {# BLOC 7.2 : FORMULAIRE D'ÉDITION (edit_forms[galerie.id]) #}
+      {# Chaque formulaire est pré-rempli avec les données de la galerie correspondante #}
+      {# Action : POST vers /galerie?page=X pour rester sur la même page après soumission #}
+      {# novalidate : désactive la validation HTML5, seule la validation serveur est utilisée #}
+      {{ form_start(edit_forms[galerie.id], { attr: { class: 'row g-3', novalidate: 'novalidate' } }) }}
+      {# Colonne pleine : champ Nom #}
+      <div class="col-12">
+        {{ form_row(edit_forms[galerie.id].nom) }}
+      </div>
+      {# Colonne pleine : champ Adresse #}
+      <div class="col-12">
+        {{ form_row(edit_forms[galerie.id].adresse) }}
+      </div>
+      {# Colonne demi larg : champ Localisation #}
+      <div class="col-md-6 col-12">
+        {{ form_row(edit_forms[galerie.id].localisation) }}
+      </div>
+      {# Colonne demi larg : champ Capacité Max #}
+      <div class="col-md-6 col-12">
+        {{ form_row(edit_forms[galerie.id].capacite_max) }}
+      </div>
+      {# Colonne pleine : champ Description #}
+      <div class="col-12">
+        {{ form_row(edit_forms[galerie.id].description) }}
+      </div>
+      {# BLOC 7.3 : BOUTONS D'ACTION #}
+      {# Bouton Enregistrer (submit) et Fermer (dismiss) #}
+      <div class="col-12 d-flex gap-2">
+        <button class="btn btn-primary" type="submit">Enregistrer</button>
+        <button type="button" class="btn btn-outline-primary" data-bs-dismiss="offcanvas"
+          aria-label="Close">Fermer</button>
+      </div>
+      {{ form_end(edit_forms[galerie.id]) }}
+    </div>
+  </div>
+</div>
+{% endfor %}
+
+<script>
+// Recherche AJAX automatique
+document.addEventListener('DOMContentLoaded', function() {
+  const searchForm = document.getElementById('searchForm');
+  const searchInput = document.getElementById('searchInput');
+  let searchTimeout;
+  
+  if (searchInput && searchForm) {
+    searchInput.addEventListener('input', function() {
+      // Annuler le timeout précédent si l'utilisateur continue de taper
+      clearTimeout(searchTimeout);
+      
+      // Attendre 500ms après la dernière frappe avant de soumettre
+      searchTimeout = setTimeout(function() {
+        searchForm.submit();
+      }, 500);
+    });
+  }
+});
+</script>
+
+{% endblock %}

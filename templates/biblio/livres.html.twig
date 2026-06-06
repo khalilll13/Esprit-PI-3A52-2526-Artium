@@ -1,0 +1,1998 @@
+{% extends 'base_admin.html.twig' %}
+
+{%block title %}{{ 'Biobliotheque'|trans }}{% endblock %}
+
+{% block admin_content %}
+    <div class="row">
+            <!-- Page Header -->
+            <div class="col-lg-12 col-md-12 col-12">
+              <div class="border-bottom pb-3 mb-3 d-flex align-items-center justify-content-between">
+                <div class="d-flex flex-column gap-1">
+                  <h1 class="mb-0 h1 fw-bold">Biobliothèque</h1>
+                  <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                      <li class="breadcrumb-item">
+                        <a href="{{ path('app_admin') }}">Tableau de Bord</a>
+                      </li>
+                      <li class="breadcrumb-item active" aria-current="page">Biobliothèque</li>
+                    </ol>
+                  </nav>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-lg-12 col-md-12 col-12">
+              <!-- Card -->
+              <div class="card rounded-3">
+                <!-- Card Header -->
+                <div class="card-header p-0">
+                  <ul class="nav nav-lb-tab border-bottom-0" id="tab" role="tablist">
+                    <li class="nav-item">
+                      <a class="nav-link active" id="all-post-tab" data-bs-toggle="pill" href="#all-post" role="tab" aria-controls="all-post" aria-selected="true">Tout les genres</a>
+                    </li>
+                  </ul>
+                </div>
+                <div class="p-4 row">
+                  <!-- Form -->
+                <div class ="formbtn">
+                  <form method="get" class="d-flex align-items-center gap-2" id="livreSearchForm">
+                    <span class="position-absolute ps-3 search-icon">
+                      <i class="fe fe-search"></i>
+                    </span>
+                    <input type="search" name="q" class="form-control ps-6 me-2 flex-grow-1" placeholder="Rechercher livre" value="{{ search_q|default('') }}" />
+                    <select name="sort" class="form-select form-select-sm w-auto ms-1" aria-label="Trier" onchange="document.getElementById('livreSearchForm').submit()">
+                      <option value="">Trier</option>
+                      <option value="price_asc" {{ search_sort == 'price_asc' ? 'selected' : '' }}>Prix croissant</option>
+                      <option value="price_desc" {{ search_sort == 'price_desc' ? 'selected' : '' }}>Prix décroissant</option>
+                      <option value="date_desc" {{ (search_sort == 'date_desc' or search_sort is empty) ? 'selected' : '' }}>Date création récente</option>
+                      <option value="date_asc" {{ search_sort == 'date_asc' ? 'selected' : '' }}>Date création ancienne</option>
+                    </select>
+                    <button type="submit" class="btn btn-outline-primary ms-1 btn-sm">OK</button>
+                  </form>
+                  <div class="bouton_delete">
+                  <a href="#" id="deleteSelectedBtn" class="btn btn-primary" data-delete-url-template="{{ path('livre_delete', {'id': 0}) }}">Supprimer tout</a>
+                  <button class="btn btn-success ms-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasAddLivre" aria-controls="offcanvasAddLivre">Ajouter Livre</button>
+                </div>
+
+                <!-- Offcanvas: Ajouter Livre -->
+                <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasAddLivre" aria-labelledby="offcanvasAddLivreLabel">
+                  <div class="offcanvas-header">
+                    <h5 id="offcanvasAddLivreLabel">Ajouter Livre</h5>
+                    <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                  </div>
+                  <div class="offcanvas-body">
+                    {{ form_start(livreForm, {'action': path('livre_create'), 'attr': {'class': 'needs-validation', 'novalidate': 'novalidate'}}) }}
+                      <div class="mb-3">
+                        {{ form_row(livreForm.titre) }}
+                      </div>
+                      <div class="mb-3">
+                        {{ form_row(livreForm.description) }}
+                      </div>
+                      <div class="mb-3">
+                        {{ form_row(livreForm.image, {'attr': {'required': 'required'}}) }}
+                      </div>
+                      <div class="mb-3">
+                        {{ form_row(livreForm.categorie) }}
+                      </div>
+                      <div class="mb-3">
+                        {{ form_row(livreForm.prix_location, {
+                          'attr': {
+                            'required': 'required',
+                            'type': 'number',
+                            'step': '0.01',
+                            'min': '0',
+                            'inputmode': 'decimal',
+                            'pattern': '^\\d+(\\.\\d{1,2})?$'
+                          }
+                        }) }}
+                      </div>
+                      <div class="mb-3">
+                        {{ form_row(livreForm.fichier_pdf, {'attr': {'required': 'required'}}) }}
+                      </div>
+                      <div class="mb-3">
+                        {{ form_row(livreForm.collection) }}
+                      </div>
+                      <div class="d-flex justify-content-end mt-3">
+                        <button type="submit" class="btn btn-primary">Create</button>
+                      </div>
+                    {{ form_end(livreForm) }}
+                  </div>
+                </div>
+
+                <!-- Offcanvas: Modifier Livre -->
+                <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasEditLivre" aria-labelledby="offcanvasEditLivreLabel">
+                  <div class="offcanvas-header">
+                    <h5 id="offcanvasEditLivreLabel">Modifier Livre</h5>
+                    <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                  </div>
+                  <div class="offcanvas-body">
+                    {# render an empty form view and populate client-side #}
+                    {{ form_start(livreEditForm, {'action': '#', 'attr': {'id': 'editLivreForm', 'enctype': 'multipart/form-data', 'class': 'needs-validation', 'novalidate': 'novalidate'}}) }}
+                      <div class="mb-3">
+                        {{ form_row(livreEditForm.titre) }}
+                      </div>
+                      <div class="mb-3">
+                        {{ form_row(livreEditForm.description) }}
+                      </div>
+                      <div class="mb-3">
+                        {{ form_row(livreEditForm.image, {'attr': {'required': 'required'}}) }}
+                        <div id="edit-image-preview" class="mt-2"></div>
+                      </div>
+                      <div class="mb-3">
+                        {{ form_row(livreEditForm.categorie) }}
+                      </div>
+                      <div class="mb-3">
+                        {{ form_row(livreEditForm.prix_location, {
+                          'attr': {
+                            'required': 'required',
+                            'type': 'number',
+                            'step': '0.01',
+                            'min': '0',
+                            'inputmode': 'decimal',
+                            'pattern': '^\\d+(\\.\\d{1,2})?$'
+                          }
+                        }) }}
+                      </div>
+                      <div class="mb-3">
+                        {{ form_row(livreEditForm.fichier_pdf, {'attr': {'required': 'required'}}) }}
+                        <div id="edit-pdf-preview" class="mt-2 small text-muted"></div>
+                      </div>
+                      <div class="mb-3">
+                        {{ form_row(livreEditForm.collection) }}
+                      </div>
+                      <div class="d-flex justify-content-end mt-3">
+                        <button type="submit" class="btn btn-primary">Mettre à jour</button>
+                      </div>
+                    {{ form_end(livreEditForm) }}
+                  </div>
+                </div>
+                </div>
+                </div>
+                <script>
+                document.addEventListener('DOMContentLoaded', function(){
+                  const forms = document.querySelectorAll('.needs-validation');
+
+                  forms.forEach(function (form) {
+                    // ensure an .invalid-feedback exists next to each input/select/textarea
+                    Array.from(form.querySelectorAll('input, textarea, select')).forEach(function(el){
+                      if (!el.name) return;
+                      if (el.type === 'hidden') return;
+                      if (el.matches('button, [type="submit"], [type="button"]')) return;
+                      const parent = el.parentElement || el.closest('.mb-3') || el;
+                      if (!parent) return;
+                      if (!parent.querySelector('.invalid-feedback')){
+                        const fb = document.createElement('div');
+                        fb.className = 'invalid-feedback';
+                        parent.appendChild(fb);
+                      }
+                    });
+
+                    form.addEventListener('submit', function (event) {
+                      const valid = form.checkValidity();
+
+                      Array.from(form.querySelectorAll('input, textarea, select')).forEach(function(el){
+                        if (!el.name) return;
+                        if (el.type === 'hidden') return;
+                        if (el.matches('button, [type="submit"], [type="button"]')) return;
+
+                        const parent = el.parentElement || el.closest('.mb-3') || el;
+                        const fb = parent ? parent.querySelector('.invalid-feedback') : null;
+
+                        if (!el.checkValidity()){
+                          el.classList.add('is-invalid');
+                          el.classList.remove('is-valid');
+                          if (fb){
+                            let msg = 'Champ invalide.';
+                            const v = el.validity;
+                            if (v.valueMissing) msg = 'Ce champ est requis.';
+                            else if (v.tooShort) msg = 'Valeur trop courte.';
+                            else if (v.tooLong) msg = 'Valeur trop longue.';
+                            else if (v.patternMismatch) msg = 'Format invalide.';
+                            else if (v.typeMismatch) msg = 'Format incorrect.';
+                            else if (v.rangeUnderflow || v.rangeOverflow) msg = 'Valeur hors limites.';
+                            else if (v.stepMismatch) msg = 'Valeur invalide.';
+                            fb.textContent = msg;
+                          }
+                        } else {
+                          el.classList.remove('is-invalid');
+                          el.classList.add('is-valid');
+                          if (fb) fb.textContent = '';
+                        }
+                      });
+
+                      if (!valid) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                      }
+                      form.classList.add('was-validated');
+                    }, false);
+                  });
+                });
+                </script>
+                <div>
+                  <div class="tab-content" id="tabContent">
+                    <!-- Tab -->
+                    <div class="tab-pane fade show active" id="all-post" role="tabpanel" aria-labelledby="all-post-tab">
+                      <div class="table-responsive">
+                        <!-- Table -->
+                        <table class="table mb-0 text-nowrap table-centered table-hover table-with-checkbox table-centered table-hover">
+                          <!-- Table Head -->
+                          <thead class="table-light">
+                            <tr>
+                              <th>
+                                <div class="form-check">
+                                  <input type="checkbox" class="form-check-input" id="checkAll" />
+                                  <label class="form-check-label" for="checkAll"></label>
+                                </div>
+                              </th>
+                              <th>Titre</th>
+                              <th>image</th>
+                              <th>categorie</th>
+                              <th>prix location</th>
+                              <th>Artist</th>
+                              <th>status</th>
+                              <th></th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {% for livre in livres %}
+                            <tr>
+                              {# determine if this livre is currently rented (only count non-expired Active locations) #}
+                              {% set status = livreStatus[livre.id] ?? null %}
+                              <td>
+                                <div class="form-check">
+                                  <input type="checkbox"
+                                         class="form-check-input row-checkbox"
+                                         id="post{{ loop.index }}"
+                                         value="{{ livre.id }}"
+                                         data-rented="{{ status and status.isActive ? '1' : '0' }}" />
+                                  <label class="form-check-label" for="post{{ loop.index }}"></label>
+                                </div>
+                              </td>
+                              <td>
+                                <h5 class="mb-0">
+                                  <a href="#" class="text-inherit">{{ livre.titre }}</a>
+                                </h5>
+                              </td>
+                              <td>
+                                {% if livre.image %}
+                                    <img src="{{ path('livre_image', {'id': livre.id}) }}" alt="{{ livre.titre }}" class="book-thumb" style="width:64px;height:96px;object-fit:cover;border-radius:6px;" />
+                                  {% else %}
+                                    <i class="fe fe-image text-primary fs-4"></i>
+                                  {% endif %}
+                              </td>
+                              <td>
+                                <a href="#" class="text-inherit">{{ livre.categorie }}</a>
+                              </td>
+                              <td>{{ livre.prixLocation }}</td>
+                              <td>
+                                {% if livre.collection and livre.collection.artiste %}
+                                  {{ livre.collection.artiste.nom }}
+                                {% else %}
+                                  -
+                                {% endif %}
+                              </td>
+                              <td>
+                                {% set status = livreStatus[livre.id] ?? null %}
+
+                                {% if status and status.isActive %}
+                                    <span class="badge bg-success">Loué</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">Non loué</span>
+                                {% endif %}
+                              </td>
+                              <td>
+                                <span class="dropdown dropstart">
+                                  <a class="btn-icon btn btn-ghost btn-sm rounded-circle" href="#" role="button" id="courseDropdown{{ loop.index }}" data-bs-toggle="dropdown" data-bs-offset="-20,20" aria-expanded="false">
+                                    <i class="fe fe-more-vertical"></i>
+                                  </a>
+                                  <span class="dropdown-menu" aria-labelledby="courseDropdown{{ loop.index }}">
+                                    <span class="dropdown-header">Paramètres</span>
+                                      {# compute active (non-expired) location id/date and stats for data attributes #}
+                                      {% set _now = "now"|date %}
+                                      {% set status = livreStatus[livre.id] ?? null %}
+                                      {% set activeId = status and status.isActive ? status.locationId : '' %}
+                                      {% set activeDate = status and status.isActive ? status.startDate : '' %}
+                                      {% set activeExpiration = status and status.isActive ? status.expirationDate : '' %}
+                                      {% set locationCount = livre.locationLivres|length %}
+                                      {% set totalRevenue = 0 %}
+                                        <a class="dropdown-item js-show-details" href="#"
+                                         data-id="{{ livre.id }}"
+                                         data-titre="{{ livre.titre|e('html_attr') }}"
+                                         data-date-creation="{{ livre.dateCreation ? livre.dateCreation|date('Y-m-d H:i:s') : '' }}"
+                                         data-description="{{ (livre.description is not empty) ? livre.description|e('html_attr') : '' }}"
+                                         data-pdf-url="{{ livre.fichierPdf ? path('livre_pdf', {'id': livre.id})|e('html_attr') : '' }}"
+                                         data-image="{{ (livre.image is defined and livre.image) ? (path('livre_image', {'id': livre.id})|e('html_attr')) : '' }}"
+                                        data-active-id="{{ activeId }}"
+                                         data-active-date="{{ activeDate }}"
+                                         data-active-expiration="{{ activeExpiration }}"
+                                         data-location-count="{{ locationCount }}"
+                                         data-total-revenue="{{ '%.2f'|format(totalRevenue) }}"
+                                      >
+                                        <i class="fe fe-eye dropdown-item-icon"></i>
+                                        Détails
+                                      </a>
+                                         <a class="dropdown-item js-edit-livre" href="#"
+                                           data-id="{{ livre.id }}"
+                                           data-titre="{{ livre.titre|e('html_attr') }}"
+                                           data-description="{{ (livre.description is not empty) ? livre.description|e('html_attr') : '' }}"
+                                           data-categorie="{{ livre.categorie is not empty ? livre.categorie|e('html_attr') : '' }}"
+                                           data-prix="{{ livre.prixLocation is not empty ? livre.prixLocation : '' }}"
+                                           data-image="{{ (livre.image is defined and livre.image) ? (path('livre_image', {'id': livre.id})|e('html_attr')) : '' }}"
+                                           data-pdf-url="{{ livre.fichierPdf ? path('livre_pdf', {'id': livre.id})|e('html_attr') : '' }}"
+                                           data-collection="{{ livre.collection ? livre.collection.id : '' }}"
+                                           data-rented="{{ status and status.isActive ? '1' : '0' }}"
+                                           data-edit-url-template="{{ path('livre_edit', {'id': 0}) }}"
+                                           data-bs-toggle="offcanvas"
+                                           data-bs-target="#offcanvasEditLivre"
+                                           aria-controls="offcanvasEditLivre"
+                                        >
+                                          <i class="fe fe-edit dropdown-item-icon"></i>
+                                          Modifier
+                                        </a>
+                                      <a class="dropdown-item js-delete-livre" href="#"
+                                      data-id="{{ livre.id }}"
+                                      data-delete-url-template="{{ path('livre_delete', {'id': 0}) }}"
+                                      data-rented="{{ status and status.isActive ? '1' : '0' }}"
+                                    >
+                                      <i class="fe fe-trash dropdown-item-icon"></i>
+                                      Supprimer
+                                    </a>
+                                  </span>
+                                </span>
+                              </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                              <td colspan="8">Aucun livre trouvé.</td>
+                            </tr>
+                            {% endfor %}
+                          </tbody>
+                        </table>
+                        <div class="d-flex justify-content-center mt-4">
+                          {{ knp_pagination_render(livres) }}
+                        </div>
+                      </div>
+
+                      
+                    </div>
+                    <div class="tab-pane fade" id="published" role="tabpanel" aria-labelledby="published-tab">
+                      <div class="table-responsive">
+                        <table class="table mb-0 text-nowrap table-centered table-hover table-with-checkbox">
+                          <thead class="table-light">
+                            <tr>
+                              <th>
+                                <div class="form-check">
+                                  <input type="checkbox" class="form-check-input" id="checkPublished" />
+                                  <label class="form-check-label" for="checkPublished"></label>
+                                </div>
+                              </th>
+                              <th>Titre</th>
+                              <th>image</th>
+                              <th>categorie</th>
+                              <th>prix location</th>
+                              <th>Artist</th>
+                              <th>status</th>
+                              <th></th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr>
+                              <td>
+                                <div class="form-check">
+                                  <input type="checkbox" class="form-check-input" id="postNine" />
+                                  <label class="form-check-label" for="postNine"></label>
+                                </div>
+                              </td>
+                              <td>
+                                <h5 class="mb-0">
+                                  <a href="#" class="text-inherit">The Modern JavaScript Courses</a>
+                                </h5>
+                              </td>
+                              <td>
+                                <i class="fe fe-link fs-4 text-primary"></i>
+                              </td>
+                              <td>
+                                <a href="#" class="text-inherit">Workshop</a>
+                              </td>
+                              <td>5 July, 2021 5:42pm</td>
+                              <td>
+                                <div class="d-flex align-items-center flex-row gap-2">
+                                  <img src="../../assets/images/avatar/avatar-4.jpg" alt="" class="rounded-circle avatar-xs" />
+                                  <h5 class="mb-0">Lisa Menon</h5>
+                                </div>
+                              </td>
+                              <td>
+                                <span class="badge-dot bg-success me-1 d-inline-block align-middle"></span>
+                                Published
+                              </td>
+                              <td>
+                                <span class="dropdown dropstart">
+                                  <a
+                                    class="btn-icon btn btn-ghost btn-sm rounded-circle"
+                                    href="#"
+                                    role="button"
+                                    id="courseDropdown9"
+                                    data-bs-toggle="dropdown"
+                                    data-bs-offset="-20,20"
+                                    aria-expanded="false">
+                                    <i class="fe fe-more-vertical"></i>
+                                  </a>
+                                  <span class="dropdown-menu" aria-labelledby="courseDropdown9">
+                                    <span class="dropdown-header">Settings</span>
+                                    <a class="dropdown-item" href="#">
+                                      <i class="fe fe-edit dropdown-item-icon"></i>
+                                      Edit
+                                    </a>
+                                    <a class="dropdown-item" href="#">
+                                      <i class="fe fe-move dropdown-item-icon"></i>
+                                      Move
+                                    </a>
+                                    <a class="dropdown-item" href="#">
+                                      <i class="fe fe-copy dropdown-item-icon"></i>
+                                      Copy
+                                    </a>
+                                    <a class="dropdown-item" href="#">
+                                      <i class="fe fe-toggle-left dropdown-item-icon"></i>
+                                      Publish
+                                    </a>
+                                    <a class="dropdown-item" href="#">
+                                      <i class="fe fe-toggle-right dropdown-item-icon"></i>
+                                      Unpublish
+                                    </a>
+                                    <a class="dropdown-item" href="#">
+                                      <i class="fe fe-trash dropdown-item-icon"></i>
+                                      Delete
+                                    </a>
+                                  </span>
+                                </span>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <div class="form-check">
+                                  <input type="checkbox" class="form-check-input" id="postTen" />
+                                  <label class="form-check-label" for="postTen"></label>
+                                </div>
+                              </td>
+                              <td>
+                                <h5 class="mb-0">
+                                  <a href="#" class="text-inherit">Online WordPress Courses Become ..</a>
+                                </h5>
+                              </td>
+                              <td>
+                                <i class="fe fe-image text-primary fs-4"></i>
+                              </td>
+                              <td>
+                                <a href="#" class="text-inherit">Company</a>
+                              </td>
+                              <td>3 July, 2021 10:42am</td>
+                              <td>
+                                <div class="d-flex align-items-center flex-row gap-2">
+                                  <img src="../../assets/images/avatar/avatar-8.jpg" alt="" class="rounded-circle avatar-xs" />
+                                  <h5 class="mb-0">Maria Pinto</h5>
+                                </div>
+                              </td>
+                              <td>
+                                <span class="badge-dot bg-success me-1 d-inline-block align-middle"></span>
+                                Published
+                              </td>
+                              <td>
+                                <span class="dropdown dropstart">
+                                  <a
+                                    class="btn-icon btn btn-ghost btn-sm rounded-circle"
+                                    href="#"
+                                    role="button"
+                                    id="courseDropdown10"
+                                    data-bs-toggle="dropdown"
+                                    data-bs-offset="-20,20"
+                                    aria-expanded="false">
+                                    <i class="fe fe-more-vertical"></i>
+                                  </a>
+                                  <span class="dropdown-menu" aria-labelledby="courseDropdown10">
+                                    <span class="dropdown-header">Settings</span>
+                                    <a class="dropdown-item" href="#">
+                                      <i class="fe fe-edit dropdown-item-icon"></i>
+                                      Edit
+                                    </a>
+                                    <a class="dropdown-item" href="#">
+                                      <i class="fe fe-move dropdown-item-icon"></i>
+                                      Move
+                                    </a>
+                                    <a class="dropdown-item" href="#">
+                                      <i class="fe fe-copy dropdown-item-icon"></i>
+                                      Copy
+                                    </a>
+                                    <a class="dropdown-item" href="#">
+                                      <i class="fe fe-toggle-left dropdown-item-icon"></i>
+                                      Publish
+                                    </a>
+                                    <a class="dropdown-item" href="#">
+                                      <i class="fe fe-toggle-right dropdown-item-icon"></i>
+                                      Unpublish
+                                    </a>
+                                    <a class="dropdown-item" href="#">
+                                      <i class="fe fe-trash dropdown-item-icon"></i>
+                                      Delete
+                                    </a>
+                                  </span>
+                                </span>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <div class="form-check">
+                                  <input type="checkbox" class="form-check-input" id="postEleven" />
+                                  <label class="form-check-label" for="postEleven"></label>
+                                </div>
+                              </td>
+                              <td>
+                                <h5 class="mb-0">
+                                  <a href="#" class="text-inherit">How to become Java Developer</a>
+                                </h5>
+                              </td>
+                              <td>
+                                <i class="fe fe-image text-primary fs-4"></i>
+                              </td>
+                              <td>
+                                <a href="#" class="text-inherit">Company</a>
+                              </td>
+                              <td>4 July, 2021 12:42pm</td>
+                              <td>
+                                <div class="d-flex align-items-center flex-row gap-2">
+                                  <img src="../../assets/images/avatar/avatar-10.jpg" alt="" class="rounded-circle avatar-xs" />
+                                  <h5 class="mb-0">John Deo</h5>
+                                </div>
+                              </td>
+                              <td>
+                                <span class="badge-dot bg-success me-1 d-inline-block align-middle"></span>
+                                Published
+                              </td>
+                              <td>
+                                <span class="dropdown dropstart">
+                                  <a
+                                    class="btn-icon btn btn-ghost btn-sm rounded-circle"
+                                    href="#"
+                                    role="button"
+                                    id="courseDropdown11"
+                                    data-bs-toggle="dropdown"
+                                    data-bs-offset="-20,20"
+                                    aria-expanded="false">
+                                    <i class="fe fe-more-vertical"></i>
+                                  </a>
+                                  <span class="dropdown-menu" aria-labelledby="courseDropdown11">
+                                    <span class="dropdown-header">Settings</span>
+                                    <a class="dropdown-item" href="#">
+                                      <i class="fe fe-edit dropdown-item-icon"></i>
+                                      Edit
+                                    </a>
+                                    <a class="dropdown-item" href="#">
+                                      <i class="fe fe-move dropdown-item-icon"></i>
+                                      Move
+                                    </a>
+                                    <a class="dropdown-item" href="#">
+                                      <i class="fe fe-copy dropdown-item-icon"></i>
+                                      Copy
+                                    </a>
+                                    <a class="dropdown-item" href="#">
+                                      <i class="fe fe-toggle-left dropdown-item-icon"></i>
+                                      Publish
+                                    </a>
+                                    <a class="dropdown-item" href="#">
+                                      <i class="fe fe-toggle-right dropdown-item-icon"></i>
+                                      Unpublish
+                                    </a>
+                                    <a class="dropdown-item" href="#">
+                                      <i class="fe fe-trash dropdown-item-icon"></i>
+                                      Delete
+                                    </a>
+                                  </span>
+                                </span>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <div class="form-check">
+                                  <input type="checkbox" class="form-check-input" id="postTwelve" />
+                                  <label class="form-check-label" for="postTwelve"></label>
+                                </div>
+                              </td>
+                              <td>
+                                <h5 class="mb-0">
+                                  <a href="#" class="text-inherit">How to become modern Stack Developer</a>
+                                </h5>
+                              </td>
+                              <td>
+                                <i class="fe fe-image fs-4 text-primary"></i>
+                              </td>
+                              <td>
+                                <a href="#" class="text-inherit">Company</a>
+                              </td>
+                              <td>3 July, 2021 12:42pm</td>
+                              <td>
+                                <div class="d-flex align-items-center flex-row gap-2">
+                                  <img src="../../assets/images/avatar/avatar-12.jpg" alt="" class="rounded-circle avatar-xs" />
+                                  <h5 class="mb-0">March Liso</h5>
+                                </div>
+                              </td>
+                              <td>
+                                <span class="badge-dot bg-success me-1 d-inline-block align-middle"></span>
+                                Published
+                              </td>
+                              <td>
+                                <span class="dropdown dropstart">
+                                  <a
+                                    class="btn-icon btn btn-ghost btn-sm rounded-circle"
+                                    href="#"
+                                    role="button"
+                                    id="courseDropdown12"
+                                    data-bs-toggle="dropdown"
+                                    data-bs-offset="-20,20"
+                                    aria-expanded="false">
+                                    <i class="fe fe-more-vertical"></i>
+                                  </a>
+                                  <span class="dropdown-menu" aria-labelledby="courseDropdown12">
+                                    <span class="dropdown-header">Settings</span>
+                                    <a class="dropdown-item" href="#">
+                                      <i class="fe fe-edit dropdown-item-icon"></i>
+                                      Edit
+                                    </a>
+                                    <a class="dropdown-item" href="#">
+                                      <i class="fe fe-move dropdown-item-icon"></i>
+                                      Move
+                                    </a>
+                                    <a class="dropdown-item" href="#">
+                                      <i class="fe fe-copy dropdown-item-icon"></i>
+                                      Copy
+                                    </a>
+                                    <a class="dropdown-item" href="#">
+                                      <i class="fe fe-toggle-left dropdown-item-icon"></i>
+                                      Publish
+                                    </a>
+                                    <a class="dropdown-item" href="#">
+                                      <i class="fe fe-toggle-right dropdown-item-icon"></i>
+                                      Unpublish
+                                    </a>
+                                    <a class="dropdown-item" href="#">
+                                      <i class="fe fe-trash dropdown-item-icon"></i>
+                                      Delete
+                                    </a>
+                                  </span>
+                                </span>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                    <div class="tab-pane fade" id="scheduled" role="tabpanel" aria-labelledby="scheduled-tab">
+                      <div class="table-responsive">
+                        <table class="table mb-0 text-nowrap table-centered table-hover table-with-checkbox">
+                          <thead class="table-light">
+                            <tr>
+                              <th>
+                                <div class="form-check">
+                                  <input type="checkbox" class="form-check-input" id="checkScheduled" />
+                                  <label class="form-check-label" for="checkScheduled"></label>
+                                </div>
+                              </th>
+                              <th>Titre</th>
+                              <th>image</th>
+                              <th>categorie</th>
+                              <th>prix location</th>
+                              <th>Artist</th>
+                              <th>status</th>
+                              <th></th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr>
+                              <td>
+                                <div class="form-check">
+                                  <input type="checkbox" class="form-check-input" id="postThirteen" />
+                                  <label class="form-check-label" for="postThirteen"></label>
+                                </div>
+                              </td>
+                              <td>
+                                <h5 class="mb-0">
+                                  <a href="#" class="text-inherit">The Javascript Learning</a>
+                                </h5>
+                              </td>
+                              <td>
+                                <i class="fe fe-video fs-4 text-primary"></i>
+                              </td>
+                              <td>
+                                <a href="#" class="text-inherit">Marketing</a>
+                              </td>
+                              <td>3 July, 2021 12:42pm</td>
+                              <td>
+                                <div class="d-flex align-items-center flex-row gap-2">
+                                  <img src="../../assets/images/avatar/avatar-15.jpg" alt="" class="rounded-circle avatar-xs" />
+                                  <h5 class="mb-0">Misty Smaln</h5>
+                                </div>
+                              </td>
+                              <td>
+                                <span class="badge-dot bg-info me-1 d-inline-block align-middle"></span>
+                                Scheduled
+                              </td>
+                              <td>
+                                <span class="dropdown dropstart">
+                                  <a
+                                    class="btn-icon btn btn-ghost btn-sm rounded-circle"
+                                    href="#"
+                                    role="button"
+                                    id="courseDropdown13"
+                                    data-bs-toggle="dropdown"
+                                    data-bs-offset="-20,20"
+                                    aria-expanded="false">
+                                    <i class="fe fe-more-vertical"></i>
+                                  </a>
+                                  <span class="dropdown-menu" aria-labelledby="courseDropdown13">
+                                    <span class="dropdown-header">Settings</span>
+                                    <a class="dropdown-item" href="#">
+                                      <i class="fe fe-edit dropdown-item-icon"></i>
+                                      Edit
+                                    </a>
+                                    <a class="dropdown-item" href="#">
+                                      <i class="fe fe-move dropdown-item-icon"></i>
+                                      Move
+                                    </a>
+                                    <a class="dropdown-item" href="#">
+                                      <i class="fe fe-copy dropdown-item-icon"></i>
+                                      Copy
+                                    </a>
+                                    <a class="dropdown-item" href="#">
+                                      <i class="fe fe-toggle-left dropdown-item-icon"></i>
+                                      Publish
+                                    </a>
+                                    <a class="dropdown-item" href="#">
+                                      <i class="fe fe-toggle-right dropdown-item-icon"></i>
+                                      Unpublish
+                                    </a>
+                                    <a class="dropdown-item" href="#">
+                                      <i class="fe fe-trash dropdown-item-icon"></i>
+                                      Delete
+                                    </a>
+                                  </span>
+                                </span>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <div class="form-check">
+                                  <input type="checkbox" class="form-check-input" id="postFourteen" />
+                                  <label class="form-check-label" for="postFourteen"></label>
+                                </div>
+                              </td>
+                              <td>
+                                <h5 class="mb-0">
+                                  <a href="#" class="text-inherit">Revolutionize how you build the web...</a>
+                                </h5>
+                              </td>
+                              <td>
+                                <i class="fe fe-image fs-4 text-primary"></i>
+                              </td>
+                              <td>
+                                <a href="#" class="text-inherit">Company</a>
+                              </td>
+                              <td>3 July, 2021 12:42pm</td>
+                              <td>
+                                <div class="d-flex align-items-center flex-row gap-2">
+                                  <img src="../../assets/images/avatar/avatar-13.jpg" alt="" class="rounded-circle avatar-xs" />
+                                  <h5 class="mb-0">Nikala Socha</h5>
+                                </div>
+                              </td>
+                              <td>
+                                <span class="badge-dot bg-info me-1 d-inline-block align-middle"></span>
+                                Scheduled
+                              </td>
+                              <td>
+                                <span class="dropdown dropstart">
+                                  <a
+                                    class="btn-icon btn btn-ghost btn-sm rounded-circle"
+                                    href="#"
+                                    role="button"
+                                    id="courseDropdown14"
+                                    data-bs-toggle="dropdown"
+                                    data-bs-offset="-20,20"
+                                    aria-expanded="false">
+                                    <i class="fe fe-more-vertical"></i>
+                                  </a>
+                                  <span class="dropdown-menu" aria-labelledby="courseDropdown14">
+                                    <span class="dropdown-header">Settings</span>
+                                    <a class="dropdown-item" href="#">
+                                      <i class="fe fe-edit dropdown-item-icon"></i>
+                                      Edit
+                                    </a>
+                                    <a class="dropdown-item" href="#">
+                                      <i class="fe fe-move dropdown-item-icon"></i>
+                                      Move
+                                    </a>
+                                    <a class="dropdown-item" href="#">
+                                      <i class="fe fe-copy dropdown-item-icon"></i>
+                                      Copy
+                                    </a>
+                                    <a class="dropdown-item" href="#">
+                                      <i class="fe fe-toggle-left dropdown-item-icon"></i>
+                                      Publish
+                                    </a>
+                                    <a class="dropdown-item" href="#">
+                                      <i class="fe fe-toggle-right dropdown-item-icon"></i>
+                                      Unpublish
+                                    </a>
+                                    <a class="dropdown-item" href="#">
+                                      <i class="fe fe-trash dropdown-item-icon"></i>
+                                      Delete
+                                    </a>
+                                  </span>
+                                </span>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <div class="form-check">
+                                  <input type="checkbox" class="form-check-input" id="postFifteen" />
+                                  <label class="form-check-label" for="postFifteen"></label>
+                                </div>
+                              </td>
+                              <td>
+                                <h5 class="mb-0">
+                                  <a href="#" class="text-inherit">The modern Javascript Course</a>
+                                </h5>
+                              </td>
+                              <td>
+                                <i class="fe fe-link fs-4 text-primary"></i>
+                              </td>
+                              <td>
+                                <a href="#" class="text-inherit">Workshop</a>
+                              </td>
+                              <td>3 July, 2021 12:42pm</td>
+                              <td>
+                                <div class="d-flex align-items-center flex-row gap-2">
+                                  <img src="../../assets/images/avatar/avatar-9.jpg" alt="" class="rounded-circle avatar-xs" />
+                                  <h5 class="mb-0">Jeny D'Souza</h5>
+                                </div>
+                              </td>
+                              <td>
+                                <span class="badge-dot bg-info me-1 d-inline-block align-middle"></span>
+                                Scheduled
+                              </td>
+                              <td>
+                                <span class="dropdown dropstart">
+                                  <a
+                                    class="btn-icon btn btn-ghost btn-sm rounded-circle"
+                                    href="#"
+                                    role="button"
+                                    id="courseDropdown15"
+                                    data-bs-toggle="dropdown"
+                                    data-bs-offset="-20,20"
+                                    aria-expanded="false">
+                                    <i class="fe fe-more-vertical"></i>
+                                  </a>
+                                  <span class="dropdown-menu" aria-labelledby="courseDropdown15">
+                                    <span class="dropdown-header">Settings</span>
+                                    <a class="dropdown-item" href="#">
+                                      <i class="fe fe-edit dropdown-item-icon"></i>
+                                      Edit
+                                    </a>
+                                    <a class="dropdown-item" href="#">
+                                      <i class="fe fe-move dropdown-item-icon"></i>
+                                      Move
+                                    </a>
+                                    <a class="dropdown-item" href="#">
+                                      <i class="fe fe-copy dropdown-item-icon"></i>
+                                      Copy
+                                    </a>
+                                    <a class="dropdown-item" href="#">
+                                      <i class="fe fe-toggle-left dropdown-item-icon"></i>
+                                      Publish
+                                    </a>
+                                    <a class="dropdown-item" href="#">
+                                      <i class="fe fe-toggle-right dropdown-item-icon"></i>
+                                      Unpublish
+                                    </a>
+                                    <a class="dropdown-item" href="#">
+                                      <i class="fe fe-trash dropdown-item-icon"></i>
+                                      Delete
+                                    </a>
+                                  </span>
+                                </span>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <div class="form-check">
+                                  <input type="checkbox" class="form-check-input" id="postSixteen" />
+                                  <label class="form-check-label" for="postSixteen"></label>
+                                </div>
+                              </td>
+                              <td>
+                                <h5 class="mb-0">
+                                  <a href="#" class="text-inherit">Github learning course</a>
+                                </h5>
+                              </td>
+                              <td>
+                                <i class="fe fe-image fs-4 text-primary"></i>
+                              </td>
+                              <td>
+                                <a href="#" class="text-inherit">Course</a>
+                              </td>
+                              <td>3 July, 2021 12:42pm</td>
+                              <td>
+                                <div class="d-flex align-items-center flex-row gap-2">
+                                  <img src="../../assets/images/avatar/avatar-5.jpg" alt="" class="rounded-circle avatar-xs" />
+                                  <h5 class="mb-0">Samiksha Nitry</h5>
+                                </div>
+                              </td>
+                              <td>
+                                <span class="badge-dot bg-info me-1 d-inline-block align-middle"></span>
+                                Scheduled
+                              </td>
+                              <td>
+                                <span class="dropdown dropstart">
+                                  <a
+                                    class="btn-icon btn btn-ghost btn-sm rounded-circle"
+                                    href="#"
+                                    role="button"
+                                    id="courseDropdown16"
+                                    data-bs-toggle="dropdown"
+                                    data-bs-offset="-20,20"
+                                    aria-expanded="false">
+                                    <i class="fe fe-more-vertical"></i>
+                                  </a>
+                                  <span class="dropdown-menu" aria-labelledby="courseDropdown16">
+                                    <span class="dropdown-header">Settings</span>
+                                    <a class="dropdown-item" href="#">
+                                      <i class="fe fe-edit dropdown-item-icon"></i>
+                                      Edit
+                                    </a>
+                                    <a class="dropdown-item" href="#">
+                                      <i class="fe fe-move dropdown-item-icon"></i>
+                                      Move
+                                    </a>
+                                    <a class="dropdown-item" href="#">
+                                      <i class="fe fe-copy dropdown-item-icon"></i>
+                                      Copy
+                                    </a>
+                                    <a class="dropdown-item" href="#">
+                                      <i class="fe fe-toggle-left dropdown-item-icon"></i>
+                                      Publish
+                                    </a>
+                                    <a class="dropdown-item" href="#">
+                                      <i class="fe fe-toggle-right dropdown-item-icon"></i>
+                                      Unpublish
+                                    </a>
+                                    <a class="dropdown-item" href="#">
+                                      <i class="fe fe-trash dropdown-item-icon"></i>
+                                      Delete
+                                    </a>
+                                  </span>
+                                </span>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                    <div class="tab-pane fade" id="draft" role="tabpanel" aria-labelledby="draft-tab">
+                      <div class="table-responsive">
+                        <table class="table mb-0 text-nowrap table-centered table-hover table-with-checkbox">
+                          <thead class="table-light">
+                            <tr>
+                              <th>
+                                <div class="form-check">
+                                  <input type="checkbox" class="form-check-input" id="checkDraft" />
+                                  <label class="form-check-label" for="checkDraft"></label>
+                                </div>
+                              </th>
+                              <th>Titre</th>
+                              <th>image</th>
+                              <th>categorie</th>
+                              <th>prix location</th>
+                              <th>Artist</th>
+                              <th>status</th>
+                              <th></th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr>
+                              <td>
+                                <div class="form-check">
+                                  <input type="checkbox" class="form-check-input" id="postSeventeen" />
+                                  <label class="form-check-label" for="postSeventeen"></label>
+                                </div>
+                              </td>
+                              <td>
+                                <h5 class="mb-0">
+                                  <a href="#" class="text-inherit">Revolutionize how you build the web...</a>
+                                </h5>
+                              </td>
+                              <td>
+                                <i class="fe fe-image text-primary fs-4"></i>
+                              </td>
+                              <td>
+                                <a href="#" class="text-inherit">Courses</a>
+                              </td>
+                              <td>7 July, 2021 1:42pm</td>
+                              <td>
+                                <div class="d-flex align-items-center flex-row gap-2">
+                                  <img src="../../assets/images/avatar/avatar-7.jpg" alt="" class="rounded-circle avatar-xs" />
+                                  <h5 class="mb-0">Reva Yokk</h5>
+                                </div>
+                              </td>
+                              <td>
+                                <span class="badge-dot bg-warning me-1 d-inline-block align-middle"></span>
+                                Draft
+                              </td>
+                              <td>
+                                <span class="dropdown dropstart">
+                                  <a
+                                    class="btn-icon btn btn-ghost btn-sm rounded-circle"
+                                    href="#"
+                                    role="button"
+                                    id="courseDropdown17"
+                                    data-bs-toggle="dropdown"
+                                    data-bs-offset="-20,20"
+                                    aria-expanded="false">
+                                    <i class="fe fe-more-vertical"></i>
+                                  </a>
+                                  <span class="dropdown-menu" aria-labelledby="courseDropdown17">
+                                    <span class="dropdown-header">Settings</span>
+                                    <a class="dropdown-item" href="#">
+                                      <i class="fe fe-edit dropdown-item-icon"></i>
+                                      Edit
+                                    </a>
+                                    <a class="dropdown-item" href="#">
+                                      <i class="fe fe-move dropdown-item-icon"></i>
+                                      Move
+                                    </a>
+                                    <a class="dropdown-item" href="#">
+                                      <i class="fe fe-copy dropdown-item-icon"></i>
+                                      Copy
+                                    </a>
+                                    <a class="dropdown-item" href="#">
+                                      <i class="fe fe-toggle-left dropdown-item-icon"></i>
+                                      Publish
+                                    </a>
+                                    <a class="dropdown-item" href="#">
+                                      <i class="fe fe-toggle-right dropdown-item-icon"></i>
+                                      Unpublish
+                                    </a>
+                                    <a class="dropdown-item" href="#">
+                                      <i class="fe fe-trash dropdown-item-icon"></i>
+                                      Delete
+                                    </a>
+                                  </span>
+                                </span>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <div class="form-check">
+                                  <input type="checkbox" class="form-check-input" id="postEighteen" />
+                                  <label class="form-check-label" for="postEighteen"></label>
+                                </div>
+                              </td>
+                              <td>
+                                <h5 class="mb-0">
+                                  <a href="#" class="text-inherit">Github learning course</a>
+                                </h5>
+                              </td>
+                              <td>
+                                <i class="fe fe-video text-primary fs-4"></i>
+                              </td>
+                              <td>
+                                <a href="#" class="text-inherit">Marketing</a>
+                              </td>
+                              <td>7 July, 2021 1:42pm</td>
+                              <td>
+                                <div class="d-flex align-items-center flex-row gap-2">
+                                  <img src="../../assets/images/avatar/avatar-10.jpg" alt="" class="rounded-circle avatar-xs" />
+                                  <h5 class="mb-0">Jone Deo</h5>
+                                </div>
+                              </td>
+                              <td>
+                                <span class="badge-dot bg-warning me-1 d-inline-block align-middle"></span>
+                                Draft
+                              </td>
+                              <td>
+                                <span class="dropdown dropstart">
+                                  <a
+                                    class="btn-icon btn btn-ghost btn-sm rounded-circle"
+                                    href="#"
+                                    role="button"
+                                    id="courseDropdown18"
+                                    data-bs-toggle="dropdown"
+                                    data-bs-offset="-20,20"
+                                    aria-expanded="false">
+                                    <i class="fe fe-more-vertical"></i>
+                                  </a>
+                                  <span class="dropdown-menu" aria-labelledby="courseDropdown18">
+                                    <span class="dropdown-header">Settings</span>
+                                    <a class="dropdown-item" href="#">
+                                      <i class="fe fe-edit dropdown-item-icon"></i>
+                                      Edit
+                                    </a>
+                                    <a class="dropdown-item" href="#">
+                                      <i class="fe fe-move dropdown-item-icon"></i>
+                                      Move
+                                    </a>
+                                    <a class="dropdown-item" href="#">
+                                      <i class="fe fe-copy dropdown-item-icon"></i>
+                                      Copy
+                                    </a>
+                                    <a class="dropdown-item" href="#">
+                                      <i class="fe fe-toggle-left dropdown-item-icon"></i>
+                                      Publish
+                                    </a>
+                                    <a class="dropdown-item" href="#">
+                                      <i class="fe fe-toggle-right dropdown-item-icon"></i>
+                                      Unpublish
+                                    </a>
+                                    <a class="dropdown-item" href="#">
+                                      <i class="fe fe-trash dropdown-item-icon"></i>
+                                      Delete
+                                    </a>
+                                  </span>
+                                </span>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <div class="form-check">
+                                  <input type="checkbox" class="form-check-input" id="postNineteen" />
+                                  <label class="form-check-label" for="postNineteen"></label>
+                                </div>
+                              </td>
+                              <td>
+                                <h5 class="mb-0">
+                                  <a href="#" class="text-inherit">how you build the website with Gatsby</a>
+                                </h5>
+                              </td>
+                              <td>
+                                <i class="fe fe-image text-primary fs-4"></i>
+                              </td>
+                              <td>
+                                <a href="#" class="text-inherit">Courses</a>
+                              </td>
+                              <td>7 July, 2021 1:42pm</td>
+                              <td>
+                                <div class="d-flex align-items-center flex-row gap-2">
+                                  <img src="../../assets/images/avatar/avatar-14.jpg" alt="" class="rounded-circle avatar-xs" />
+                                  <h5 class="mb-0">Dee Lumpa</h5>
+                                </div>
+                              </td>
+                              <td>
+                                <span class="badge-dot bg-warning me-1 d-inline-block align-middle"></span>
+                                Draft
+                              </td>
+                              <td>
+                                <span class="dropdown dropstart">
+                                  <a
+                                    class="btn-icon btn btn-ghost btn-sm rounded-circle"
+                                    href="#"
+                                    role="button"
+                                    id="courseDropdown19"
+                                    data-bs-toggle="dropdown"
+                                    data-bs-offset="-20,20"
+                                    aria-expanded="false">
+                                    <i class="fe fe-more-vertical"></i>
+                                  </a>
+                                  <span class="dropdown-menu" aria-labelledby="courseDropdown19">
+                                    <span class="dropdown-header">Settings</span>
+                                    <a class="dropdown-item" href="#">
+                                      <i class="fe fe-edit dropdown-item-icon"></i>
+                                      Edit
+                                    </a>
+                                    <a class="dropdown-item" href="#">
+                                      <i class="fe fe-move dropdown-item-icon"></i>
+                                      Move
+                                    </a>
+                                    <a class="dropdown-item" href="#">
+                                      <i class="fe fe-copy dropdown-item-icon"></i>
+                                      Copy
+                                    </a>
+                                    <a class="dropdown-item" href="#">
+                                      <i class="fe fe-toggle-left dropdown-item-icon"></i>
+                                      Publish
+                                    </a>
+                                    <a class="dropdown-item" href="#">
+                                      <i class="fe fe-toggle-right dropdown-item-icon"></i>
+                                      Unpublish
+                                    </a>
+                                    <a class="dropdown-item" href="#">
+                                      <i class="fe fe-trash dropdown-item-icon"></i>
+                                      Delete
+                                    </a>
+                                  </span>
+                                </span>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <div class="form-check">
+                                  <input type="checkbox" class="form-check-input" id="postTwenty" />
+                                  <label class="form-check-label" for="postTwenty"></label>
+                                </div>
+                              </td>
+                              <td>
+                                <h5 class="mb-0">
+                                  <a href="#" class="text-inherit">Become Full Stake Developer</a>
+                                </h5>
+                              </td>
+                              <td>
+                                <i class="fe fe-image text-primary fs-4"></i>
+                              </td>
+                              <td>
+                                <a href="#" class="text-inherit">Courses</a>
+                              </td>
+                              <td>7 July, 2021 1:42pm</td>
+                              <td>
+                                <div class="d-flex align-items-center flex-row gap-2">
+                                  <img src="../../assets/images/avatar/avatar-8.jpg" alt="" class="rounded-circle avatar-xs" />
+                                  <h5 class="mb-0">Samara Lily</h5>
+                                </div>
+                              </td>
+                              <td>
+                                <span class="badge-dot bg-warning me-1 d-inline-block align-middle"></span>
+                                Draft
+                              </td>
+                              <td>
+                                <span class="dropdown dropstart">
+                                  <a
+                                    class="btn-icon btn btn-ghost btn-sm rounded-circle"
+                                    href="#"
+                                    role="button"
+                                    id="courseDropdown20"
+                                    data-bs-toggle="dropdown"
+                                    data-bs-offset="-20,20"
+                                    aria-expanded="false">
+                                    <i class="fe fe-more-vertical"></i>
+                                  </a>
+                                  <span class="dropdown-menu" aria-labelledby="courseDropdown20">
+                                    <span class="dropdown-header">Settings</span>
+                                    <a class="dropdown-item" href="#">
+                                      <i class="fe fe-edit dropdown-item-icon"></i>
+                                      Edit
+                                    </a>
+                                    <a class="dropdown-item" href="#">
+                                      <i class="fe fe-move dropdown-item-icon"></i>
+                                      Move
+                                    </a>
+                                    <a class="dropdown-item" href="#">
+                                      <i class="fe fe-copy dropdown-item-icon"></i>
+                                      Copy
+                                    </a>
+                                    <a class="dropdown-item" href="#">
+                                      <i class="fe fe-toggle-left dropdown-item-icon"></i>
+                                      Publish
+                                    </a>
+                                    <a class="dropdown-item" href="#">
+                                      <i class="fe fe-toggle-right dropdown-item-icon"></i>
+                                      Unpublish
+                                    </a>
+                                    <a class="dropdown-item" href="#">
+                                      <i class="fe fe-trash dropdown-item-icon"></i>
+                                      Delete
+                                    </a>
+                                  </span>
+                                </span>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                    <div class="tab-pane fade" id="deleted" role="tabpanel" aria-labelledby="deleted-tab">
+                      <div class="table-responsive">
+                        <table class="table mb-0 text-nowrap table-centered table-hover table-with-checkbox">
+                          <thead class="table-light">
+                            <tr>
+                              <th>
+                                <div class="form-check">
+                                  <input type="checkbox" class="form-check-input" id="checkDeleted" />
+                                  <label class="form-check-label" for="checkDeleted"></label>
+                                </div>
+                              </th>
+                              <th>Titre</th>
+                              <th>image</th>
+                              <th>categorie</th>
+                              <th>prix location</th>
+                              <th>Artist</th>
+                              <th>status</th>
+                              <th></th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr>
+                              <td>
+                                <div class="form-check">
+                                  <input type="checkbox" class="form-check-input" id="postTwentyOne" />
+                                  <label class="form-check-label" for="postTwentyOne"></label>
+                                </div>
+                              </td>
+                              <td>
+                                <h5 class="mb-0">
+                                  <a href="#" class="text-inherit">How to become Full Stack Developer</a>
+                                </h5>
+                              </td>
+                              <td>
+                                <i class="fe fe-link fs-4 text-primary"></i>
+                              </td>
+                              <td>
+                                <a href="#" class="text-inherit">Workshop</a>
+                              </td>
+                              <td>2 July, 2021 12:42pm</td>
+                              <td>
+                                <div class="d-flex align-items-center flex-row gap-2">
+                                  <img src="../../assets/images/avatar/avatar-2.jpg" alt="" class="rounded-circle avatar-xs" />
+                                  <h5 class="mb-0">Sina Ray</h5>
+                                </div>
+                              </td>
+                              <td>
+                                <span class="badge-dot bg-danger me-1 d-inline-block align-middle"></span>
+                                Deleted
+                              </td>
+                              <td>
+                                <span class="dropdown dropstart">
+                                  <a
+                                    class="btn-icon btn btn-ghost btn-sm rounded-circle"
+                                    href="#"
+                                    role="button"
+                                    id="courseDropdown21"
+                                    data-bs-toggle="dropdown"
+                                    data-bs-offset="-20,20"
+                                    aria-expanded="false">
+                                    <i class="fe fe-more-vertical"></i>
+                                  </a>
+                                  <span class="dropdown-menu" aria-labelledby="courseDropdown21">
+                                    <span class="dropdown-header">Settings</span>
+                                    <a class="dropdown-item" href="#">
+                                      <i class="fe fe-edit dropdown-item-icon"></i>
+                                      Edit
+                                    </a>
+                                    <a class="dropdown-item" href="#">
+                                      <i class="fe fe-move dropdown-item-icon"></i>
+                                      Move
+                                    </a>
+                                    <a class="dropdown-item" href="#">
+                                      <i class="fe fe-copy dropdown-item-icon"></i>
+                                      Copy
+                                    </a>
+                                    <a class="dropdown-item" href="#">
+                                      <i class="fe fe-toggle-left dropdown-item-icon"></i>
+                                      Publish
+                                    </a>
+                                    <a class="dropdown-item" href="#">
+                                      <i class="fe fe-toggle-right dropdown-item-icon"></i>
+                                      Unpublish
+                                    </a>
+                                    <a class="dropdown-item" href="#">
+                                      <i class="fe fe-trash dropdown-item-icon"></i>
+                                      Delete
+                                    </a>
+                                  </span>
+                                </span>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <div class="form-check">
+                                  <input type="checkbox" class="form-check-input" id="postTwentyTwo" />
+                                  <label class="form-check-label" for="postTwentyTwo"></label>
+                                </div>
+                              </td>
+                              <td>
+                                <h5 class="mb-0">
+                                  <a href="#" class="text-inherit">How to build website with React</a>
+                                </h5>
+                              </td>
+                              <td>
+                                <i class="fe fe-image fs-4 text-primary"></i>
+                              </td>
+                              <td>
+                                <a href="#" class="text-inherit">Course</a>
+                              </td>
+                              <td>2 July, 2021 12:42pm</td>
+                              <td>
+                                <div class="d-flex align-items-center flex-row gap-2">
+                                  <img src="../../assets/images/avatar/avatar-5.jpg" alt="" class="rounded-circle avatar-xs" />
+                                  <h5 class="mb-0">Ellonek Lincha</h5>
+                                </div>
+                              </td>
+                              <td>
+                                <span class="badge-dot bg-danger me-1 d-inline-block align-middle"></span>
+                                Deleted
+                              </td>
+                              <td>
+                                <span class="dropdown dropstart">
+                                  <a
+                                    class="btn-icon btn btn-ghost btn-sm rounded-circle"
+                                    href="#"
+                                    role="button"
+                                    id="courseDropdown23"
+                                    data-bs-toggle="dropdown"
+                                    data-bs-offset="-20,20"
+                                    aria-expanded="false">
+                                    <i class="fe fe-more-vertical"></i>
+                                  </a>
+                                  <span class="dropdown-menu" aria-labelledby="courseDropdown23">
+                                    <span class="dropdown-header">Settings</span>
+                                    <a class="dropdown-item" href="#">
+                                      <i class="fe fe-edit dropdown-item-icon"></i>
+                                      Edit
+                                    </a>
+                                    <a class="dropdown-item" href="#">
+                                      <i class="fe fe-move dropdown-item-icon"></i>
+                                      Move
+                                    </a>
+                                    <a class="dropdown-item" href="#">
+                                      <i class="fe fe-copy dropdown-item-icon"></i>
+                                      Copy
+                                    </a>
+                                    <a class="dropdown-item" href="#">
+                                      <i class="fe fe-toggle-left dropdown-item-icon"></i>
+                                      Publish
+                                    </a>
+                                    <a class="dropdown-item" href="#">
+                                      <i class="fe fe-toggle-right dropdown-item-icon"></i>
+                                      Unpublish
+                                    </a>
+                                    <a class="dropdown-item" href="#">
+                                      <i class="fe fe-trash dropdown-item-icon"></i>
+                                      Delete
+                                    </a>
+                                  </span>
+                                </span>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <div class="form-check">
+                                  <input type="checkbox" class="form-check-input" id="postTwentyThree" />
+                                  <label class="form-check-label" for="postTwentyThree"></label>
+                                </div>
+                              </td>
+                              <td>
+                                <h5 class="mb-0">
+                                  <a href="#" class="text-inherit">Learning a basic bootstrap with us</a>
+                                </h5>
+                              </td>
+                              <td>
+                                <i class="fe fe-image fs-4 text-primary"></i>
+                              </td>
+                              <td>
+                                <a href="#" class="text-inherit">Course</a>
+                              </td>
+                              <td>2 July, 2021 12:42pm</td>
+                              <td>
+                                <div class="d-flex align-items-center flex-row gap-2">
+                                  <img src="../../assets/images/avatar/avatar-6.jpg" alt="" class="rounded-circle avatar-xs" />
+                                  <h5 class="mb-0">Misara Chopay</h5>
+                                </div>
+                              </td>
+                              <td>
+                                <span class="badge-dot bg-danger me-1 d-inline-block align-middle"></span>
+                                Deleted
+                              </td>
+                              <td>
+                                <span class="dropdown dropstart">
+                                  <a
+                                    class="btn-icon btn btn-ghost btn-sm rounded-circle"
+                                    href="#"
+                                    role="button"
+                                    id="courseDropdown24"
+                                    data-bs-toggle="dropdown"
+                                    data-bs-offset="-20,20"
+                                    aria-expanded="false">
+                                    <i class="fe fe-more-vertical"></i>
+                                  </a>
+                                  <span class="dropdown-menu" aria-labelledby="courseDropdown24">
+                                    <span class="dropdown-header">Settings</span>
+                                    <a class="dropdown-item" href="#">
+                                      <i class="fe fe-edit dropdown-item-icon"></i>
+                                      Edit
+                                    </a>
+                                    <a class="dropdown-item" href="#">
+                                      <i class="fe fe-move dropdown-item-icon"></i>
+                                      Move
+                                    </a>
+                                    <a class="dropdown-item" href="#">
+                                      <i class="fe fe-copy dropdown-item-icon"></i>
+                                      Copy
+                                    </a>
+                                    <a class="dropdown-item" href="#">
+                                      <i class="fe fe-toggle-left dropdown-item-icon"></i>
+                                      Publish
+                                    </a>
+                                    <a class="dropdown-item" href="#">
+                                      <i class="fe fe-toggle-right dropdown-item-icon"></i>
+                                      Unpublish
+                                    </a>
+                                    <a class="dropdown-item" href="#">
+                                      <i class="fe fe-trash dropdown-item-icon"></i>
+                                      Delete
+                                    </a>
+                                  </span>
+                                </span>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <div class="form-check">
+                                  <input type="checkbox" class="form-check-input" id="postTwentyFour" />
+                                  <label class="form-check-label" for="postTwentyFour"></label>
+                                </div>
+                              </td>
+                              <td>
+                                <h5 class="mb-0">
+                                  <a href="#" class="text-inherit">Guide to Static Sites with Gatsby.js</a>
+                                </h5>
+                              </td>
+                              <td>
+                                <i class="fe fe-video fs-4 text-primary"></i>
+                              </td>
+                              <td>
+                                <a href="#" class="text-inherit">Marketing</a>
+                              </td>
+                              <td>2 July, 2021 12:42pm</td>
+                              <td>
+                                <div class="d-flex align-items-center flex-row gap-2">
+                                  <img src="../../assets/images/avatar/avatar-6.jpg" alt="" class="rounded-circle avatar-xs" />
+                                  <h5 class="mb-0">Misara Chopay</h5>
+                                </div>
+                              </td>
+                              <td>
+                                <span class="badge-dot bg-danger me-1 d-inline-block align-middle"></span>
+                                Deleted
+                              </td>
+                              <td>
+                                <span class="dropdown dropstart">
+                                  <a
+                                    class="btn-icon btn btn-ghost btn-sm rounded-circle"
+                                    href="#"
+                                    role="button"
+                                    id="courseDropdown25"
+                                    data-bs-toggle="dropdown"
+                                    data-bs-offset="-20,20"
+                                    aria-expanded="false">
+                                    <i class="fe fe-more-vertical"></i>
+                                  </a>
+                                  <span class="dropdown-menu" aria-labelledby="courseDropdown25">
+                                    <span class="dropdown-header">Settings</span>
+                                    <a class="dropdown-item" href="#">
+                                      <i class="fe fe-edit dropdown-item-icon"></i>
+                                      Edit
+                                    </a>
+                                    <a class="dropdown-item" href="#">
+                                      <i class="fe fe-move dropdown-item-icon"></i>
+                                      Move
+                                    </a>
+                                    <a class="dropdown-item" href="#">
+                                      <i class="fe fe-copy dropdown-item-icon"></i>
+                                      Copy
+                                    </a>
+                                    <a class="dropdown-item" href="#">
+                                      <i class="fe fe-toggle-left dropdown-item-icon"></i>
+                                      Publish
+                                    </a>
+                                    <a class="dropdown-item" href="#">
+                                      <i class="fe fe-toggle-right dropdown-item-icon"></i>
+                                      Unpublish
+                                    </a>
+                                    <a class="dropdown-item" href="#">
+                                      <i class="fe fe-trash dropdown-item-icon"></i>
+                                      Delete
+                                    </a>
+                                  </span>
+                                </span>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <div class="form-check">
+                                  <input type="checkbox" class="form-check-input" id="postTwentyFive" />
+                                  <label class="form-check-label" for="postTwentyFive"></label>
+                                </div>
+                              </td>
+                              <td>
+                                <h5 class="mb-0">
+                                  <a href="#" class="text-inherit">Online WordPress Courses Become ..</a>
+                                </h5>
+                              </td>
+                              <td>
+                                <i class="fe fe-image fs-4 text-primary"></i>
+                              </td>
+                              <td>
+                                <a href="#" class="text-inherit">Course</a>
+                              </td>
+                              <td>2 July, 2021 12:42pm</td>
+                              <td>
+                                <div class="d-flex align-items-center flex-row gap-2">
+                                  <img src="../../assets/images/avatar/avatar-12.jpg" alt="" class="rounded-circle avatar-xs" />
+                                  <h5 class="mb-0">Zeban Juben</h5>
+                                </div>
+                              </td>
+                              <td>
+                                <span class="badge-dot bg-danger me-1 d-inline-block align-middle"></span>
+                                Deleted
+                              </td>
+                              <td>
+                                <span class="dropdown dropstart">
+                                  <a
+                                    class="btn-icon btn btn-ghost btn-sm rounded-circle"
+                                    href="#"
+                                    role="button"
+                                    id="courseDropdown26"
+                                    data-bs-toggle="dropdown"
+                                    data-bs-offset="-20,20"
+                                    aria-expanded="false">
+                                    <i class="fe fe-more-vertical"></i>
+                                  </a>
+                                  <span class="dropdown-menu" aria-labelledby="courseDropdown26">
+                                    <span class="dropdown-header">Settings</span>
+                                    <a class="dropdown-item" href="#">
+                                      <i class="fe fe-edit dropdown-item-icon"></i>
+                                      Edit
+                                    </a>
+                                    <a class="dropdown-item" href="#">
+                                      <i class="fe fe-move dropdown-item-icon"></i>
+                                      Move
+                                    </a>
+                                    <a class="dropdown-item" href="#">
+                                      <i class="fe fe-copy dropdown-item-icon"></i>
+                                      Copy
+                                    </a>
+                                    <a class="dropdown-item" href="#">
+                                      <i class="fe fe-toggle-left dropdown-item-icon"></i>
+                                      Publish
+                                    </a>
+                                    <a class="dropdown-item" href="#">
+                                      <i class="fe fe-toggle-right dropdown-item-icon"></i>
+                                      Unpublish
+                                    </a>
+                                    <a class="dropdown-item" href="#">
+                                      <i class="fe fe-trash dropdown-item-icon"></i>
+                                      Delete
+                                    </a>
+                                  </span>
+                                </span>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <!-- Card Footer -->
+              </div>
+            </div>
+          </div>
+          <!-- Details modal -->
+          <div class="modal fade" id="livreDetailsModal" tabindex="-1" aria-labelledby="livreDetailsLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+              <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title" id="livreDetailsLabel">Détails du livre</h5>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                      <div class="row g-3">
+                        <div class="col-12 col-md-7">
+                          <div class="card mb-3">
+                            <div class="card-body">
+                              <h5 class="card-title" id="detail-titre">—</h5>
+                              <p class="text-muted mb-1"><strong>ID:</strong> <span id="detail-id">—</span></p>
+                              <p class="text-muted mb-1"><strong>Date de création:</strong> <span id="detail-date-creation">—</span></p>
+                              <p id="detail-description">—</p>
+                              <p id="detail-pdf">—</p>
+                            </div>
+                          </div>
+                          <div class="card">
+                            <div class="card-body" id="rental-section">
+                              <h6>Informations de location <span id="rental-badge"></span></h6>
+                              <p class="mb-1"><strong>ID location:</strong> <span id="detail-location-id">-</span></p>
+                              <p class="mb-1"><strong>Date début:</strong> <span id="detail-location-date">-</span></p>
+                              <p class="mb-1"><strong>Date d'expiration:</strong> <span id="detail-location-expiration">-</span></p>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="col-12 col-md-5">
+                          <div class="card mb-3">
+                            <div class="card-body text-center">
+                              <img id="detail-image" src="" alt="" class="img-fluid mb-2" style="max-height:200px;" />
+                              <div class="small text-muted">Fichier PDF: <span id="detail-pdf-label">—</span></div>
+                            </div>
+                          </div>
+                          <div class="card">
+                            <div class="card-body">
+                              <h6>Statistiques</h6>
+                              <p class="mb-1"><strong>Nombre d’emprunts:</strong> <span id="stat-count">0</span></p>
+                              <p class="mb-1"><strong>Budget total généré:</strong> <span id="stat-total">0.00</span> </p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+                    </div>
+                  </div>
+            </div>
+          </div>
+
+          <script>
+            document.addEventListener('DOMContentLoaded', function () {
+              // keep server-rendered dropdowns intact (they include per-row data- attributes)
+
+              // delegate clicks on Détails anchors (they carry data- attributes)
+              document.body.addEventListener('click', function(e){
+                const el = e.target.closest('.js-show-details');
+                if (!el) return;
+                e.preventDefault();
+
+                const modalEl = document.getElementById('livreDetailsModal');
+                if (!modalEl) return;
+
+                const dataset = el.dataset;
+
+                // General
+                document.getElementById('detail-id').textContent = dataset.id || '-';
+                document.getElementById('detail-titre').textContent = dataset.titre || '-';
+                document.getElementById('detail-date-creation').textContent = dataset.dateCreation || '-';
+                document.getElementById('detail-description').textContent = dataset.description || '-';
+
+                // PDF or image embed + download link — detect MIME via HEAD request
+                const pdfLabel = document.getElementById('detail-pdf-label');
+                const pdfUrl = dataset.pdfUrl || '';
+                if (!pdfUrl) {
+                  pdfLabel.innerHTML = '<span class="badge bg-secondary">Aucun fichier</span>';
+                } else {
+                  // show a loading placeholder
+                  pdfLabel.innerHTML = '<div class="text-muted">Chargement du fichier…</div>';
+                  fetch(pdfUrl, { method: 'HEAD' }).then(function(resp) {
+                    const ct = (resp.headers.get('Content-Type') || '').toLowerCase();
+                    if (ct.startsWith('image/')) {
+                      pdfLabel.innerHTML = '<div class="pdf-embed"><img src="' + pdfUrl + '" style="max-width:100%;height:auto;border:0;" alt="Fichier image" /><div class="mt-2"><a href="' + pdfUrl + '?download=1" class="btn btn-sm btn-primary" target="_blank">Télécharger</a></div></div>';
+                    } else {
+                      // default to iframe/object for PDFs or other types
+                      pdfLabel.innerHTML = '<div class="pdf-embed"><iframe src="' + pdfUrl + '" style="width:100%;height:320px;border:0;"></iframe><div class="mt-2"><a href="' + pdfUrl + '?download=1" class="btn btn-sm btn-primary" target="_blank">Télécharger</a></div></div>';
+                    }
+                  }).catch(function() {
+                    // fallback: show download link
+                    pdfLabel.innerHTML = '<div class="mt-2"><a href="' + pdfUrl + '?download=1" class="btn btn-sm btn-primary" target="_blank">Télécharger le fichier</a></div>';
+                  });
+                }
+
+                // Image
+                const img = document.getElementById('detail-image');
+                if (dataset.image) {
+                  img.src = dataset.image;
+                  img.style.display = '';
+                } else {
+                  img.src = '';
+                  img.style.display = 'none';
+                }
+
+                // Rental info
+                const activeId = dataset.activeId || '';
+                const activeDate = dataset.activeDate || '';
+                document.getElementById('detail-location-id').textContent = activeId || '-';
+                document.getElementById('detail-location-date').textContent = activeDate || '-';
+
+                // expiration: use activeExpiration from dataset (do not add 7 days in JS)
+                const expEl = document.getElementById('detail-location-expiration');
+                expEl.textContent = dataset.activeExpiration || '-';
+
+                // Stats
+                const count = parseInt(dataset.locationCount || '0', 10);
+                const total = parseFloat(dataset.totalRevenue || '0');
+                document.getElementById('stat-count').textContent = count;
+                document.getElementById('stat-total').textContent = total.toFixed(2);
+
+                // rental section styling
+                const rentalSection = document.getElementById('rental-section');
+                const rentalBadge = document.getElementById('rental-badge');
+                if (!activeId) {
+                  rentalSection.style.opacity = '0.5';
+                  rentalSection.style.backgroundColor = '#f5f5f5';
+                  rentalBadge.innerHTML = '<span class="badge bg-secondary ms-2">Aucune location active</span>';
+                } else {
+                  rentalSection.style.opacity = '';
+                  rentalSection.style.backgroundColor = '';
+                  rentalBadge.innerHTML = '<span class="badge bg-success ms-2">Active</span>';
+                }
+
+                const modal = new bootstrap.Modal(modalEl);
+                modal.show();
+              });
+            });
+          </script>
+
+  <script>
+    document.addEventListener('click', function(e){
+      var btn = e.target.closest('.js-edit-livre');
+      if (!btn) return;
+      e.preventDefault();
+
+      var id = btn.dataset.id;
+      var form = document.getElementById('editLivreForm');
+      if (!form) return;
+
+      // set action URL (template contains route with id 0)
+      var tmpl = btn.dataset.editUrlTemplate || '';
+      if (tmpl) {
+        form.action = tmpl.replace('/0', '/' + id);
+      } else {
+        form.action = '/bibliotheque/livre/' + id + '/edit';
+      }
+
+      function setField(name, value){
+        var el = form.querySelector('[name="livre['+name+']"]');
+        if (el) el.value = value || '';
+      }
+
+      setField('titre', btn.dataset.titre);
+      setField('description', btn.dataset.description);
+      setField('categorie', btn.dataset.categorie);
+      setField('prix_location', btn.dataset.prix);
+
+      var coll = form.querySelector('[name="livre[collection]"]');
+      if (coll) coll.value = (btn.dataset.collection || '');
+
+      // Store original values so we can detect forbidden edits on submit
+      try {
+        form.dataset.origPrix = btn.dataset.prix || '';
+        form.dataset.origCategorie = btn.dataset.categorie || '';
+        form.dataset.origCollection = btn.dataset.collection || '';
+      } catch(e) {}
+
+      // clear file inputs (do not prefill for security)
+      var imgInput = form.querySelector('[name="livre[image]"]');
+      if (imgInput) imgInput.value = '';
+      var pdfInput = form.querySelector('[name="livre[fichier_pdf]"]');
+      if (pdfInput) pdfInput.value = '';
+
+      // populate previews for existing image/pdf (safe: show links/previews, do not set file inputs)
+      try {
+        var imgPreview = document.getElementById('edit-image-preview');
+        if (imgPreview) {
+          if (btn.dataset && btn.dataset.image) {
+            imgPreview.innerHTML = '<img src="' + btn.dataset.image + '" alt="Aperçu" style="max-height:120px;object-fit:cover;border-radius:6px;" /> <div class="mt-1"><a href="' + btn.dataset.image + '" target="_blank">Ouvrir l\'image actuelle</a></div>';
+          } else {
+            imgPreview.innerHTML = '<span class="text-muted">Aucune image actuelle</span>';
+          }
+        }
+        var pdfPreview = document.getElementById('edit-pdf-preview');
+        if (pdfPreview) {
+          if (btn.dataset && btn.dataset.pdfUrl) {
+            pdfPreview.innerHTML = '<a href="' + btn.dataset.pdfUrl + '?download=1" target="_blank">Télécharger le PDF actuel</a>';
+          } else {
+            pdfPreview.innerHTML = '<span class="text-muted">Aucun PDF actuel</span>';
+          }
+        }
+      } catch(e) {}
+
+      // On submit: if admin changed forbidden fields (prix/categorie/collection) while book is rented, block and show notification
+      form.onsubmit = function(event){
+        try {
+          var p = form.querySelector('[name="livre[prix_location]"]');
+          var c = form.querySelector('[name="livre[categorie]"]');
+          var col = form.querySelector('[name="livre[collection]"]');
+          var changed = false;
+          if (form.dataset && form.dataset.origPrix !== undefined && p && (String(p.value || '') !== String(form.dataset.origPrix || ''))) changed = true;
+          if (form.dataset && form.dataset.origCategorie !== undefined && c && (String(c.value || '') !== String(form.dataset.origCategorie || ''))) changed = true;
+          if (form.dataset && form.dataset.origCollection !== undefined && col && (String(col.value || '') !== String(form.dataset.origCollection || ''))) changed = true;
+          if (changed && (btn.dataset && btn.dataset.rented === '1')) {
+            // block submit and notify
+            event.preventDefault();
+            try { showAdminNotification('⚠️Modification interdite ! Ces modifications sont bloquées pour protéger les droits des amateurs.', 'warning'); } catch(e) {}
+            // highlight fields
+            if (p) p.style.backgroundColor = '#fff3cd';
+            if (c) c.style.backgroundColor = '#fff3cd';
+            if (col) col.style.backgroundColor = '#fff3cd';
+            return false;
+          }
+        } catch(e) {}
+        // allow submission to continue
+      };
+    });
+  </script>
+
+  <script>
+    document.addEventListener('click', function(e){
+      var btn = e.target.closest('.js-delete-livre');
+      if (!btn) return;
+      e.preventDefault();
+
+      // If the row/book is currently rented, block single-item deletion
+      if (btn.dataset && btn.dataset.rented === '1') {
+        try { showAdminNotification('ce livre est actuellement loué. Suppression bloquée pour protéger les droits des amateurs.', 'warning'); } catch(e) {}
+        var trBlocked = btn.closest('tr'); if (trBlocked) trBlocked.style.backgroundColor = '#fff3cd';
+        return;
+      }
+
+      if (!confirm('Êtes-vous sûr de vouloir supprimer ce livre ?')) {
+        return;
+      }
+
+      var id = btn.dataset.id;
+      var tmpl = btn.dataset.deleteUrlTemplate || '';
+      var action = tmpl ? tmpl.replace('/0', '/' + id) : '/bibliotheque/livre/' + id + '/delete';
+
+      // create and submit a POST form
+      var f = document.createElement('form');
+      f.method = 'post';
+      f.action = action;
+      f.style.display = 'none';
+      document.body.appendChild(f);
+      f.submit();
+    });
+  </script>
+
+  <script>
+    // Admin: delete selected rows (minimal, uses existing delete route)
+    document.addEventListener('DOMContentLoaded', function () {
+      const checkAll = document.getElementById('checkAll');
+      if (checkAll) {
+        checkAll.addEventListener('change', function () {
+          document.querySelectorAll('input.row-checkbox').forEach(function (cb) { cb.checked = checkAll.checked; });
+        });
+      }
+
+      const delBtn = document.getElementById('deleteSelectedBtn');
+      if (!delBtn) return;
+
+      delBtn.addEventListener('click', function (ev) {
+        ev.preventDefault();
+
+        const checkedBoxes = Array.from(document.querySelectorAll('input.row-checkbox:checked'));
+        if (checkedBoxes.length === 0) {
+          showAdminNotification('Aucun livre sélectionné.', 'info');
+          return;
+        }
+
+        // Block deletion if any selected livre is rented
+        const rented = checkedBoxes.filter(function(cb){ return cb.dataset && cb.dataset.rented === '1'; });
+        if (rented.length > 0) {
+          showAdminNotification('' + rented.length + ' livre(s) sélectionné(s) sont actuellement loués. Suppression bloquée pour protéger les droits des amateurs.', 'warning');
+          rented.forEach(function(cb){ const tr = cb.closest('tr'); if (tr) { tr.style.backgroundColor = '#fff3cd'; } });
+          return;
+        }
+
+        const selected = checkedBoxes.map(function(cb){ return cb.value; }).filter(Boolean);
+        if (!confirm('Confirmer la suppression de ' + selected.length + ' livre(s) ?')) return;
+
+        const tmpl = delBtn.dataset.deleteUrlTemplate || '/bibliotheque/livre/0/delete';
+
+        Promise.all(selected.map(function(id){
+          const url = tmpl.replace('/0', '/' + encodeURIComponent(id));
+          return fetch(url, { method: 'POST', credentials: 'same-origin', headers: {'X-Requested-With': 'XMLHttpRequest'} })
+            .then(function(r){ return { id: id, ok: r.ok, status: r.status }; })
+            .catch(function(err){ return { id: id, ok: false, error: String(err) }; });
+        })).then(function(){
+          location.reload();
+        });
+      });
+    });
+  </script>
+
+  <script>
+    // Minimal admin notification strip (top-right). type: 'info'|'warning'|'danger' -> bootstrap classes
+    function showAdminNotification(message, type) {
+      type = type || 'info';
+      const cls = type === 'danger' ? 'alert-danger' : (type === 'warning' ? 'alert-warning' : 'alert-info');
+      const container = document.createElement('div');
+      container.className = 'position-fixed top-0 end-0 p-3';
+      container.style.zIndex = '10800';
+      container.innerHTML = `<div class="alert ${cls} alert-dismissible fade show mb-0" role="alert" style="box-shadow: 0 4px 12px rgba(0,0,0,0.12);">` +
+                            `<div style="display:flex;align-items:center;gap:0.5rem;"><strong style="margin-right:.5rem;">${type === 'warning' ? '⚠️' : (type === 'danger' ? '⛔' : 'ℹ️')}</strong><div style="flex:1">${message}</div></div>` +
+                            `<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>`;
+      document.body.appendChild(container);
+      setTimeout(function(){ try{ container.remove(); }catch(e){} }, 4500);
+    }
+  </script>
+
+  {% endblock %}

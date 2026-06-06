@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Accueil</title>
+        <!-- Required meta tags back -->
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="author" content="Codescandy" />
+
+        <!-- Favicon icon back-->
+        <link rel="icon" href="{{asset('assetsback/images/iconn.ico')}}" />
+
+        <!-- Dark mode JS back -->
+        <script src="{{ asset('assetsback/js/vendors/darkMode.js') }}"></script>
+
+        {% block stylesheets %}
+            <!-- Backoffice Template Css -->
+            <link href="{{ asset('assetsback/fonts/feather/feather.css') }}" rel="stylesheet" />
+            <link href="{{ asset('assetsback/libs/bootstrap-icons/font/bootstrap-icons.min.css') }}" rel="stylesheet" />
+            <link href="{{ asset('assetsback/libs/simplebar/dist/simplebar.min.css') }}" rel="stylesheet" />
+
+            <link rel="stylesheet" href="{{ asset('assetsback/libs/flatpickr/dist/flatpickr.min.css') }}" />
+            <link rel="stylesheet" href="{{ asset('assetsback/css/theme.min.css') }}">
+            <link href="{{ asset('assetsback/libs/tiny-slider/dist/tiny-slider.css') }}" rel="stylesheet">
+			<style>
+				.slime-accent {
+					color: #3a39c5 !important;
+				}
+
+				.slime-btnn {
+					background: linear-gradient(135deg, #8df000 0%, #5fb800 100%) !important;
+					border-color: #6cc400 !important;
+					color: #ffffff !important;
+					box-shadow: 0 12px 24px rgba(122, 214, 0, 0.28);
+				}
+
+				.slime-btn {
+					color: #ffffff !important;
+					box-shadow: 0 12px 24px rgba(122, 214, 0, 0.28);
+				}
+
+				.slime-btn:hover,
+				.slime-btn:focus {
+					background: linear-gradient(135deg, #98ff0d 0%, #67c700 100%) !important;
+					border-color: #67c700 !important;
+					color: #ffffff !important;
+				}
+
+				.slime-white-text {
+					color: #ffffff !important;
+					text-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+				}
+			</style>
+
+        {% endblock %}
+    </head>
+
+    <body>
+        	<!-- Navbar -->
+	<nav class="navbar navbar-expand-lg">
+		<div class="container-fluid px-0">
+			<a class="navbar-brand" href="#top"><img src="{{ asset('assetsback/images/logo2.png')}}" alt="Artium" width="120px"/></a>
+			<div class="order-lg-3 d-flex align-items-center">
+				<div>
+					<div class="d-flex align-items-center">
+						<div class="dropdown me-2">
+							<button class="btn btn-light btn-icon rounded-circle d-flex align-items-center" type="button" aria-expanded="false" data-bs-toggle="dropdown" aria-label="Toggle theme (auto)">
+								<i class="bi theme-icon-active"></i>
+								<span class="visually-hidden bs-theme-text">Toggle theme</span>
+							</button>
+							<ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="bs-theme-text">
+								<li>
+									<button type="button" class="dropdown-item d-flex align-items-center" data-bs-theme-value="light" aria-pressed="false">
+										<i class="bi theme-icon bi-sun-fill"></i>
+										<span class="ms-2">Clair</span>
+									</button>
+								</li>
+								<li>
+									<button type="button" class="dropdown-item d-flex align-items-center" data-bs-theme-value="dark" aria-pressed="false">
+										<i class="bi theme-icon bi-moon-stars-fill"></i>
+										<span class="ms-2">Sombre</span>
+									</button>
+								</li>
+							</ul>
+						</div>
+						<a href="{{ path('app_signin') }}" class="btn btn-outline-primary shadow-sm me-2 d-none d-md-block">Se Connecter</a>
+						<a href="{{ path('app_signup') }}" class="btn btn-primary d-none d-md-block me-2 me-lg-0">S'inscrire</a>
+					</div>
+				</div>
+				<!-- Collapsed menu -->
+				<button class="navbar-toggler collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#navbar-default" aria-controls="navbar-default" aria-expanded="false" aria-label="Toggle navigation">
+					<span class="icon-bar top-bar mt-0"></span>
+					<span class="icon-bar middle-bar"></span>
+					<span class="icon-bar bottom-bar"></span>
+				</button>
+			</div>
+
+			<!-- Menu -->
+			<div class="collapse navbar-collapse" id="navbar-default">
+				<ul class="navbar-nav">
+					<li class="nav-item">
+						<a class="nav-link" href="#top" id="navbarBrowse" aria-haspopup="true" data-display="static">Accueil</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" href="#pourquoi" id="navbarBrowse" aria-haspopup="true" data-display="static">Pourquoi Artium</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" href="#artiste" id="navbarBrowse" aria-haspopup="true" data-display="static">Artistes</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" href="#join" id="navbarBrowse" aria-haspopup="true" data-display="static">Rejoignez-nous</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" href="#avis" id="navbarBrowse" aria-haspopup="true" data-display="static">Avis</a>
+					</li>
+				</ul>
+			</div>
+		</div>
+	</nav>
+
+	<!-- Hero -->
+	<section class="py-8 bg-auto slime-hero hero-graphics" id="top">
+		<div
+			class="container my-lg-8">
+			<!-- Hero Section -->
+			<div class="row justify-content-center">
+				<div class="col-xl-7 col-lg-9 col-md-12">
+					<div class="text-center">
+						<h1 class="mb-4 display-2 fw-bold">
+							<span class="slime-white-text" style="color: #b1f005 !important;">Un Univers</span>
+							<span class="slime-accent" data-strings="Artistique, Créatif, Moderne, Inspirant, Unique"></span>
+						</h1>
+
+						<p class="mb-6 h2 slime-white-text">Explorez un espace où la créativité s’exprime librement, où chaque œuvre reflète une vision unique et où l’art prend vie à travers des styles modernes et inspirants.</p>
+						<a href="#avis" class="btn btn-primary me-2 slime-btn" >Voir Avis</a>
+						<a href="{{ path('app_signup') }}" class="btn btn-primary slime-btnn">Essayer Gratuitement</a>
+						<div class="mt-8 mb-0">
+							<ul class="list-inline">
+								<li class="list-inline-item slime-white-text fw-semibold lh-1 fs-4 me-3 mb-2 mb-md-0">
+									<span class="icon-shape icon-xs rounded-circle bg-light-success text-center me-2">
+										<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-check text-success" viewbox="0 0 16 16">
+											<path d="M10.97 4.97a.75.75 0 0 1 1.07 1.05l-3.99 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425a.267.267 0 0 1 .02-.022z"></svg>
+										</span>
+										<span class="align-middle">+30,000 Amateurs</span>
+									</li>
+								</li>
+								<li class="list-inline-item slime-white-text fw-semibold lh-1 fs-4 me-3 mb-2 mb-md-0">
+									<span class="icon-shape icon-xs rounded-circle bg-light-success text-center me-2">
+										<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-check text-success" viewbox="0 0 16 16">
+											<path d="M10.97 4.97a.75.75 0 0 1 1.07 1.05l-3.99 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425a.267.267 0 0 1 .02-.022z"></svg>
+										</span>
+										<span class="align-middle">Créateurs passionnés</span>
+									</li>
+								</li>
+								<li class="list-inline-item slime-white-text fw-semibold lh-1 fs-4">
+									<span class="icon-shape icon-xs rounded-circle bg-light-success text-center me-2">
+										<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-check text-success" viewbox="0 0 16 16">
+											<path d="M10.97 4.97a.75.75 0 0 1 1.07 1.05l-3.99 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425a.267.267 0 0 1 .02-.022z"></svg>
+										</span>
+										<span class="align-middle">Accès flexible</span>
+									</li>
+								</li>
+							</ul>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+	<!-- Features -->
+	<section class="bg-white py-8" id="pourquoi">
+		<div class="container mb-lg-8">
+			<div class="row mb-8 justify-content-center">
+				<div
+					class="col-lg-8 col-md-12 col-12 text-center">
+					<!-- caption -->
+					<span class="text-primary mb-3 d-block text-uppercase fw-semibold ls-xl">Pourquoi choisir Artium</span>
+					<h2 class="mb-2 display-4 fw-bold">Vivez l’art autrement</h2>
+					<p class="lead mb-0">Découvrez des œuvres uniques, écoutez de la musique inspirante, explorez des espaces culturels virtuels et plongez dans un univers créatif. Chaque visite est une nouvelle expérience.</p>
+				</div>
+			</div>
+			<!-- row -->
+			<div class="row">
+				<div
+					class="col-lg-3 col-md-6 col-12">
+					<!-- features -->
+					<div
+						class="mb-4">
+						<!-- icon -->
+						<div class="d-flex justify-content-center display-4 text-primary">
+							<i class="bi bi-book"></i>
+						</div>
+						<!-- para -->
+						<div class="mt-4 text-center">
+							<h3>Explorez de nouvelles collections</h3>
+							<p class="fs-4 mb-0">Parcourez des collections d’œuvres, catalogues et publications sélectionnées par des experts.</p>
+						</div>
+					</div>
+				</div>
+				<div
+					class="col-lg-3 col-md-6 col-12">
+					<!-- features -->
+					<div
+						class="mb-4">
+						<!-- icon -->
+						<div class="d-flex justify-content-center display-4 text-primary">
+							<i class="bi bi-music-note-beamed"></i>
+						</div>
+						<!-- para -->
+						<div class="mt-4 text-center">
+							<h3>Vivez la musique et le son</h3>
+							<p class="fs-4 mb-0">Écoutez créations sonores et playlists composées par des artistes et conservateurs.</p>
+						</div>
+					</div>
+				</div>
+				<div
+					class="col-lg-3 col-md-6 col-12">
+					<!-- features -->
+					<div
+						class="mb-4 text-center">
+						<!-- icon -->
+						<div class="d-flex justify-content-center display-4 text-primary">
+							<i class="bi bi-bank"></i>
+						</div>
+						<!-- para -->
+						<div class="mt-4 text-center">
+							<h3>Visitez des espaces virtuels</h3>
+							<p class="fs-4 mb-0">Parcourez des expositions virtuelles et vivez des parcours immersifs autour des œuvres.</p>
+						</div>
+					</div>
+				</div>
+				<div
+					class="col-lg-3 col-md-6 col-12">
+					<!-- features -->
+					<div
+						class="mb-4">
+						<!-- icon -->
+						<div class="d-flex justify-content-center display-4 text-primary">
+							<i class="bi bi-brush"></i>
+						</div>
+						<!-- para -->
+						<div class="mt-4 text-center">
+							<h3>Découvrez des œuvres uniques</h3>
+							<p class="fs-4 mb-0">Admirez des créations originales et laissez-vous inspirer par la créativité venue du monde entier.</p>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+	<!-- Section 'artiste' supprimée -->
+	<!-- Join -->
+	<section class="bg-white py-8" id="join">
+		<div class="container mb-lg-8">
+			<div class="row mb-4 justify-content-center">
+				<div class="col-lg-11 col-md-12">
+					<div class="row align-items-center">
+						<div
+							class="col-md-12 col-12 mb-4">
+							<!-- avatar group -->
+							<div
+								class="avatar-group me-5">
+								<!-- avatar -->
+								<span class="avatar avatar-lg">
+									<img alt="avatar" src="{{ asset('assetsback/images/avatar/avatar-1.jpg') }}" class="rounded-circle">
+								</span>
+								<!-- avatar -->
+								<span class="avatar avatar-lg">
+									<img alt="avatar" src="{{ asset('assetsback/images/avatar/avatar-2.jpg') }}" class="rounded-circle">
+								</span>
+								<!-- avatar -->
+								<span class="avatar avatar-lg">
+									<img alt="avatar" src="{{ asset('assetsback/images/avatar/avatar-3.jpg') }}" class="rounded-circle">
+								</span>
+								<!-- avatar -->
+								<span class="avatar avatar-lg">
+									<img alt="avatar" src="{{ asset('assetsback/images/avatar/avatar-4.jpg') }}" class="rounded-circle">
+								</span>
+								<!-- avatar -->
+								<span class="avatar avatar-lg avatar-danger">
+									<span class="avatar-initials rounded-circle fs-5 fw-bold">1M+</span>
+								</span>
+							</div>
+						</div>
+						<!-- heading -->
+						<div class="col-lg-4 col-md-5 col-12 mb-6">
+							<h1 class="display-3 fw-bold">Devenez artiste sur Artium</h1>
+						</div>
+						<div
+							class="offset-lg-1 col-lg-6 col-md-7 col-12 mb-6">
+							<!-- para -->
+							<p class="lead mb-0">Partagez vos créations, touchez une nouvelle audience et développez votre visibilité grâce à notre communauté culturelle.</p>
+						</div>
+					</div>
+					<!-- row -->
+					<div class="row">
+						<div
+							class="col-lg-4 col-md-4 col-12 mb-3">
+							<!-- text -->
+							<h3 class="fw-semibold mb-2">Monétisez vos œuvres</h3>
+							<p class="fs-4 mb-0">Vendez ou mettez en avant vos créations, recevez des contributions et développez votre activité artistique.</p>
+						</div>
+						<div
+							class="col-lg-4 col-md-4 col-12 mb-3">
+							<!-- text -->
+							<h3 class="fw-semibold mb-2">Inspirez le public</h3>
+							<p class="fs-4 mb-0">Partagez votre démarche artistique et touchez des amateurs, collectionneurs et professionnels.</p>
+						</div>
+						<div
+							class="col-lg-4 col-md-4 col-12 mb-3">
+							<!-- text -->
+							<h3 class="fw-semibold mb-2">Rejoignez la communauté</h3>
+							<p class="fs-4 mb-0">Bénéficiez d’un réseau d’artistes et de ressources pour promouvoir et développer vos projets.</p>
+						</div>
+						<!-- btn -->
+						<div class="col-md-12 mt-3">
+							<a href="#" class="btn btn-primary">Publier mes œuvres</a>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+	<!-- Avis -->
+	<section class="py-8" id="avis">
+		<div class="container">
+			<div class="row justify-content-center">
+				<div class="col-lg-8 col-md-12 col-12 text-center">
+					<div
+						class="mb-8">
+						<!-- caption -->
+						<span class="text-primary mb-3 d-block text-uppercase fw-semibold ls-xl">Avis</span>
+						<h2 class="mb-2 display-4 fw-bold">Ils parlent d’Artium</h2>
+						<p class="lead mb-0">Des milliers de passionnés et de professionnels nous font déjà confiance.</p>
+					</div>
+				</div>
+			</div>
+			<!-- row -->
+			<div
+				class="row mb-8">
+				<!-- col -->
+				<div class="col-md-12">
+					<div class="position-relative">
+						<!-- controls -->
+
+						<!-- slider -->
+							<div class="sliderTestimonial"> <div
+								class="item">
+								<!-- card -->
+								<div
+									class="card border shadow-none">
+									<!-- card body -->
+									<div class="card-body p-5">
+										<div class="mb-2">
+											<span class="align-text-top">
+												<span class="fs-6">
+													<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" class="bi bi-star-fill text-warning" viewbox="0 0 16 16">
+														<path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"></path>
+													</svg>
+													<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" class="bi bi-star-fill text-warning" viewbox="0 0 16 16">
+														<path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"></path>
+													</svg>
+													<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" class="bi bi-star-fill text-warning" viewbox="0 0 16 16">
+														<path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"></path>
+													</svg>
+													<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" class="bi bi-star-fill text-warning" viewbox="0 0 16 16">
+														<path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"></path>
+													</svg>
+													<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" class="bi bi-star-fill text-warning" viewbox="0 0 16 16">
+														<path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"></path>
+													</svg>
+												</span>
+											</span>
+										</div>
+										<!-- para -->
+										<p class="lead text-dark font-italic fw-medium mb-0">
+											"I started at stage zero. With Geeks I was able to start learning online and eventually build up enough knowledge and skills to transition into a
+											                                                well-paying career."
+										</p>
+									</div>
+									<!-- card footer -->
+									<div class="card-footer px-5 py-4">
+										<div class="d-flex align-items-center">
+											<img src="{{ asset('assetsback/images/avatar/avatar-1.jpg') }}" alt="avatar" class="avatar avatar-md rounded-circle">
+											<div class="ms-3">
+												<h4 class="mb-0">Barry Watson</h4>
+												<p class="mb-0 small">Web Developer,UK</p>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div
+								class="item">
+								<!-- card -->
+								<div
+									class="card border shadow-none">
+									<!-- card body -->
+									<div class="card-body p-5">
+										<div class="mb-2">
+											<span class="align-text-top">
+												<span class="fs-6">
+													<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" class="bi bi-star-fill text-warning" viewbox="0 0 16 16">
+														<path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"></path>
+													</svg>
+													<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" class="bi bi-star-fill text-warning" viewbox="0 0 16 16">
+														<path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"></path>
+													</svg>
+													<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" class="bi bi-star-fill text-warning" viewbox="0 0 16 16">
+														<path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"></path>
+													</svg>
+													<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" class="bi bi-star-fill text-warning" viewbox="0 0 16 16">
+														<path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"></path>
+													</svg>
+													<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" class="bi bi-star-fill text-warning" viewbox="0 0 16 16">
+														<path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"></path>
+													</svg>
+												</span>
+											</span>
+										</div>
+										<!-- para -->
+										<p class="lead text-dark font-italic fw-medium mb-0">
+											"Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Etiam vulputate euismod justo in consequat. Sed tempus elementum
+											                                                urnanisl et lacus. "
+										</p>
+									</div>
+									<!-- card footer -->
+									<div class="card-footer px-5 py-4">
+										<div
+											class="d-flex align-items-center">
+											<!-- img -->
+											<img src="{{ asset('assetsback/images/avatar/avatar-2.jpg') }}" alt="avatar" class="avatar avatar-md rounded-circle">
+											<div class="ms-3">
+												<h4 class="mb-0">Linda Shenoy</h4>
+												<p class="mb-0 small">Developer and Bootcamp Instructor</p>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div
+								class="item">
+								<!-- card -->
+								<div
+									class="card border shadow-none">
+									<!-- card body -->
+									<div class="card-body p-5">
+										<div class="mb-2">
+											<span class="align-text-top">
+												<span class="fs-6">
+													<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" class="bi bi-star-fill text-warning" viewbox="0 0 16 16">
+														<path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"></path>
+													</svg>
+													<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" class="bi bi-star-fill text-warning" viewbox="0 0 16 16">
+														<path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"></path>
+													</svg>
+													<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" class="bi bi-star-fill text-warning" viewbox="0 0 16 16">
+														<path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"></path>
+													</svg>
+													<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" class="bi bi-star-fill text-warning" viewbox="0 0 16 16">
+														<path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"></path>
+													</svg>
+													<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" class="bi bi-star-fill text-warning" viewbox="0 0 16 16">
+														<path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"></path>
+													</svg>
+												</span>
+											</span>
+										</div>
+										<!-- para -->
+										<p class="lead text-dark font-italic fw-medium mb-0">
+											"Sed pretium risus magna, ac efficitur nunc rutrum imperdiet. Vivamus sed ante sed mi fermentum tempus. Nullam finibus augue eget felis efficitur
+											                                                semper."
+										</p>
+									</div>
+									<!-- card footer -->
+									<div class="card-footer px-5 py-4">
+										<div class="d-flex align-items-center">
+											<img src="{{ asset('assetsback/images/avatar/avatar-3.jpg') }}" alt="avatar" class="avatar avatar-md rounded-circle">
+											<div class="ms-3">
+												<h4 class="mb-0">Jean Watson</h4>
+												<p class="mb-0 small">Engineering Architect</p>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div
+								class="item">
+								<!-- card -->
+								<div
+									class="card border shadow-none">
+									<!-- card body -->
+									<div class="card-body p-5">
+										<div class="mb-2">
+											<span class="align-text-top">
+												<span class="fs-6">
+													<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" class="bi bi-star-fill text-warning" viewbox="0 0 16 16">
+														<path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"></path>
+													</svg>
+													<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" class="bi bi-star-fill text-warning" viewbox="0 0 16 16">
+														<path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"></path>
+													</svg>
+													<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" class="bi bi-star-fill text-warning" viewbox="0 0 16 16">
+														<path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"></path>
+													</svg>
+													<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" class="bi bi-star-fill text-warning" viewbox="0 0 16 16">
+														<path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"></path>
+													</svg>
+													<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" class="bi bi-star-fill text-warning" viewbox="0 0 16 16">
+														<path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"></path>
+													</svg>
+												</span>
+											</span>
+										</div>
+										<!-- para -->
+										<p class="lead text-dark font-italic fw-medium mb-0">
+											"Morbi quis posuere lacus. Morbi et metus sit amet tellus dapibus aliquam. Morbi consectetur magna vel turpis lobortis lorem iopsum dolor sit commodo."
+										</p>
+									</div>
+									<!-- card footer -->
+									<div class="card-footer px-5 py-4">
+										<div class="d-flex align-items-center">
+											<img src="{{ asset('assetsback/images/avatar/avatar-4.jpg') }}" alt="avatar" class="avatar avatar-md rounded-circle">
+											<div class="ms-3">
+												<h4 class="mb-0">John Deo</h4>
+												<p class="mb-0 small">Web Developer,UK</p>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div
+								class="item">
+								<!-- card -->
+								<div
+									class="card border shadow-none">
+									<!-- card body -->
+									<div class="card-body p-5">
+										<div class="mb-2">
+											<span class="align-text-top">
+												<span class="fs-6">
+													<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" class="bi bi-star-fill text-warning" viewbox="0 0 16 16">
+														<path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"></path>
+													</svg>
+													<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" class="bi bi-star-fill text-warning" viewbox="0 0 16 16">
+														<path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"></path>
+													</svg>
+													<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" class="bi bi-star-fill text-warning" viewbox="0 0 16 16">
+														<path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"></path>
+													</svg>
+													<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" class="bi bi-star-fill text-warning" viewbox="0 0 16 16">
+														<path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"></path>
+													</svg>
+													<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" class="bi bi-star-fill text-warning" viewbox="0 0 16 16">
+														<path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"></path>
+													</svg>
+												</span>
+											</span>
+										</div>
+										<!-- para -->
+										<p class="lead text-dark font-italic fw-medium mb-0">
+											" Curabitur sollicitudin mi et sagittis egestas. Curabitur pellentesque nibh id enim hendrerit, at mollis neque rutrum. Sed nibh velit, tristique et
+											                                                dolor vitae."
+										</p>
+									</div>
+									<!-- card footer -->
+									<div class="card-footer px-5 py-4">
+										<div class="d-flex align-items-center">
+											<img src="{{ asset('assetsback/images/avatar/avatar-5.jpg') }}" alt="avatar" class="avatar avatar-md rounded-circle">
+											<div class="ms-3">
+												<h4 class="mb-0">Rubik Nanda</h4>
+												<p class="mb-0 small">Web Developer,UK</p>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div
+								class="item">
+								<!-- card -->
+								<div
+									class="card border shadow-none">
+									<!-- card body -->
+									<div class="card-body p-5">
+										<div class="mb-2">
+											<span class="align-text-top">
+												<span class="fs-6">
+													<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" class="bi bi-star-fill text-warning" viewbox="0 0 16 16">
+														<path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"></path>
+													</svg>
+													<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" class="bi bi-star-fill text-warning" viewbox="0 0 16 16">
+														<path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"></path>
+													</svg>
+													<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" class="bi bi-star-fill text-warning" viewbox="0 0 16 16">
+														<path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"></path>
+													</svg>
+													<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" class="bi bi-star-fill text-warning" viewbox="0 0 16 16">
+														<path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"></path>
+													</svg>
+													<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" class="bi bi-star-fill text-warning" viewbox="0 0 16 16">
+														<path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"></path>
+													</svg>
+												</span>
+											</span>
+										</div>
+										<!-- para -->
+										<p class="lead text-dark font-italic fw-medium mb-0">
+											"Vestibulum in lobortis purus. Quisque sem turpis, hendrerit quis lacinia nec, rutrum nec velit. Nullam lobortis rhoncus tincidunt lorem ispun dnascetur
+											                                                ridiculus mus. "
+										</p>
+									</div>
+									<!-- card footer -->
+									<div class="card-footer px-5 py-4">
+										<div class="d-flex align-items-center">
+											<img src="{{ asset('assetsback/images/avatar/avatar-6.jpg') }}" alt="avatar" class="avatar avatar-md rounded-circle">
+											<div class="ms-3">
+												<h4 class="mb-0">Barry Watson</h4>
+												<p class="mb-0 small">Web Developer,UK</p>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div
+								class="item">
+								<!-- card -->
+								<div
+									class="card border shadow-none">
+									<!-- card body -->
+									<div class="card-body p-5">
+										<div class="mb-2">
+											<span class="align-text-top">
+												<span class="fs-6">
+													<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" class="bi bi-star-fill text-warning" viewbox="0 0 16 16">
+														<path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"></path>
+													</svg>
+													<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" class="bi bi-star-fill text-warning" viewbox="0 0 16 16">
+														<path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"></path>
+													</svg>
+													<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" class="bi bi-star-fill text-warning" viewbox="0 0 16 16">
+														<path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"></path>
+													</svg>
+													<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" class="bi bi-star-fill text-warning" viewbox="0 0 16 16">
+														<path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"></path>
+													</svg>
+													<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" class="bi bi-star-fill text-warning" viewbox="0 0 16 16">
+														<path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"></path>
+													</svg>
+												</span>
+											</span>
+										</div>
+										<!-- para -->
+										<p class="lead text-dark font-italic fw-medium mb-0">
+											"Praesent sit amet ornare magna, vitae consequat arcu. Vestibulum at dictum erat, a fringilla ante. Nam et nibh ut nunc rutrum suscipit quis non neque.
+											                                                Nulla facilisi."
+										</p>
+									</div>
+									<div class="card-footer px-5 py-4">
+										<div class="d-flex align-items-center">
+											<img src="{{ asset('assetsback/images/avatar/avatar-7.jpg') }}" alt="avatar" class="avatar avatar-md rounded-circle">
+											<div class="ms-3">
+												<h4 class="mb-0">Barry Watson</h4>
+												<p class="mb-0 small">Web Developer,UK</p>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div
+								class="item">
+								<!-- card -->
+								<div
+									class="card border shadow-none">
+									<!-- card body -->
+									<div class="card-body p-5">
+										<div class="mb-2">
+											<span class="align-text-top">
+												<span class="fs-6">
+													<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" class="bi bi-star-fill text-warning" viewbox="0 0 16 16">
+														<path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"></path>
+													</svg>
+													<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" class="bi bi-star-fill text-warning" viewbox="0 0 16 16">
+														<path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"></path>
+													</svg>
+													<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" class="bi bi-star-fill text-warning" viewbox="0 0 16 16">
+														<path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"></path>
+													</svg>
+													<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" class="bi bi-star-fill text-warning" viewbox="0 0 16 16">
+														<path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"></path>
+													</svg>
+													<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" class="bi bi-star-fill text-warning" viewbox="0 0 16 16">
+														<path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"></path>
+													</svg>
+												</span>
+											</span>
+										</div>
+										<!-- para -->
+										<p class="lead text-dark font-italic fw-medium mb-0">
+											"Sed pretium risus magna, ac efficitur nunc rutrum imperdiet. Vivamus sed ante sed mi fermentum tempus. Nullam finibus augue eget felis efficitur
+											                                                semper."
+										</p>
+									</div>
+									<!-- card footer -->
+									<div class="card-footer px-5 py-4">
+										<div class="d-flex align-items-center">
+											<img src="{{ asset('assetsback/images/avatar/avatar-3.jpg') }}" alt="avatar" class="avatar avatar-md rounded-circle">
+											<div class="ms-3">
+												<h4 class="mb-0">Jean Watson</h4>
+												<p class="mb-0 small">Engineering Architect</p>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<ul class="controls-testimonial controls" id="sliderTestimonialControls">
+							<li class="prev me-md-1">
+								<i class="fe fe-chevron-left"></i>
+							</li>
+							<li class="next ms-md-1">
+								<i class="fe fe-chevron-right"></i>
+							</li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<!-- footer -->
+	<footer class="pt-lg-8 pt-5 footer bg-white">
+		<div class="container mt-lg-2">
+			<div class="row">
+				<div
+					class="col-lg-4 col-md-6 col-12">
+					<!-- about company -->
+					<div class="mb-4">
+						<img src="{{ asset('assetsback/images/logo2.png') }}" class="logo logo-light">
+						<img src="{{ asset('assetsback/images/Porcelain PNG Logo.png') }}" class="logo logo-dark">
+						<div class="mt-4">
+							<p>Artium rapproche les passionnés de l’art et de la culture, offrant une expérience immersive pour découvrir des artistes et explorer le monde artistique.</p>
+							<!-- social media -->
+							<div
+								class="fs-4 mt-4">
+
+								<!--Github-->
+								<a href="https://github.com/RouaZribi203/ARTIUM.git" class="me-2">
+									<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-github" viewbox="0 0 16 16">
+										<path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38
+										                 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52
+										                 -.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2
+										                 -3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82a7.65 7.65
+										                 0 012-.27c.68.003 1.36.092 2 .27 1.53-1.03 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82
+										                 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013
+										                 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/>
+									</svg>
+								</a>
+
+								<!--Instagram-->
+								<a href="https://www.instagram.com/_artium_/">
+									<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-instagram" viewbox="0 0 16 16">
+										<path d="M8 0C5.829 0 5.556.01 4.703.048 3.85.088 3.269.222 2.76.42a3.917 3.917 0 0 0-1.417.923A3.927 3.927 0 0 0 .42 2.76C.222 3.268.087 3.85.048 4.7.01 5.555 0 5.827 0 8.001c0 2.172.01 2.444.048 3.297.04.852.174 1.433.372 1.942.205.526.478.972.923 1.417.444.445.89.719 1.416.923.51.198 1.09.333 1.942.372C5.555 15.99 5.827 16 8 16s2.444-.01 3.298-.048c.851-.04 1.434-.174 1.943-.372a3.916 3.916 0 0 0 1.416-.923c.445-.445.718-.891.923-1.417.197-.509.332-1.09.372-1.942C15.99 10.445 16 10.173 16 8s-.01-2.445-.048-3.299c-.04-.851-.175-1.433-.372-1.941a3.926 3.926 0 0 0-.923-1.417A3.911 3.911 0 0 0 13.24.42c-.51-.198-1.092-.333-1.943-.372C10.443.01 10.172 0 7.998 0h.003zm-.717 1.442h.718c2.136 0 2.389.007 3.232.046.78.035 1.204.166 1.486.275.373.145.64.319.92.599.28.28.453.546.598.92.11.281.24.705.275 1.485.039.843.047 1.096.047 3.231s-.008 2.389-.047 3.232c-.035.78-.166 1.203-.275 1.485a2.47 2.47 0 0 1-.599.919c-.28.28-.546.453-.92.598-.28.11-.704.24-1.485.276-.843.038-1.096.047-3.232.047s-2.39-.009-3.233-.047c-.78-.036-1.203-.166-1.485-.276a2.478 2.478 0 0 1-.92-.598 2.48 2.48 0 0 1-.6-.92c-.109-.281-.24-.705-.275-1.485-.038-.843-.046-1.096-.046-3.233 0-2.136.008-2.388.046-3.231.036-.78.166-1.204.276-1.486.145-.373.319-.64.599-.92.28-.28.546-.453.92-.598.282-.11.705-.24 1.485-.276.738-.034 1.024-.044 2.515-.045v.002zm4.988 1.328a.96.96 0 1 0 0 1.92.96.96 0 0 0 0-1.92zm-4.27 1.122a4.109 4.109 0 1 0 0 8.217 4.109 4.109 0 0 0 0-8.217zm0 1.441a2.667 2.667 0 1 1 0 5.334 2.667 2.667 0 0 1 0-5.334z"/>
+									</svg>
+								</a>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="offset-lg-1 col-lg-2 col-md-3 col-6">
+					<div
+						class="mb-4">
+						<!-- list -->
+						<h3 class="fw-bold mb-3">Artium</h3>
+						<ul class="list-unstyled nav nav-footer flex-column nav-x-0">
+							<li>
+								<a href="#pourquoi" class="nav-link">A Propos</a>
+							</li>
+							<li>
+								<a href="#" class="nav-link">Oeuvres</a>
+							</li>
+							<li>
+								<a href="#" class="nav-link">Blog</a>
+							</li>
+							<li>
+								<a href="#" class="nav-link">Artistes</a>
+							</li>
+							<li>
+								<a href="#" class="nav-link">Contact</a>
+							</li>
+						</ul>
+					</div>
+				</div>
+				<div class="col-lg-2 col-md-3 col-6">
+					<div
+						class="mb-4">
+						<!-- list -->
+						<h3 class="fw-bold mb-3">Support</h3>
+						<ul class="list-unstyled nav nav-footer flex-column nav-x-0">
+							<li>
+								<a href="#" class="nav-link">Aide et Support</a>
+							</li>
+							<li>
+								<a href="#join" class="nav-link">Devenir Artiste</a>
+							</li>
+							<li>
+								<a href="#" class="nav-link">Télécharger l'application</a>
+							</li>
+							<li>
+								<a href="#" class="nav-link">FAQ’s</a>
+							</li>
+							<li>
+								<a href="#" class="nav-link">Tutoriel</a>
+							</li>
+						</ul>
+					</div>
+				</div>
+				<div
+					class="col-lg-3 col-md-12">
+					<!-- contact info -->
+					<div class="mb-4">
+						<h3 class="fw-bold mb-3">Contactez-nous</h3>
+						<p>1, 2 rue André Ampère - 2083 - Pôle Technologique - El Ghazala.</p>
+						<p class="mb-1">
+							Email:
+							<a>Contact@Artium.tn</a>
+						</p>
+						<p>
+							<br>
+							Téléphone:
+							<span class="text-dark fw-semibold">(+216) 56 789 022</span>
+						</p>
+					</div>
+				</div>
+			</div>
+			<div
+				class="row align-items-center g-0 border-top py-2 mt-6">
+				<!-- Desc -->
+				<div class="col-lg-4 col-md-5 col-12">
+					<span>
+						©
+						<span id="copyright2">
+							<script>
+								document.getElementById("copyright2").appendChild(document.createTextNode(new Date().getFullYear()));
+							</script>
+						</span>
+						Artium, Tous droits réservés.
+					</span>
+				</div>
+
+				<!-- Links -->
+				<div class="col-12 col-md-7 col-lg-8 d-md-flex justify-content-end">
+					<nav class="nav nav-footer">
+						<a class="nav-link ps-0" href="#">Politiques de confidentialité</a>
+						<a class="nav-link px-2 px-md-3" href="#">Cookies</a>
+
+						<a class="nav-link" href="#">Conditions d'utilisation</a>
+					</nav>
+				</div>
+			</div>
+		</div>
+	</footer>
+
+	<!-- Scroll top -->
+	<div class="btn-scroll-top">
+		<svg class="progress-square svg-content" width="100%" height="100%" viewbox="0 0 40 40">
+			<path d="M8 1H32C35.866 1 39 4.13401 39 8V32C39 35.866 35.866 39 32 39H8C4.13401 39 1 35.866 1 32V8C1 4.13401 4.13401 1 8 1Z"/>
+		</svg>
+	</div>
+
+        <!-- Backoffice Template Scripts -->
+            <script src="{{ asset('assetsback/libs/@popperjs/core/dist/umd/popper.min.js') }}"></script>
+            <script src="{{ asset('assetsback/libs/bootstrap/dist/js/bootstrap.min.js') }}"></script>
+            <script src="{{ asset('assetsback/libs/simplebar/dist/simplebar.min.js') }}"></script>
+
+            <script src="{{ asset('assetsback/libs/tiny-slider/dist/min/tiny-slider.js') }}"></script>
+            <script src="{{ asset('assetsback/libs/jsvectormap/dist/jsvectormap.min.js') }}"></script>
+            <script src="{{ asset('assetsback/libs/jsvectormap/dist/maps/world.js') }}"></script>
+            <script src="{{ asset('assetsback/libs/apexcharts/dist/apexcharts.min.js') }}"></script>
+            <script src="{{ asset('assetsback/js/vendors/chart.js') }}"></script>
+            <script src="{{ asset('assetsback/js/vendors/tnsSlider.js') }}"></script>
+            <script src="{{ asset('assetsback/js/vendors/tooltip.js') }}"></script>
+            <script src="{{ asset('assetsback/libs/flatpickr/dist/flatpickr.min.js') }}"></script>
+            <script src="{{ asset('assetsback/js/vendors/flatpickr.js') }}"></script>
+            <script src="{{ asset('assetsback/libs/typed.js/dist/typed.umd.js') }}"></script>
+            <script src="{{ asset('assetsback/js/vendors/typed.js') }}"></script>
+
+            <script src="{{ asset('assetsback/js/theme.min.js') }}"></script>
+            <script src="{{ asset('assetsback/js/vendors/validation.js') }}"></script>
+    </body>
+</html>

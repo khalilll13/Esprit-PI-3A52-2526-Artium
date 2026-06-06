@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Votre ticket ARTIUM</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f8f9fa;">
+    <!-- Wrapper principal -->
+    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="width: 100%; background: #f8f9fa;">
+        <tr>
+            <td style="padding: 20px;">
+                <!-- Container email -->
+                <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 40px rgba(102, 126, 234, 0.15);">
+                    
+                    <!-- HEADER avec logo -->
+                    <tr>
+                        <td style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 40px 20px; text-align: center;">
+                            <img src="cid:artium-logo" alt="ARTIUM" style="max-width: 140px; height: auto; display: block; margin: 0 auto 15px;">
+                            <p style="margin: 0; color: rgba(255, 255, 255, 0.9); font-size: 14px; letter-spacing: 1px;">Plateforme Artistique & Événementielle</p>
+                        </td>
+                    </tr>
+
+                    <!-- CONTENU PRINCIPAL -->
+                    <tr>
+                        <td style="padding: 40px 30px;">
+                            
+                            <!-- Salutation -->
+                            <h1 style="margin: 0 0 10px 0; font-size: 28px; color: #1a202c; font-weight: 600; text-align: center;">
+                                Ticket Disponible! ✨
+                            </h1>
+                            <p style="margin: 0 0 30px 0; text-align: center; color: #718096; font-size: 16px; line-height: 1.6;">
+                                Merci <strong>{{ user.prenom }}</strong>, votre ticket est prêt. Conservez-le précieusement!
+                            </p>
+
+                            <!-- DÉTAILS DE L'ÉVÉNEMENT -->
+                            <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin: 0 0 30px 0; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 10px; overflow: hidden;">
+                                <tr>
+                                    <td style="padding: 24px; color: #ffffff;">
+                                        <p style="margin: 0 0 16px 0; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; opacity: 0.85; font-weight: 600;">
+                                            Détails de votre événement
+                                        </p>
+                                        
+                                        <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin: 0;">
+                                            <tr>
+                                                <td style="padding: 10px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.2);">
+                                                    <p style="margin: 0 0 4px 0; font-size: 11px; opacity: 0.8;">📅 ÉVÉNEMENT</p>
+                                                    <p style="margin: 0; font-size: 16px; font-weight: 600;">{{ evenement.titre }}</p>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="padding: 10px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.2);">
+                                                    <p style="margin: 0 0 4px 0; font-size: 11px; opacity: 0.8;">🕐 DATE & HEURE</p>
+                                                    <p style="margin: 0; font-size: 16px; font-weight: 600;">{{ evenement.dateDebut ? evenement.dateDebut|date('d/m/Y H:i') : '-' }}</p>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="padding: 10px 0;">
+                                                    <p style="margin: 0 0 4px 0; font-size: 11px; opacity: 0.8;">🎟️ NUMÉRO DE TICKET</p>
+                                                    <p style="margin: 0; font-size: 16px; font-weight: 600;">ARTIUM-{{ ticket.id }}-2026</p>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <!-- INFORMATION IMPORTANTE -->
+                            <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin: 0 0 30px 0;">
+                                <tr>
+                                    <td style="background: #fef3c7; border-left: 4px solid #f59e0b; padding: 20px; border-radius: 6px;">
+                                        <p style="margin: 0; font-size: 14px; color: #92400e;">
+                                            <strong>⚠️ Important:</strong><br>
+                                            Présentez votre code QR à l'entrée. Une seule personne par ticket. Non transférable.
+                                        </p>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <!-- BUTTON CTA -->
+                            <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin: 0 0 30px 0; text-align: center;">
+                                <tr>
+                                    <td>
+                                        <a href="https://127.0.0.1:8000/signin" style="display: inline-block; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: #ffffff; padding: 14px 40px; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 14px;">
+                                            Accéder à mon compte
+                                        </a>
+                                    </td>
+                                </tr>
+                            </table>
+
+                        </td>
+                    </tr>
+
+                    <!-- FOOTER -->
+                    <tr>
+                        <td style="background: #f7fafc; padding: 30px 20px; text-align: center; border-top: 1px solid #e2e8f0;">
+                            <p style="margin: 0 0 12px 0; color: #2d3748; font-size: 14px; font-weight: 600;">
+                                Des questions?
+                            </p>
+                            <p style="margin: 0 0 16px 0; color: #718096; font-size: 13px;">
+                                Contactez notre équipe:<br>
+                                <a href="mailto:support@artium.tn" style="color: #667eea; text-decoration: none; font-weight: 600;">support@artium.tn</a>
+                            </p>
+                            <p style="margin: 0; color: #a0aec0; font-size: 11px; line-height: 1.6;">
+                                © 2026 <strong>ARTIUM</strong> - Tous droits réservés<br>
+                                Plateforme de découverte artistique
+                            </p>
+                        </td>
+                    </tr>
+
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>

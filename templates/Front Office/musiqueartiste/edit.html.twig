@@ -1,0 +1,133 @@
+{% extends 'base_artiste.html.twig' %}
+
+{% block title %}{{ 'Edit Music'|trans }}{% endblock %}
+
+{% block artiste_content %}
+<!-- Flash messages -->
+{% for message in app.flashes('success') %}
+  <div class="alert alert-success alert-dismissible fade show" role="alert">
+    {{ message }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+{% endfor %}
+
+{% for message in app.flashes('error') %}
+  <div class="alert alert-danger alert-dismissible fade show" role="alert">
+    {{ message }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+{% endfor %}
+
+<!-- Edit Music Form START -->
+<div class="card">
+  <div class="card-header border-0">
+    <div class="d-flex align-items-center justify-content-between">
+      <h1 class="h4 card-title mb-0">Edit Music</h1>
+      <a href="{{ path('app_musiqueartiste') }}" class="btn btn-sm btn-outline-primary">
+        <i class="bi bi-arrow-left pe-1"></i> Back to My Music
+      </a>
+    </div>
+  </div>
+  
+  <div class="card-body">
+    <div class="row">
+      <!-- Current Music Preview -->
+      <div class="col-lg-4 mb-4">
+        <div class="sticky-top" style="top: 100px;">
+          <h5 class="mb-3">Current Music</h5>
+          <div class="card">
+            <img class="img-fluid rounded-top" 
+                 src="{{ path('app_musiqueartiste_image', {'id': musique.id}) }}" 
+                 alt="{{ musique.titre }}">
+            <div class="card-body">
+              <h6>{{ musique.titre }}</h6>
+              <p class="small text-muted mb-2">{{ musique.description }}</p>
+              <span class="badge bg-primary">{{ musique.genre.value }}</span>
+              <p class="small mt-2 mb-0">
+                <i class="bi bi-calendar pe-1"></i> 
+                {{ musique.dateCreation|date('Y-m-d') }}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Edit Form -->
+      <div class="col-lg-8">
+        {{ form_start(form, {'attr': {'class': 'needs-validation', 'novalidate': 'novalidate', 'enctype': 'multipart/form-data'}}) }}
+        
+          <!-- Display form errors at the top -->
+          {% if form.vars.errors|length > 0 %}
+            <div class="alert alert-danger">
+              <strong>Please fix the following errors:</strong>
+              <ul class="mb-0 mt-2">
+                {% for error in form.vars.errors %}
+                  <li>{{ error.message }}</li>
+                {% endfor %}
+              </ul>
+            </div>
+          {% endif %}
+
+          <!-- Title -->
+          <div class="mb-3">
+            {{ form_label(form.titre, null, {'label_attr': {'class': 'form-label'}}) }}
+            <span class="text-danger">*</span>
+            {{ form_widget(form.titre, {'attr': {'class': 'form-control'}}) }}
+            {{ form_errors(form.titre) }}
+          </div>
+
+          <!-- Description -->
+          <div class="mb-3">
+            {{ form_label(form.description, null, {'label_attr': {'class': 'form-label'}}) }}
+            <span class="text-danger">*</span>
+            {{ form_widget(form.description, {'attr': {'class': 'form-control', 'rows': '4'}}) }}
+            {{ form_errors(form.description) }}
+          </div>
+
+          <!-- Genre -->
+          <div class="mb-3">
+            {{ form_label(form.genre, null, {'label_attr': {'class': 'form-label'}}) }}
+            <span class="text-danger">*</span>
+            {{ form_widget(form.genre, {'attr': {'class': 'form-select'}}) }}
+            {{ form_errors(form.genre) }}
+          </div>
+
+          <hr class="my-4">
+
+          <!-- Cover Image -->
+          <div class="mb-3">
+            <h5 class="mb-3">{{ form_label(form.imageFile, 'Update Cover Image (optional)', {'label_attr': {'class': 'form-label'}}) }}</h5>
+            <div class="icon-shape icon-xxl border rounded position-relative">
+              <span class="position-absolute"><i class="bi bi-image fs-3"></i></span>
+              {{ form_widget(form.imageFile, {'attr': {'class': 'form-control border-0 opacity-0'}, 'required': false}) }}
+            </div>
+            {{ form_errors(form.imageFile) }}
+            <small class="text-muted d-block mt-2">Leave empty to keep current image. Max 5MB (JPEG, PNG)</small>
+          </div>
+
+          <!-- Audio File -->
+          <div class="mb-4">
+            <h5 class="mb-3">{{ form_label(form.audioFile, 'Update Audio File (optional)', {'label_attr': {'class': 'form-label'}}) }}</h5>
+            <div class="icon-shape icon-xxl border rounded position-relative">
+              <span class="position-absolute"><i class="bi bi-music-note-beamed fs-3"></i></span>
+              {{ form_widget(form.audioFile, {'attr': {'class': 'form-control border-0 opacity-0'}, 'required': false}) }}
+            </div>
+            {{ form_errors(form.audioFile) }}
+            <small class="text-muted d-block mt-2">Leave empty to keep current audio. MP3, WAV, AAC, OPUS, OGG, FLAC, M4A</small>
+          </div>
+
+          <!-- Buttons -->
+          <div class="d-flex gap-2">
+            <button class="btn btn-primary" type="submit">
+              <i class="bi bi-check-circle pe-2"></i>Update Music
+            </button>
+            <a href="{{ path('app_musiqueartiste') }}" class="btn btn-outline-secondary">Cancel</a>
+          </div>
+
+        {{ form_end(form) }}
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Edit Music Form END -->
+{% endblock %}

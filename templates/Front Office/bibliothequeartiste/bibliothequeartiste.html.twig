@@ -1,0 +1,843 @@
+{% extends 'base_artiste.html.twig' %}
+
+{% block title %}{{ 'Bibliothèque'|trans }}{% endblock %}
+
+{% block artiste_content %}
+<!-- Share feed START -->
+          
+          <!-- Share feed END -->
+
+          <!-- Artist Bibliothèque (static UI) START -->
+          <div class="card mb-4">
+            <div class="card-body">
+              <div class="d-flex align-items-center justify-content-between mb-3">
+                <h4 class="mb-0">Ma Bibliothèque</h4>
+                <button class="btn btn-success" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasAddLivreFront" aria-controls="offcanvasAddLivreFront">Ajouter un Livre</button>
+              </div>
+
+              <div class="row g-3">
+                {# Render actual livres for the current user if available, otherwise fallback to placeholders #}
+                {% if livres is defined and livres|length > 0 %}
+                  {% for livre in livres %}
+                    {% set stats = livreStats[livre.id] ?? {} %}
+                    <div class="col-12 col-sm-6 col-md-4">
+                      <div class="card h-100 shadow-sm border-0 rounded-3 position-relative">
+                        <div class="card-body d-flex flex-column p-3">
+                          <div style="position:absolute;top:8px;right:8px;z-index:5;">
+                            <div class="dropdown">
+                              <a href="#" class="text-muted" id="cardAction{{ livre.id }}" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi bi-three-dots-vertical"></i></a>
+                              <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="cardAction{{ livre.id }}">
+                                <li>
+                                    <a class="dropdown-item js-show-details" href="#"
+                                     data-id="{{ livre.id }}"
+                                     data-titre="{{ livre.titre|e('html_attr') }}"
+                                     data-date-creation="{{ livre.dateCreation ? livre.dateCreation|date('Y-m-d H:i:s') : '' }}"
+                                     data-description="{{ livre.description|e('html_attr') }}"
+                                     data-pdf-url="{{ livre.fichierPdf and (livre.fichierPdf starts with 'http://') ? livre.fichierPdf|e('html_attr') : (livre.fichierPdf and (livre.fichierPdf starts with 'https://') ? livre.fichierPdf|e('html_attr') : (livre.id ? path('livre_pdf', {'id': livre.id})|e('html_attr') : '')) }}"
+                                     data-image="{{ livre.image and (livre.image starts with 'http://') ? livre.image|e('html_attr') : (livre.image and (livre.image starts with 'https://') ? livre.image|e('html_attr') : (livre.id ? path('livre_image', {'id': livre.id})|e('html_attr') : '')) }}"
+                                     data-active-id="{{ stats.activeId is defined ? stats.activeId : '' }}"
+                                     data-active-date="{{ stats.activeDate is defined ? stats.activeDate : '' }}"
+                                     data-location-count="{{ stats.count is defined ? stats.count : 0 }}"
+                                     data-total-revenue="{{ stats.total is defined ? '%.2f'|format(stats.total) : '0.00' }}"
+                                     data-active-user="{{ stats.activeUserId is defined ? stats.activeUserId : '' }}"
+                                     data-current-user="{{ app.user ? app.user.id : '' }}"
+                                     data-nombre-jours="{{ stats.activeDays is defined ? stats.activeDays : '' }}"
+                                     data-prix="{{ livre.prixLocation is not null ? livre.prixLocation : '' }}">
+                                    Détails
+                                  </a>
+                                </li>
+                                    <li><a class="dropdown-item js-edit-livre" href="#"
+                                      data-id="{{ livre.id }}"
+                                      data-edit-url-template="{{ path('artiste_livre_edit', {'id': 0}) }}"
+                                      data-titre="{{ livre.titre|e('html_attr') }}"
+                                      data-description="{{ livre.description|e('html_attr') }}"
+                                      data-categorie="{{ livre.categorie|e('html_attr') }}"
+                                      data-prix="{{ livre.prixLocation is not null ? livre.prixLocation : '' }}"
+                                      data-collection="{{ livre.collection ? livre.collection.id : '' }}">Modifier</a></li>
+                                <li><a class="dropdown-item text-danger js-delete-livre" href="#"
+                                     data-id="{{ livre.id }}"
+                                     data-delete-url-template="{{ path('artiste_livre_delete', {'id': 0}) }}"
+                                  >Supprimer</a></li>
+                              </ul>
+                            </div>
+                          </div>
+
+                          <div class="d-flex flex-column align-items-center text-center">
+                            <img src="{{ livre.image and (livre.image starts with 'http://') ? livre.image : (livre.image and (livre.image starts with 'https://') ? livre.image : (livre.id ? path('livre_image', {'id': livre.id}) : asset('assetsfront/images/post/3by2/01.jpg'))) }}" alt="Couverture {{ livre.titre }}" class="rounded mb-3" style="width:140px;height:200px;object-fit:cover;">
+                            <h5 class="mb-1 fw-semibold">{{ livre.titre }}</h5>
+                            <div class="mb-2 text-muted">Catégorie: <span class="fw-medium text-dark">{{ livre.categorie }}</span></div>
+                            <div class="mb-2"><strong class="text-primary">{{ livre.prixLocation is not null ? livre.prixLocation ~ ' €' : '-' }}</strong> <small class="text-muted">/ jour</small></div>
+                            <div class="mb-2">
+                              {% set expiration = null %}
+
+                              {% if stats.activeDate is defined
+                               and stats.activeDate
+                               and stats.activeDays is defined
+                               and stats.activeDays|trim != ''
+                              %}
+                                {% set expiration =
+                                  (stats.activeDate|date)
+                                  |date_modify('+' ~ stats.activeDays ~ ' days')
+                                %}
+                              {% endif %}
+
+                              {% set today = "now"|date("Y-m-d") %}
+                              {% set expirationDateOnly =
+                                expiration ? expiration|date("Y-m-d") : null
+                              %}
+
+                              {% set isActive =
+                                expirationDateOnly
+                                and expirationDateOnly >= today
+                              %}
+
+                              <span class="badge {{ isActive ? 'bg-success' : 'bg-secondary' }}">
+                                {{ isActive ? 'Loué' : 'Non loué' }}
+                              </span>
+                            </div>
+                            <div class="text-muted small">Collection: <span class="text-dark">{{ livre.collection ? livre.collection.titre : '-' }}</span></div>
+                          </div>
+
+                        </div>
+                      </div>
+                    </div>
+                  {% endfor %}
+                {% else %}
+                  {# fallback static placeholders when no livres found #}
+                  {% for i in 1..6 %}
+                    <div class="col-12 col-sm-6 col-md-4">
+                      <div class="card h-100 shadow-sm border-0 rounded-3 position-relative">
+                        <div class="card-body d-flex flex-column p-3">
+                          <div style="position:absolute;top:8px;right:8px;z-index:5;">
+                            <div class="dropdown">
+                              <a href="#" class="text-muted" id="cardAction{{ i }}" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi bi-three-dots-vertical"></i></a>
+                              <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="cardAction{{ i }}">
+                                <li>
+                                    <a class="dropdown-item js-show-details" href="#"
+                                     data-id="{{ i }}"
+                                     data-titre="Titre du livre {{ i }}"
+                                     data-date-creation="--/--/----"
+                                     data-description="Ceci est une description statique du livre {{ i }}. Plus de détails à venir lorsque le CRUD sera disponible."
+                                     data-pdf-url=""
+                                     data-image="{{ asset('assetsfront/images/post/3by2/0' ~ (((i - 1) % 3) + 1) ~ '.jpg') }}"
+                                     data-active-id=""
+                                     data-active-date=""
+                                     data-location-count="{{ 2 * i }}"
+                                     data-total-revenue="{{ '%.2f'|format((2 * i) * (6 + i)) }}"
+                                     data-active-user=""
+                                     data-current-user="{{ app.user ? app.user.id : '' }}">
+                                    Détails
+                                  </a>
+                                </li>
+                                <li><a class="dropdown-item" href="#">Modifier</a></li>
+                                <li><a class="dropdown-item text-danger" href="#">Supprimer</a></li>
+                              </ul>
+                            </div>
+                          </div>
+
+                          <div class="d-flex flex-column align-items-center text-center">
+                            <img src="{{ asset('assetsfront/images/post/3by2/0' ~ (((i - 1) % 3) + 1) ~ '.jpg') }}" alt="Couverture livre {{ i }}" class="rounded mb-3" style="width:140px;height:200px;object-fit:cover;">
+                            <h5 class="mb-1 fw-semibold">Titre du livre {{ i }}</h5>
+                            <div class="mb-2 text-muted">Catégorie: <span class="fw-medium text-dark">Roman</span></div>
+                            <div class="mb-2"><strong class="text-primary">{{ (6 + i) }} €</strong> <small class="text-muted">/ jour</small></div>
+                            <div class="mb-2">
+                              <span class="badge {{ (i % 2) == 0 ? 'bg-success' : 'bg-secondary' }}">{{ (i % 2) == 0 ? 'Loué' : 'Non loué' }}</span>
+                            </div>
+                            <div class="text-muted small">Collection: <span class="text-dark">Collection {{ i }}</span></div>
+                          </div>
+
+                        </div>
+                      </div>
+                    </div>
+                  {% endfor %}
+                {% endif %}
+              </div>
+            </div>
+          </div>
+          <!-- Artist Bibliothèque (static UI) END -->
+ 
+          <!-- Book Details Modal (admin-style, static) -->
+          <!-- Offcanvas: Ajouter Livre (static front UI) -->
+          <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasAddLivreFront" aria-labelledby="offcanvasAddLivreFrontLabel">
+            <div class="offcanvas-header">
+              <h5 id="offcanvasAddLivreFrontLabel">Ajouter Livre</h5>
+              <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+            </div>
+            <div class="offcanvas-body">
+              <form id="addLivreFormFront" class="needs-validation" novalidate method="post" action="{{ path('artiste_livre_create') }}" enctype="multipart/form-data">
+                <div class="d-flex justify-content-end mb-3">
+                  <button type="button" id="generateAiBtn" class="btn btn-primary">
+                    ✨ Générer automatiquement
+                  </button>
+                </div>
+                <!-- Alert Container -->
+                <div id="aiAlertContainer"></div>
+                <div class="mb-3">
+                  <label class="form-label">Titre</label>
+                  <input type="text" class="form-control" name="titre" placeholder="Titre du livre" required minlength="2" maxlength="255">
+                  <div class="invalid-feedback">
+                  Le titre est obligatoire (2 à 255 caractères).
+                  </div>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Description</label>
+                  <textarea class="form-control"
+                      name="description"
+                      rows="3"
+                      required
+                      minlength="1"
+                      maxlength="500"></textarea>
+                  <div class="invalid-feedback">
+                    La description doit contenir entre 1 et 500 caractères.
+                  </div>
+
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Image (aperçu)</label>
+                  <input type="file" class="form-control" name="image" accept="image/*" required>
+                  <div class="invalid-feedback">
+                    Veuillez ajouter une image du livre.
+                  </div>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Fichier PDF</label>
+                  <input type="file" class="form-control" name="fichier_pdf" accept="application/pdf" required>
+                  <div class="invalid-feedback">
+                    Veuillez ajouter le fichier PDF du livre.
+                  </div>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Catégorie</label>
+                  <input type="text"
+                    class="form-control"
+                    name="categorie"
+                    placeholder="Catégorie"
+                    required>
+                  <div class="invalid-feedback">
+                    La catégorie est obligatoire.
+                  </div>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Prix location</label>
+                  <input type="text"
+                    class="form-control"
+                    name="prix_location"
+                    placeholder="Prix"
+                    required
+                    pattern="^\d+(\.\d{1,2})?$">
+                  <div class="invalid-feedback">
+                    Le prix doit être un nombre valide (ex: 10 ou 10.50).
+                  </div>
+
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Collection</label>
+                  <select name="collection" class="form-select" required>
+                    <option value="">Choisir une collection</option>
+                    {% if collections is defined %}
+                      {% for coll in collections %}
+                        <option value="{{ coll.id }}">{{ coll.titre }}</option>
+                      {% endfor %}
+                    {% endif %}
+                  </select>
+                  <div class="invalid-feedback">
+                    Veuillez choisir une collection.
+                  </div>
+                </div>
+                <div class="d-flex justify-content-end mt-3">
+                  <button type="submit" class="btn btn-primary">Enregistrer</button>
+                </div>
+              </form>
+            </div>
+          </div>
+          <!-- Offcanvas: Modifier Livre (front) -->
+          <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasEditLivreFront" aria-labelledby="offcanvasEditLivreFrontLabel">
+            <div class="offcanvas-header">
+              <h5 id="offcanvasEditLivreFrontLabel">Modifier Livre</h5>
+              <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+            </div>
+            <div class="offcanvas-body">
+              <form id="editLivreFormFront" class="needs-validation" novalidate method="post" action="" enctype="multipart/form-data">
+
+                <input type="hidden" name="id" value="" />
+                <div class="mb-3">
+                  <label class="form-label">Titre</label>
+                  <input type="text" class="form-control" name="livre[titre]" placeholder="Titre du livre" required>
+                  <div class="invalid-feedback">
+                    Le titre est obligatoire (2 à 255 caractères).
+                  </div>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Description</label>
+                  <textarea class="form-control" name="livre[description]" rows="3" required></textarea>
+                  <div class="invalid-feedback">
+                    La description doit contenir entre 1 et 500 caractères.
+                  </div>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Image (remplacer)</label>
+                  <input type="file" class="form-control" name="livre[image]" accept="image/*">
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Fichier PDF (remplacer)</label>
+                  <input type="file" class="form-control" name="livre[fichier_pdf]" accept="application/pdf">
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Catégorie</label>
+                  <input type="text" class="form-control" name="livre[categorie]" placeholder="Catégorie" required>
+                  <div class="invalid-feedback">
+                    La catégorie est obligatoire.
+                  </div>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Prix location</label>
+                  <input type="number" step="0.01" class="form-control" name="livre[prix_location]" placeholder="Prix" required>
+                  <div class="invalid-feedback">
+                    Le prix doit être un nombre valide (ex: 10 ou 10.50).
+                  </div>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Collection</label>
+                  <select name="livre[collection]" class="form-select" required>
+                    <option value="">Choisir une collection</option>
+                    {% if collections is defined %}
+                      {% for coll in collections %}
+                        <option value="{{ coll.id }}">{{ coll.titre }}</option>
+                      {% endfor %}
+                    {% endif %}
+                  </select>
+                  <div class="invalid-feedback">
+                    Veuillez choisir une collection.
+                  </div>
+                </div>
+                <div class="d-flex justify-content-end mt-3">
+                  <button type="submit" class="btn btn-primary">Publier</button>
+                </div>
+              </form>
+            </div>
+          </div>
+          <div class="modal fade" id="livreDetailsModal" tabindex="-1" aria-labelledby="livreDetailsLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+              <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title" id="livreDetailsLabel">Détails du livre</h5>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                      <div class="row g-3">
+                        <div class="col-12 col-md-7">
+                          <div class="card mb-3">
+                            <div class="card-body">
+                              <h5 class="card-title" id="detail-titre">—</h5>
+                              <p class="text-muted mb-1"><strong>ID:</strong> <span id="detail-id">—</span></p>
+                              <p class="text-muted mb-1"><strong>Date de création:</strong> <span id="detail-date-creation">—</span></p>
+                              <p id="detail-description">—</p>
+                              <p id="detail-pdf">—</p>
+                            </div>
+                          </div>
+                          <div class="card">
+                            <div class="card-body" id="rental-section">
+                                      <h6>Informations de location <span id="rental-badge"></span></h6>
+                                      <p class="mb-1"><strong>ID location:</strong> <span id="detail-location-id">-</span></p>
+                                      <p class="mb-1"><strong>Date début:</strong> <span id="detail-location-date">-</span></p>
+                                      <p class="mb-1"><strong>Date d'expiration:</strong> <span id="detail-location-expiration">-</span></p>
+                                      <div id="calendar-holder" style="margin-top:15px;background:white;padding:10px;border-radius:8px;">
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                                <div class="col-12 col-md-5">
+                                  <div class="card mb-3">
+                                    <div class="card-body text-center">
+                                      <img id="detail-image" src="" alt="" class="img-fluid mb-2" style="max-height:200px;" />
+                                      <div class="small text-muted">Fichier PDF: <span id="detail-pdf-label">—</span></div>
+                                    </div>
+                                  </div>
+                                  <div class="card">
+                                    <div class="card-body">
+                                      <h6>Statistiques</h6>
+                                      <p class="mb-1"><strong>Nombre d’emprunts:</strong> <span id="stat-count">0</span></p>
+                                      <p class="mb-1"><strong>Budget total généré:</strong> <span id="stat-total">0.00</span> </p>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                            <div class="modal-footer">
+                              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+                            </div>
+                          </div>
+                    </div>
+                  </div>
+
+                  <script>
+                    (function () {
+                      if (window.__artistBiblioDetailsBound) {
+                        return;
+                      }
+                      window.__artistBiblioDetailsBound = true;
+
+                      // delegate clicks on Détails anchors (they carry data- attributes)
+                      document.body.addEventListener('click', function(e){
+                        const el = e.target.closest('.js-show-details');
+                        if (!el) return;
+                        e.preventDefault();
+
+                        const modalEl = document.getElementById('livreDetailsModal');
+                        if (!modalEl) return;
+
+                        const dataset = el.dataset;
+
+                        // General
+                        document.getElementById('detail-id').textContent = dataset.id || '-';
+                        document.getElementById('detail-titre').textContent = dataset.titre || '-';
+                        document.getElementById('detail-date-creation').textContent = dataset.dateCreation || '-';
+                        document.getElementById('detail-description').textContent = dataset.description || '-';
+
+                        // PDF or image embed + download link — artist can always view the PDF
+                        const pdfLabel = document.getElementById('detail-pdf-label');
+                        const pdfUrl = dataset.pdfUrl || '';
+
+                        if (!pdfUrl) {
+                          pdfLabel.innerHTML = '<span class="badge bg-secondary">Aucun fichier</span>';
+                        } else {
+                          // allowed: perform HEAD probe and show embed/download
+                          pdfLabel.innerHTML = '<div class="text-muted">Chargement du fichier…</div>';
+                          fetch(pdfUrl, { method: 'HEAD' }).then(function(resp) {
+                            const ct = (resp.headers.get('Content-Type') || '').toLowerCase();
+                            if (ct.startsWith('image/')) {
+                              pdfLabel.innerHTML = '<div class="pdf-embed"><img src="' + pdfUrl + '" style="max-width:100%;height:auto;border:0;" alt="Fichier image" /><div class="mt-2"><a href="' + pdfUrl + '?download=1" class="btn btn-sm btn-primary" target="_blank">Télécharger</a></div></div>';
+                            } else {
+                              pdfLabel.innerHTML = '<div class="pdf-embed"><iframe src="' + pdfUrl + '" style="width:100%;height:320px;border:0;"></iframe><div class="mt-2"><a href="' + pdfUrl + '?download=1" class="btn btn-sm btn-primary" target="_blank">Télécharger</a></div></div>';
+                            }
+                          }).catch(function() {
+                            pdfLabel.innerHTML = '<div class="mt-2"><a href="' + pdfUrl + '?download=1" class="btn btn-sm btn-primary" target="_blank">Télécharger le fichier</a></div>';
+                          });
+                        }
+
+                        // Image
+                        const img = document.getElementById('detail-image');
+                        if (dataset.image) {
+                          img.src = dataset.image;
+                          img.style.display = '';
+                        } else {
+                          img.src = '';
+                          img.style.display = 'none';
+                        }
+
+                        // Rental info
+                        const activeId = dataset.activeId || '';
+                        const activeDate = dataset.activeDate || '';
+                        document.getElementById('detail-location-id').textContent = activeId || '-';
+                        document.getElementById('detail-location-date').textContent = activeDate || '-';
+
+                        const expEl = document.getElementById('detail-location-expiration');
+
+                        let startDate = null;
+                        let expirationDate = null;
+                        let days = parseInt(dataset.nombreJours || dataset.nombre_jours || '7', 10) || 7;
+
+                        if (activeDate) {
+
+                          // Prefer ISO-like input (replace space with T) for reliable parsing
+                          const isoActive = activeDate.includes('T') ? activeDate : activeDate.replace(' ', 'T');
+                          startDate = new Date(isoActive);
+
+                          if (isNaN(startDate)) {
+                            expEl.textContent = '-';
+                          } else {
+                            expirationDate = new Date(startDate);
+
+                            // Read nombre_de_jours from dataset (fallback to 7)
+                            // (days already read above)
+                            expirationDate.setDate(startDate.getDate() + days);
+
+                            // Format locally to avoid UTC shift from toISOString()
+                            function fmtLocal(d){
+                              const z = n => String(n).padStart(2,'0');
+                              return `${d.getFullYear()}-${z(d.getMonth()+1)}-${z(d.getDate())} ${z(d.getHours())}:${z(d.getMinutes())}:${z(d.getSeconds())}`;
+                            }
+
+                            expEl.textContent = fmtLocal(expirationDate);
+
+
+                          const calendarEl =document.getElementById('calendar-holder');
+
+
+                        if (window.bookCalendar) {
+                          window.bookCalendar.destroy();
+                        }
+
+
+                          window.bookCalendar =
+                          new FullCalendar.Calendar(calendarEl, {
+
+                          initialView: 'dayGridMonth',
+                          height: 300,
+                          events: (function(){
+                            // Create a visual background range for the rental period
+                            // Use date-only strings (YYYY-MM-DD) and allDay=true to avoid timezone shifts
+                            function toDateOnly(d){
+                              const z = n => String(n).padStart(2,'0');
+                              return `${d.getFullYear()}-${z(d.getMonth()+1)}-${z(d.getDate())}`;
+                            }
+
+                            const startStr = toDateOnly(startDate);
+                            const expStr = toDateOnly(expirationDate);
+
+                            const rangeEnd = new Date(expirationDate);
+                            rangeEnd.setDate(rangeEnd.getDate() + 1); // end is exclusive
+                            const rangeEndStr = toDateOnly(rangeEnd);
+
+                            return [
+                              // Background highlight for the entire renting period (all-day)
+                              {
+                                title: '',
+                                start: startStr,
+                                end: rangeEndStr,
+                                display: 'background',
+                                allDay: true,
+                                backgroundColor: '#bbf592',
+                                borderColor: 'transparent'
+                              },
+                              // Start day marker (distinct color)
+                              {
+                                title: "Début",
+                                start: startStr,
+                                allDay: true,
+                                color: '#0d6efd',
+                                textColor: '#ffffff'
+                              },
+                              // Expiration day marker (distinct color)
+                              {
+                                title: "Expiration",
+                                start: expStr,
+                                allDay: true,
+                                color: '#dc3545',
+                                textColor: '#ffffff'
+                              }
+                            ];
+                          })()
+
+                    });
+
+
+                window.bookCalendar.render();
+
+          }}
+          else {
+              expEl.textContent = "-";
+              }
+
+                        // Stats
+                        const count = parseInt(dataset.locationCount || '0', 10);
+                        const price = parseFloat(dataset.prix || dataset.prixLocation || '0');
+                        const daysPer = parseInt(dataset.nombreJours || dataset.nombre_jours || '0', 10) || 0;
+
+                        // compute expected total locally
+                        let computed = 0;
+                        if (price > 0 && daysPer > 0) {
+                          computed = count * daysPer * price;
+                        }
+
+                        // server-provided total (fallback / authoritative)
+                        const serverTotal = parseFloat(dataset.totalRevenue || '0');
+
+                        // prefer the server total when it is larger (accounts for multiple past rentals)
+                        const total = serverTotal > computed ? serverTotal : computed;
+
+                        document.getElementById('stat-count').textContent = count;
+                        document.getElementById('stat-total').textContent = total.toFixed(2);
+
+                        const rentalSection = document.getElementById('rental-section');
+                        const rentalBadge = document.getElementById('rental-badge');
+                        const calendarEl = document.getElementById('calendar-holder');
+
+                        let calendarHeader = document.getElementById('calendar-header');
+
+                        if (!calendarHeader && calendarEl) {
+
+                            calendarHeader = document.createElement('div');
+
+                            calendarHeader.id = 'calendar-header';
+
+                            calendarHeader.className =
+                                'mb-2 fw-semibold text-center';
+
+                            calendarEl.parentNode.insertBefore(
+                                calendarHeader,
+                                calendarEl
+                            );
+
+                        }
+
+                        const today = new Date();
+                        today.setHours(0,0,0,0);
+
+                        if (!activeDate || !startDate || !expirationDate) {
+
+                          rentalBadge.innerHTML =
+                            '<span class="badge bg-secondary ms-2">Non loué</span>';
+
+                          calendarHeader.innerHTML =
+                            '<span class="text-muted">Jamais loué</span>';
+
+                          // 🔥 IMPORTANT FIX: destroy any previous calendar instance
+                          if (window.bookCalendar) {
+                            window.bookCalendar.destroy();
+                            window.bookCalendar = null;
+                          }
+
+                          calendarEl.innerHTML = '';
+
+                        }
+                        else {
+
+                            const exp = new Date(expirationDate);
+                            exp.setHours(0,0,0,0);
+
+                            if (exp < today) {
+
+                                // EXPIRED
+                                rentalBadge.innerHTML =
+                                    '<span class="badge bg-secondary ms-2">Non loué</span>';
+
+                                const fmt =
+                                    new Intl.DateTimeFormat(
+                                        'fr-FR',
+                                        { day:'2-digit', month:'short', year:'numeric' }
+                                    );
+
+                                calendarHeader.innerHTML =
+                                    `<span class="text-danger">Location expirée : ${fmt.format(startDate)} → ${fmt.format(expirationDate)}</span>`;
+
+                            }
+                            else {
+
+                                // ACTIVE
+                                rentalBadge.innerHTML =
+                                    '<span class="badge bg-success ms-2">Loué</span>';
+
+                                calendarHeader.innerHTML =
+                                    '<span class="text-success">Location active</span>';
+
+                            }
+
+                        }
+
+                        const modal = new bootstrap.Modal(modalEl);
+                        modal.show();
+                      });
+                    })();
+                  </script>
+
+          <script>
+            // Prefill and open the front edit offcanvas when "Modifier" is clicked
+            document.addEventListener('click', function(e){
+              const btn = e.target.closest('.js-edit-livre');
+              if (!btn) return;
+              e.preventDefault();
+
+              const form = document.getElementById('editLivreFormFront');
+              if (!form) return;
+
+              const dataset = btn.dataset;
+              const id = dataset.id || '';
+
+              // set action to the front edit route
+              const tmpl = btn.dataset.editUrlTemplate || '';
+              form.action = tmpl ? tmpl.replace('/0', '/' + id) : '';
+
+
+              function setField(name, value){
+                const el = form.querySelector('[name="' + name + '"]');
+                if (el) el.value = value || '';
+              }
+
+              setField('livre[titre]', dataset.titre);
+              setField('livre[description]', dataset.description);
+              setField('livre[categorie]', dataset.categorie);
+              setField('livre[prix_location]', dataset.prix);
+              setField('livre[collection]', dataset.collection);
+
+              // clear file inputs
+              const imgInput = form.querySelector('[name="livre[image]"]'); if (imgInput) imgInput.value = '';
+              const pdfInput = form.querySelector('[name="livre[fichier_pdf]"]'); if (pdfInput) pdfInput.value = '';
+
+              const off = bootstrap.Offcanvas.getOrCreateInstance(document.getElementById('offcanvasEditLivreFront'));
+              off.show();
+            });
+          </script>
+
+          <script>
+            // Delete handler: confirmation then POST (mirrors admin logic)
+            document.addEventListener('click', function(e){
+              const btn = e.target.closest('.js-delete-livre');
+              if (!btn) return;
+              e.preventDefault();
+
+              if (!confirm('Êtes-vous sûr de vouloir supprimer ce livre ?')) {
+                return;
+              }
+
+              const id = btn.dataset.id;
+              const tmpl = btn.dataset.deleteUrlTemplate || '';
+              const action = tmpl ? tmpl.replace('/0', '/' + id) : ('/artiste-bibliotheque/livre/' + id + '/delete');
+
+              const f = document.createElement('form');
+              f.method = 'post';
+              f.action = action;
+              f.style.display = 'none';
+              document.body.appendChild(f);
+              f.submit();
+            });
+          </script>
+
+          
+<script>
+function initArtistBiblioValidation() {
+  const forms = document.querySelectorAll('.needs-validation');
+
+  forms.forEach(function (form) {
+  if (form.dataset.validationBound === '1') {
+    return;
+  }
+
+  form.dataset.validationBound = '1';
+
+  form.addEventListener('submit', function (event) {
+    if (!form.checkValidity()) {
+    event.preventDefault();
+    event.stopPropagation();
+    }
+
+    form.classList.add('was-validated');
+  }, false);
+  });
+}
+
+document.addEventListener('DOMContentLoaded', initArtistBiblioValidation);
+document.addEventListener('turbo:load', initArtistBiblioValidation);
+</script>
+<script>
+function initArtistBiblioAiButton() {
+  const button = document.getElementById('generateAiBtn');
+  if (!button || button.dataset.aiBound === '1') {
+    return;
+  }
+
+  button.dataset.aiBound = '1';
+
+  button.addEventListener('click', async function () {
+    const alertContainer = document.getElementById('aiAlertContainer');
+    const pdfInput = document.querySelector('#addLivreFormFront input[name="fichier_pdf"]');
+
+    // Reset alerts
+    alertContainer.innerHTML = '';
+
+    // 🔵 Disable button + show spinner
+    button.disabled = true;
+    button.innerHTML = `
+      <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+      Génération en cours...
+    `;
+
+    // ❌ If no PDF
+    if (!pdfInput || !pdfInput.files.length) {
+      alertContainer.innerHTML = `
+        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+          Veuillez ajouter le fichier PDF du livre avant de générer.
+          <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+      `;
+      resetButton();
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('fichier_pdf', pdfInput.files[0]);
+
+    try {
+      const response = await fetch("{{ path('ai_generate_book') }}", {
+        method: "POST",
+        body: formData
+      });
+
+      if (!response.ok) {
+        const errText = await response.text();
+        throw new Error('Server error: ' + response.status + ' - ' + errText);
+      }
+
+      const contentType = (response.headers.get('content-type') || '').toLowerCase();
+      let data;
+      if (contentType.includes('application/json')) {
+        data = await response.json();
+      } else {
+        const txt = await response.text();
+        throw new Error('Invalid response (not JSON): ' + txt);
+      }
+
+      if (data.error) {
+        alertContainer.innerHTML = `
+          <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            ${data.error}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+          </div>
+        `;
+        resetButton();
+        return;
+      }
+
+      // ✅ Autofill fields
+      document.querySelector('#addLivreFormFront input[name="titre"]').value = data.titre || '';
+      document.querySelector('#addLivreFormFront textarea[name="description"]').value = data.description || '';
+      document.querySelector('#addLivreFormFront input[name="categorie"]').value = data.categorie || '';
+      document.querySelector('#addLivreFormFront input[name="prix_location"]').value = data.prix || '';
+
+      alertContainer.innerHTML = `
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+          Contenu généré automatiquement avec succès.
+          <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+      `;
+
+      // 🔄 Optional: scroll to form or alert
+      alertContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+    } catch (error) {
+      const msg = (error && error.message) ? error.message : 'Erreur lors de la génération automatique.';
+      alertContainer.innerHTML = `
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+          ${msg}
+          <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+      `;
+      console.error(error);
+    }
+
+    // 🔵 Restore button
+    resetButton();
+
+    function resetButton() {
+      button.disabled = false;
+      button.innerHTML = '✨ Générer automatiquement';
+    }
+  });
+}
+
+document.addEventListener('DOMContentLoaded', initArtistBiblioAiButton);
+document.addEventListener('turbo:load', initArtistBiblioAiButton);
+</script>
+<link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.css" rel="stylesheet">
+
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
+
+<style>
+#calendar-header {
+  font-size: 14px;
+  padding: 6px;
+}
+</style>
+
+
+{% endblock %}

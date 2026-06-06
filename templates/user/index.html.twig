@@ -1,0 +1,286 @@
+{% extends 'base_admin.html.twig' %}
+
+{% block title %}Liste des utilisateurs{% endblock %}
+
+{% block admin_content %}
+<div class="row">
+    <div class="col-lg-12 col-md-12 col-12">
+        <div class="border-bottom pb-3 mb-3 d-flex justify-content-between align-items-center">
+            <div class="d-flex flex-column gap-1">
+                <h1 class="mb-0 h2 fw-bold">
+                    Gestion des utilisateurs
+                    <span class="fs-5">({{ users|length }})</span>
+                </h1>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item">
+                            <a href="{{ path('app_admin') }}">Tableau de bord</a>
+                        </li>
+                        <li class="breadcrumb-item active" aria-current="page">Utilisateurs</li>
+                    </ol>
+                </nav>
+            </div>
+            <div class="d-flex gap-2">
+                <a href="{{ path('app_user_new') }}" class="btn btn-primary">
+                    <i class="fe fe-plus me-2"></i>Ajouter
+                </a>
+                {% if current_filter is defined and current_filter == 'ARTISTE' %}
+                    <a href="{{ path('app_user_export_pdf', {'type': 'artistes'}) }}" class="btn btn-outline-success" data-bs-toggle="tooltip" title="Exporter la liste des artistes en PDF">
+                        <i class="bi bi-file-earmark-pdf me-1"></i> Export PDF
+                    </a>
+                {% elseif current_filter is defined and current_filter == 'AMATEUR' %}
+                    <a href="{{ path('app_user_export_pdf', {'type': 'amateurs'}) }}" class="btn btn-outline-info" data-bs-toggle="tooltip" title="Exporter la liste des amateurs en PDF">
+                        <i class="bi bi-file-earmark-pdf me-1"></i> Export PDF
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-header">
+                <form method="get" action="{{ path(current_filter is defined and current_filter == 'ARTISTE' ? 'app_user_artistes' : (current_filter is defined and current_filter == 'AMATEUR' ? 'app_user_amateurs' : 'app_user_search')) }}" class="row align-items-center g-2">
+                    <div class="col-md-6 position-relative">
+                        <input type="text" name="nom" class="form-control" placeholder="Rechercher par nom et prénom..." value="{{ search_nom|default('') }}" style="padding-right:2.5rem;" />
+                        {% if search_nom is defined and search_nom %}
+                            <button type="button" class="btn btn-link p-0 border-0 position-absolute top-50 end-0 translate-middle-y me-2" style="z-index:2;background:transparent;color:#888;font-size:1.2rem;" onclick="window.location.href='{{ path(current_filter is defined and current_filter == 'ARTISTE' ? 'app_user_artistes' : (current_filter is defined and current_filter == 'AMATEUR' ? 'app_user_amateurs' : 'app_user_index')) }}'" aria-label="Effacer la recherche">
+                                <i class="bi bi-x-lg"></i>
+                            </button>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-3">
+                        <select name="order" class="form-select">
+                            <option value="ASC" {% if search_order|default('ASC') == 'ASC' %}selected{% endif %}>Ordre alphabétique (A-Z)</option>
+                            <option value="DESC" {% if search_order|default('ASC') == 'DESC' %}selected{% endif %}>Ordre alphabétique (Z-A)</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <button type="submit" class="btn btn-outline-primary w-100"><i class="fe fe-search me-1"></i>Filtrer</button>
+                    </div>
+                </form>
+            </div>
+            
+            <div class="table-responsive">
+                <table class="table mb-0 text-nowrap table-hover table-centered">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Utilisateur</th>
+                            <th>Email</th>
+                            <th>Téléphone</th>
+                            <th>Rôle</th>
+                            <th>Spécialité/Intérêt</th>
+                            <th>Statut</th>
+                            <th>Inscription</th>
+                            <th class="text-center">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user in users %}
+                        <tr>
+                            <td>
+                                <div class="d-flex align-items-center gap-2">
+                                     {% if user.photoProfilUrl %}
+                                         <img src="{{ user.photoProfilUrl }}" alt="" class="rounded-circle avatar-md" />
+                                     {% else %}
+                                         <span class="avatar-img rounded-circle d-flex align-items-center justify-content-center bg-light text-secondary-emphasis position-relative" style="width:48px;height:48px;">
+                                             <i class="bi bi-person fs-3 position-absolute top-50 start-50 translate-middle" style="opacity:0.5;"></i>
+                                         </span>
+                                     {% endif %}
+                                    <div>
+                                        <h5 class="mb-0">{{ user.nom }} {{ user.prenom }}</h5>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>{{ user.email }}</td>
+                            <td>{{ user.numTel ?? '-' }}</td>
+                            <td>
+                                {% if user.role.name == 'ARTISTE' %}
+                                    <span class="badge bg-primary">{{ user.role.value }}</span>
+                                {% elseif user.role.name == 'AMATEUR' %}
+                                    <span class="badge bg-info">{{ user.role.value }}</span>
+                                {% elseif user.role.name == 'ADMIN' %}
+                                    <span class="badge bg-danger">{{ user.role.value }}</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if user.role.name == 'ARTISTE' and user.specialite %}
+                                    <span class="badge bg-light text-dark">
+                                        <i class="fe fe-award me-1"></i>{{ user.specialite.value }}
+                                    </span>
+                                {% elseif user.role.name == 'AMATEUR' and user.centreInteret %}
+                                    {% set centres = user.centreInteret %}
+                                    <span class="badge bg-light text-dark">
+                                        <i class="fe fe-heart me-1"></i>
+                                        {% for centre in centres %}
+                                            {{ centre.value }}{% if not loop.last %}, {% endif %}
+                                        {% endfor %}
+                                    </span>
+                                {% else %}
+                                    <span class="text-muted">-</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if user.statut.name == 'ACTIVE' %}
+                                    <span class="badge bg-success">{{ user.statut.value }}</span>
+                                {% else %}
+                                    <span class="badge bg-warning">{{ user.statut.value }}</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ user.dateInscription ? user.dateInscription|date('d/m/Y') : '-' }}</td>
+                            <td>
+                                <div class="hstack gap-3 justify-content-center">
+                                    <a href="{{ path('app_user_show', {'id': user.id}) }}" 
+                                       class="text-primary" 
+                                       data-bs-toggle="tooltip" 
+                                       title="Voir">
+                                        {% if export_success is defined and export_success %}
+                                        <div id="export-notification" class="alert alert-success text-center" style="position:fixed;top:20px;left:50%;transform:translateX(-50%);z-index:9999;min-width:300px;">
+                                            Le tableau a été exporté avec succès !
+                                        </div>
+                                        <script>
+                                            setTimeout(function() {
+                                                var notif = document.getElementById('export-notification');
+                                                if (notif) notif.style.display = 'none';
+                                            }, 3000);
+                                        </script>
+                                        {% endif %}
+                                        <i class="fe fe-eye"></i>
+                                    </a>
+                                    <a href="{{ path('app_user_edit', {'id': user.id}) }}" 
+                                       class="text-info" 
+                                       data-bs-toggle="tooltip" 
+                                       title="Modifier">
+                                        <i class="fe fe-edit"></i>
+                                    </a>
+                                    <a href="#" 
+                                       class="text-danger" 
+                                       data-bs-toggle="tooltip" 
+                                       title="Supprimer"
+                                       onclick="confirmDelete({{ user.id }}); return false;">
+                                        <i class="fe fe-trash"></i>
+                                    </a>
+                                    {% if is_granted('ROLE_ADMIN') %}
+                                    <button class="btn btn-outline-info btn-sm show-user-connection-history fw-semibold px-3" style="font-size: 0.98rem; letter-spacing: 0.5px;" data-user-id="{{ user.id }}" title="Voir les connexions aujourd'hui">
+                                        <i class="bi bi-arrow-right-circle me-1"></i> Connexions aujourd'hui
+                                    </button>
+                                    {% endif %}
+                                <!-- Modal Bootstrap globale pour l'historique de connexion -->
+                                <div class="modal fade" id="connectionHistoryModal" tabindex="-1" aria-labelledby="connectionHistoryModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog modal-lg">
+                                        <div class="modal-content" id="connection-history-modal-content">
+                                            <!-- Contenu chargé dynamiquement -->
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <script>
+                                document.addEventListener('DOMContentLoaded', function() {
+                                        document.querySelectorAll('.show-user-connection-history').forEach(function(btn) {
+                                                btn.addEventListener('click', function() {
+                                                        const userId = btn.getAttribute('data-user-id');
+                                                        fetch(`/admin/user/${userId}/connections/popup?today=1`)
+                                                                .then(response => response.text())
+                                                                .then(html => {
+                                                                        document.getElementById('connection-history-modal-content').innerHTML = html;
+                                                                        const modal = new bootstrap.Modal(document.getElementById('connectionHistoryModal'));
+                                                                        modal.show();
+                                                                });
+                                                });
+                                        });
+                                });
+                                </script>
+                                </div>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="8" class="text-center py-5">
+                                <i class="fe fe-users fs-1 text-muted"></i>
+                                <p class="text-muted mt-2">Aucun utilisateur trouvé</p>
+                                <a href="{{ path('app_user_new') }}" class="btn btn-primary btn-sm">
+                                    <i class="fe fe-plus me-1"></i>Ajouter un utilisateur
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="mt-4">
+    <div class="card-footer">
+        <nav>
+            <ul class="pagination justify-content-center mb-0">
+                {# Bouton Previous #}
+                <li class="page-item {{ users.currentPageNumber == 1 ? 'disabled' : '' }}">
+                    <a class="page-link mx-1 rounded" 
+                       href="{{ users.currentPageNumber == 1 ? '#' : path('app_user_search', {page: users.currentPageNumber - 1, nom: search_nom|default(''), order: search_order|default('ASC')}) }}" 
+                       aria-label="Previous">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="currentColor" class="bi bi-chevron-left" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"></path>
+                        </svg>
+                    </a>
+                </li>
+                {# Boutons de pages #}
+                {% for p in 1..users.pageCount %}
+                <li class="page-item {{ p == users.currentPageNumber ? 'active' : '' }}">
+                    <a class="page-link mx-1 rounded" 
+                       href="{{ path('app_user_search', {page: p, nom: search_nom|default(''), order: search_order|default('ASC')}) }}">
+                        {{ p }}
+                    </a>
+                </li>
+                {% endfor %}
+                {# Bouton Next #}
+                <li class="page-item {{ users.currentPageNumber == users.pageCount ? 'disabled' : '' }}">
+                    <a class="page-link mx-1 rounded" 
+                       href="{{ users.currentPageNumber == users.pageCount ? '#' : path('app_user_search', {page: users.currentPageNumber + 1, nom: search_nom|default(''), order: search_order|default('ASC')}) }}" 
+                       aria-label="Next">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="currentColor" class="bi bi-chevron-right" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"></path>
+                        </svg>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Confirmation de suppression
+function confirmDelete(userId) {
+    if (confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ?')) {
+        // Créer un formulaire pour la suppression
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = '{{ path('app_user_delete', {'id': '__ID__'}) }}'.replace('__ID__', userId);
+        
+        const csrfToken = document.createElement('input');
+        csrfToken.type = 'hidden';
+        csrfToken.name = '_token';
+        csrfToken.value = '{{ csrf_token('delete') }}';
+        
+        form.appendChild(csrfToken);
+        document.body.appendChild(form);
+        form.submit();
+    }
+}
+
+// Initialiser les tooltips Bootstrap
+document.addEventListener('DOMContentLoaded', function() {
+    const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+});
+</script>
+{% endblock %}

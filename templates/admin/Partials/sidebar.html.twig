@@ -1,0 +1,87 @@
+<nav class="navbar-vertical navbar">
+  <div class="vh-100" data-simplebar>
+    <!-- Brand logo -->
+    <a class="navbar-brand" href="{{ path('app_admin') }}">
+      <img src="{{ asset('assetsback/images/Porcelain PNG Logo.png') }}" alt="Artium" class="logo"/>
+    </a>
+    <!-- Navbar nav -->
+    <ul class="navbar-nav flex-column" id="sideNavbar">
+        <!-- Dashboard -->
+        <li class="nav-item">
+        <a class="nav-link " href="{{ path('app_admin') }}">
+          <i class="nav-icon fe fe-home me-2"></i>
+          Tableau de bord
+        </a>
+      </li>
+
+      <!-- Users -->
+      <li class="nav-item">
+        <a class="nav-link  collapsed " href="#" data-bs-toggle="collapse" data-bs-target="#navProfile" aria-expanded="false" aria-controls="navProfile">
+          <i class="nav-icon fe fe-user me-2"></i>
+          Utilisateurs
+        </a>
+        <div id="navProfile" class="collapse " data-bs-parent="#sideNavbar">
+          <ul class="nav flex-column">
+            <li class="nav-item">
+              <a class="nav-link " href="{{ path('app_user_artistes') }}">Artistes</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link " href="{{ path('app_user_amateurs') }}">Amateurs</a>
+            </li>
+          </ul>
+        </div>
+      </li>
+
+      <!-- Oeuvres -->
+        <li class="nav-item">
+        <a class="nav-link " href="{{ path('oeuvres') }}">
+          <i class="nav-icon fe fe-image me-2"></i>
+          Oeuvres
+        </a>
+      </li>
+
+      <!-- Books -->
+        <li class="nav-item">
+        <a class="nav-link " href="{{ path('livres') }}">
+          <i class="nav-icon fe fe-book-open me-2"></i>
+          Bibliothèque
+        </a>
+      </li>
+
+      <!-- Music -->
+        <li class="nav-item">
+        <a class="nav-link " href="{{ path('musiques') }}">
+          <i class="nav-icon fe fe-music -open me-2"></i>
+          Musique
+        </a>
+      </li>
+      
+      <!-- Events -->
+      <li class="nav-item">
+        <a class="nav-link  collapsed " href="#" data-bs-toggle="collapse" data-bs-target="#navCMS" aria-expanded="false" aria-controls="navCMS">
+          <i class="nav-icon fe fe-calendar me-2"></i>
+          Evènements 
+        </a>
+        <div id="navCMS" class="collapse " data-bs-parent="#sideNavbar">
+          <ul class="nav flex-column">
+            <li class="nav-item">
+              <a class="nav-link " href="{{ path('evenements') }}">Evènements</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link " href="{{ path('galeries') }}">Galeries</a>
+            </li>
+          </ul>
+        </div>
+      </li>
+
+      <!-- Reclamations -->
+        <li class="nav-item">
+        <a class="nav-link " href="{{ path('app_reclamation_admin_index') }}">
+          <i class="nav-icon fe fe-alert-triangle -open me-2"></i>
+          Réclamations
+        </a>
+      </li>
+
+    </ul>
+  </div>
+</nav>

@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>{% block title %}{% endblock %}</title>
+	<!-- Required meta tags front -->
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<meta name="author" content="Webestica.com">
+	<meta name="description" content="Bootstrap 5 based Social Media Network and Community Theme">
+
+	<!-- Favicon icon front-->
+	<link rel="shortcut icon" href="{{asset('assetsback/images/iconn.ico')}}">
+
+	<!-- Dark mode JS front-->
+	<script>
+		const storedTheme = localStorage.getItem('theme')
+
+		const getPreferredTheme = () => {
+			if (storedTheme) {
+				return storedTheme
+			}
+			return window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'light'
+		}
+
+		const setTheme = function (theme) {
+			if (theme === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+				document.documentElement.setAttribute('data-bs-theme', 'dark')
+			} else {
+				document.documentElement.setAttribute('data-bs-theme', theme)
+			}
+		}
+
+		setTheme(getPreferredTheme())
+
+		window.addEventListener('DOMContentLoaded', () => {
+			var el = document.querySelector('.theme-icon-active');
+			if (el != 'undefined' && el != null) {
+				const showActiveTheme = theme => {
+					const activeThemeIcon = document.querySelector('.theme-icon-active use')
+					const btnToActive = document.querySelector(`[data-bs-theme-value="${theme}"]`)
+					const svgOfActiveBtn = btnToActive.querySelector('.mode-switch use').getAttribute('href')
+
+					document.querySelectorAll('[data-bs-theme-value]').forEach(element => {
+						element.classList.remove('active')
+					})
+
+					btnToActive.classList.add('active')
+					activeThemeIcon.setAttribute('href', svgOfActiveBtn)
+				}
+
+				window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+					if (storedTheme !== 'light' || storedTheme !== 'dark') {
+						setTheme(getPreferredTheme())
+					}
+				})
+
+				showActiveTheme(getPreferredTheme())
+
+				document.querySelectorAll('[data-bs-theme-value]')
+					.forEach(toggle => {
+						toggle.addEventListener('click', () => {
+							const theme = toggle.getAttribute('data-bs-theme-value')
+							localStorage.setItem('theme', theme)
+							setTheme(theme)
+							showActiveTheme(theme)
+						})
+					})
+
+			}
+		})
+
+	</script>
+
+	<!-- Google Font front -->
+	<link rel="preconnect" href="https://fonts.googleapis.com/">
+	<link rel="stylesheet"
+		href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap">
+
+	{% block stylesheets %}
+	<!-- Frontoffice Template Css -->
+	<link rel="stylesheet" type="text/css" href="{{ asset('assetsfront/vendor/font-awesome/css/all.min.css') }}">
+	<link rel="stylesheet" type="text/css" href="{{ asset('assetsfront/vendor/bootstrap-icons/bootstrap-icons.css') }}">
+	<link rel="stylesheet" type="text/css"href="{{ asset('assetsfront/vendor/OverlayScrollbars-master/css/OverlayScrollbars.min.css') }}">
+	<link rel="stylesheet" type="text/css" href="{{ asset('assetsfront/vendor/tiny-slider/dist/tiny-slider.css') }}">
+	<link rel="stylesheet" type="text/css"href="{{ asset('assetsfront/vendor/choices.js/public/assets/styles/choices.min.css') }}">
+	<link rel="stylesheet" type="text/css"href="{{ asset('assetsfront/vendor/glightbox-master/dist/css/glightbox.min.css') }}">
+	<link rel="stylesheet" type="text/css" href="{{ asset('assetsfront/vendor/dropzone/dist/dropzone.css') }}">
+	<link rel="stylesheet" type="text/css" href="{{ asset('assetsfront/vendor/flatpickr/dist/flatpickr.css') }}">
+	<link rel="stylesheet" type="text/css" href="{{ asset('assetsfront/vendor/plyr/plyr.css') }}">
+	<link rel="stylesheet" type="text/css" href="{{ asset('assetsfront/vendor/zuck.js/dist/zuck.min.css') }}">
+
+	<link rel="stylesheet" type="text/css" href="{{ asset('assetsfront/css/style.css') }}">
+	<link rel="stylesheet" type="text/css" href="{{ asset('assets/styles/app.css') }}">
+	<style>
+		:root {
+			--amateur-header-height: 72px;
+		}
+
+		header.header-static {
+			z-index: 2000;
+		}
+
+		.amateur-left-sidebar {
+			position: relative;
+			z-index: 1000;
+		}
+
+		#offcanvasSideNavbar {
+			top: var(--amateur-header-height);
+			height: calc(100vh - var(--amateur-header-height));
+			z-index: 1020;
+		}
+
+		@media (min-width: 992px) {
+			.amateur-left-sidebar {
+				position: sticky;
+				top: calc(var(--amateur-header-height) + 1rem);
+				align-self: flex-start;
+				z-index: 1000;
+			}
+
+			#offcanvasSideNavbar {
+				top: 0;
+				height: auto;
+				z-index: auto;
+			}
+		}
+
+		.mini-audio-player {
+			position: fixed;
+			bottom: 0;
+			left: 0;
+			right: 0;
+			z-index: 1050;
+			border-radius: 0;
+		}
+
+		.mini-audio-title {
+			max-width: 260px;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			white-space: nowrap;
+		}
+
+		.page-with-player {
+			padding-bottom: 95px;
+		}
+
+		.mini-audio-progress {
+			height: 4px;
+		}
+
+		@media (max-width: 768px) {
+			.mini-audio-player {
+				padding: 0.5rem !important;
+			}
+
+			.mini-audio-title {
+				max-width: 160px;
+			}
+		}
+	</style>
+
+	<!-- Global site tag (gtag.js) - Google Analytics -->
+	<script async src="https://www.googletagmanager.com/gtag/js?id=G-GMKQ4P9YMZ"></script>
+	<script>
+		window.dataLayer = window.dataLayer || [];
+		function gtag() { dataLayer.push(arguments); }
+		gtag('js', new Date());
+
+		gtag('config', 'G-GMKQ4P9YMZ');
+	</script>
+
+	{% endblock %}
+
+	{{ importmap('app') }}
+
+</head>
+
+<body data-route="{{ app.request.attributes.get('_route')|default('') }}" class="page-with-player">
+	<audio id="sharedAudioElement" preload="metadata" data-turbo-permanent></audio>
+	<header class="navbar-light fixed-top header-static bg-mode">
+		{% include 'Front Office/feed/Partials/navbarfront.html.twig' %}
+	</header>
+
+	<main>
+		<div class="container">
+			<div class="row g-4">
+				{% include 'Front Office/feed/Partials/sidebarfront.html.twig' %}
+				<!-- Main content START -->
+				<div class="col-md-8 col-lg-6 vstack gap-4">
+					{% for label, messages in app.flashes %}
+						{% for message in messages %}
+							<div class="alert alert-{{ label == 'error' ? 'danger' : label }} alert-dismissible fade show" role="alert">
+								{{ message }}
+								<button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+							</div>
+						{% endfor %}
+					{% endfor %}
+
+					{% block amateur_content %}{% endblock %}
+				</div>
+			</div>
+		</div>
+	</main>
+	{% include 'Front Office/Partials/offcanvas_profile.html.twig' with {
+		offcanvas_id: 'offcanvasProfile',
+		user: app.user,
+		form: profile_form|default(null),
+		profile_form_action: profile_form_action|default(path('app_feed')),
+		password_form_action: password_form_action|default(path('app_changer_mot_de_passe'))
+	} %}
+
+	<div id="miniAudioPlayer" class="mini-audio-player bg-dark border-top border-secondary px-3 py-2 text-white d-none">
+		<div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+			<div class="d-flex align-items-center gap-2">
+				<i class="bi bi-disc text-success"></i>
+				<div>
+					<div id="miniAudioTitle" class="fw-semibold mini-audio-title">Aucune musique en cours</div>
+					<div id="miniAudioArtist" class="small text-secondary">Sélectionnez une chanson</div>
+				</div>
+			</div>
+
+			<div class="d-flex align-items-center gap-2">
+				<button id="miniAudioPrev" type="button" class="btn btn-sm btn-outline-light" title="Précédent">
+					<i class="bi bi-skip-backward-fill"></i>
+				</button>
+				<button id="miniAudioToggle" type="button" class="btn btn-sm btn-success" title="Lecture / Pause">
+					<i id="miniAudioToggleIcon" class="bi bi-play-fill"></i>
+				</button>
+				<button id="miniAudioNext" type="button" class="btn btn-sm btn-outline-light" title="Suivant">
+					<i class="bi bi-skip-forward-fill"></i>
+				</button>
+				<a href="{{ path('app_musicfront') }}" class="btn btn-sm btn-outline-light" title="Ouvrir Musique">
+					<i class="bi bi-box-arrow-up-right"></i>
+				</a>
+			</div>
+
+			<div class="d-flex align-items-center gap-2 flex-grow-1" style="min-width: 220px; max-width: 440px;">
+				<span id="miniAudioCurrent" class="small text-secondary">0:00</span>
+				<input id="miniAudioSeek" type="range" class="form-range flex-grow-1 mini-audio-progress" min="0" max="100" value="0" step="0.1" aria-label="Position de lecture">
+				<span id="miniAudioDuration" class="small text-secondary">0:00</span>
+			</div>
+		</div>
+	</div>
+
+	<!-- Frontoffice Template Scripts -->
+	<script src="{{ asset('assetsfront/vendor/bootstrap/dist/js/bootstrap.bundle.min.js') }}"></script>
+
+	<script src="{{ asset('assetsfront/vendor/tiny-slider/dist/tiny-slider.js') }}"></script>
+	<script src="{{ asset('assetsfront/vendor/OverlayScrollbars-master/js/OverlayScrollbars.min.js') }}"></script>
+	<script src="{{ asset('assetsfront/vendor/choices.js/public/assets/scripts/choices.min.js') }}"></script>
+	<script src="{{ asset('assetsfront/vendor/glightbox-master/dist/js/glightbox.min.js') }}"></script>
+	<script src="{{ asset('assetsfront/vendor/flatpickr/dist/flatpickr.min.js') }}"></script>
+	<script src="{{ asset('assetsfront/vendor/plyr/plyr.js') }}"></script>
+	<script src="{{ asset('assetsfront/vendor/dropzone/dist/min/dropzone.min.js') }}"></script>
+	<script src="{{ asset('assetsfront/vendor/zuck.js/dist/zuck.min.js') }}"></script>
+	<script src="{{ asset('assetsfront/js/zuck-stories.js') }}"></script>
+
+	<script src="{{ asset('assetsfront/js/functions.js') }}"></script>
+	{{ importmap('app') }}
+	<script>
+		(function () {
+			if (window.__artiumMiniPlayerController) {
+				window.__artiumMiniPlayerController.init();
+				return;
+			}
+
+			const STORAGE_KEY = 'artium_music_player_state_v1';
+			const QUEUE_KEY = 'artium_music_player_queue_v1';
+			const miniAudio = document.getElementById('sharedAudioElement');
+			let isSeekingMini = false;
+			let globalQueue = [];
+			let globalQueueIndex = -1;
+
+			if (!miniAudio) {
+				return;
+			}
+
+			const getElements = () => ({
+				miniPlayer: document.getElementById('miniAudioPlayer'),
+				miniTitle: document.getElementById('miniAudioTitle'),
+				miniArtist: document.getElementById('miniAudioArtist'),
+				miniToggle: document.getElementById('miniAudioToggle'),
+				miniToggleIcon: document.getElementById('miniAudioToggleIcon'),
+				miniPrev: document.getElementById('miniAudioPrev'),
+				miniNext: document.getElementById('miniAudioNext'),
+				miniSeek: document.getElementById('miniAudioSeek'),
+				miniCurrent: document.getElementById('miniAudioCurrent'),
+				miniDuration: document.getElementById('miniAudioDuration')
+			});
+
+			const formatTime = (seconds) => {
+				if (!Number.isFinite(seconds) || seconds < 0) return '0:00';
+				const mins = Math.floor(seconds / 60);
+				const secs = Math.floor(seconds % 60).toString().padStart(2, '0');
+				return `${mins}:${secs}`;
+			};
+
+			const getSavedState = () => {
+				try {
+					return JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null');
+				} catch (error) {
+					return null;
+				}
+			};
+
+			const getSavedQueue = () => {
+				try {
+					return JSON.parse(localStorage.getItem(QUEUE_KEY) || 'null');
+				} catch (error) {
+					return null;
+				}
+			};
+
+			const resolveQueueIndex = (queue, parsed, currentSrc) => {
+				if (!Array.isArray(queue) || !queue.length) {
+					return 0;
+				}
+
+				if (Number.isFinite(parsed?.currentTrackIndex)) {
+					return parsed.currentTrackIndex;
+				}
+
+				const matchSrc = currentSrc || parsed?.src || '';
+				if (matchSrc) {
+					const index = queue.findIndex(track =>
+						matchSrc === track.absoluteSrc
+						|| matchSrc.endsWith(track.src)
+						|| track.src.endsWith(matchSrc)
+					);
+					return index >= 0 ? index : 0;
+				}
+
+				return 0;
+			};
+
+			const syncQueueFromStorage = () => {
+				const parsed = getSavedState();
+				const savedQueue = getSavedQueue();
+				globalQueue = parsed?.trackQueue || savedQueue?.trackQueue || [];
+
+				if (!globalQueue.length) {
+					globalQueueIndex = -1;
+					return;
+				}
+
+				globalQueueIndex = resolveQueueIndex(globalQueue, parsed, miniAudio.src);
+			};
+
+			const saveState = () => {
+				if (!miniAudio.src) return;
+				const elements = getElements();
+				if (!elements.miniTitle || !elements.miniArtist) return;
+				const existing = getSavedState();
+
+				const state = {
+					...(existing || {}),
+					src: miniAudio.src,
+					title: elements.miniTitle.textContent || 'Titre inconnu',
+					artist: elements.miniArtist.textContent || 'Artiste inconnu',
+					currentTime: miniAudio.currentTime || 0,
+					isPlaying: !miniAudio.paused,
+					currentTrackIndex: globalQueueIndex,
+					trackQueue: globalQueue,
+					updatedAt: Date.now()
+				};
+
+				localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+				if (globalQueue.length) {
+					localStorage.setItem(QUEUE_KEY, JSON.stringify({
+						trackQueue: globalQueue,
+						currentTrackIndex: globalQueueIndex,
+						updatedAt: Date.now()
+					}));
+				}
+			};
+
+			const playTrackAtIndex = (index, autoplay = true) => {
+				if (!globalQueue.length || index < 0 || index >= globalQueue.length) {
+					return;
+				}
+
+				const elements = getElements();
+				const track = globalQueue[index];
+				if (!track?.src && !track?.absoluteSrc) {
+					return;
+				}
+
+				globalQueueIndex = index;
+				miniAudio.src = track.absoluteSrc || track.src;
+				miniAudio.dataset.title = track.title || 'Titre inconnu';
+				miniAudio.dataset.artist = track.artist || 'Artiste inconnu';
+				miniAudio.load();
+
+				if (autoplay) {
+					miniAudio.play().catch(() => {});
+				}
+
+				if (elements.miniTitle) {
+					elements.miniTitle.textContent = track.title || 'Titre inconnu';
+				}
+				if (elements.miniArtist) {
+					elements.miniArtist.textContent = track.artist || 'Artiste inconnu';
+				}
+
+				saveState();
+				updateMiniUi();
+			};
+
+			const playQueueByOffset = (offset) => {
+				syncQueueFromStorage();
+				if (!globalQueue.length) {
+					return;
+				}
+
+				const baseIndex = globalQueueIndex >= 0 ? globalQueueIndex : 0;
+				const nextIndex = (baseIndex + offset + globalQueue.length) % globalQueue.length;
+				playTrackAtIndex(nextIndex, true);
+			};
+
+			const updateMiniUi = () => {
+				const elements = getElements();
+				if (!elements.miniToggleIcon || !elements.miniSeek || !elements.miniCurrent || !elements.miniDuration) {
+					return;
+				}
+
+				elements.miniToggleIcon.className = miniAudio.paused ? 'bi bi-play-fill' : 'bi bi-pause-fill';
+
+				const duration = miniAudio.duration || 0;
+				const currentTime = miniAudio.currentTime || 0;
+				const progress = duration ? (currentTime / duration) * 100 : 0;
+
+				if (!isSeekingMini) {
+					elements.miniSeek.value = progress;
+				}
+
+				elements.miniCurrent.textContent = formatTime(currentTime);
+				elements.miniDuration.textContent = formatTime(duration);
+			};
+
+			const hydrateMiniPlayer = () => {
+				const elements = getElements();
+				if (!elements.miniPlayer || !elements.miniTitle || !elements.miniArtist) {
+					return;
+				}
+
+				const routeName = document.body?.dataset?.route || '';
+				const onMusicPage = routeName === 'app_musicfront';
+				const parsed = getSavedState();
+				syncQueueFromStorage();
+				const queueList = globalQueue;
+				const dataTitle = miniAudio.dataset?.title || '';
+				const dataArtist = miniAudio.dataset?.artist || '';
+				const hasPlayableAudio = !!miniAudio.src || !!(parsed && parsed.src) || queueList.length > 0;
+
+				if (onMusicPage || !hasPlayableAudio) {
+					elements.miniPlayer.classList.add('d-none');
+					return;
+				}
+
+				elements.miniPlayer.classList.remove('d-none');
+
+				if (!miniAudio.src && parsed?.src) {
+					miniAudio.src = parsed.src;
+					miniAudio.addEventListener('loadedmetadata', () => {
+						if (Number.isFinite(parsed.currentTime) && parsed.currentTime > 0) {
+							miniAudio.currentTime = parsed.currentTime;
+						}
+						updateMiniUi();
+					}, { once: true });
+				}
+
+				if (!miniAudio.src && queueList.length) {
+					const guessedIndex = globalQueueIndex >= 0 ? globalQueueIndex : 0;
+					const guessedTrack = queueList[guessedIndex];
+					if (guessedTrack?.absoluteSrc || guessedTrack?.src) {
+						miniAudio.src = guessedTrack.absoluteSrc || guessedTrack.src;
+					}
+				}
+
+				const queueIndex = globalQueueIndex >= 0 ? globalQueueIndex : resolveQueueIndex(queueList, parsed, miniAudio.src);
+				const queueTrack = queueList[queueIndex];
+				elements.miniTitle.textContent = parsed?.title || dataTitle || queueTrack?.title || elements.miniTitle.textContent || 'Titre inconnu';
+				elements.miniArtist.textContent = parsed?.artist || dataArtist || queueTrack?.artist || elements.miniArtist.textContent || 'Artiste inconnu';
+
+				if (parsed?.isPlaying && miniAudio.paused) {
+					miniAudio.play().catch(() => {
+						updateMiniUi();
+					});
+				}
+
+				updateMiniUi();
+			};
+
+			const bindMiniControls = () => {
+				const elements = getElements();
+				if (!elements.miniToggle || !elements.miniSeek) {
+					return;
+				}
+
+				elements.miniToggle.onclick = () => {
+					if (!miniAudio.src) return;
+					if (miniAudio.paused) {
+						miniAudio.play().catch(() => {});
+					} else {
+						miniAudio.pause();
+					}
+				};
+
+				if (elements.miniPrev) {
+					elements.miniPrev.onclick = () => {
+						playQueueByOffset(-1);
+					};
+				}
+
+				if (elements.miniNext) {
+					elements.miniNext.onclick = () => {
+						playQueueByOffset(1);
+					};
+				}
+
+				elements.miniSeek.oninput = (event) => {
+					isSeekingMini = true;
+					const duration = miniAudio.duration || 0;
+					if (!duration) return;
+					const progress = Math.min(100, Math.max(0, Number(event.target.value) || 0));
+					miniAudio.currentTime = (progress / 100) * duration;
+					updateMiniUi();
+				};
+
+				elements.miniSeek.onchange = () => {
+					isSeekingMini = false;
+					updateMiniUi();
+					saveState();
+				};
+
+				elements.miniSeek.onpointerup = () => {
+					isSeekingMini = false;
+					updateMiniUi();
+					saveState();
+				};
+			};
+
+			if (!window.__artiumMiniAudioListenersAttached) {
+				window.__artiumMiniAudioListenersAttached = true;
+
+				miniAudio.addEventListener('timeupdate', () => {
+					updateMiniUi();
+					saveState();
+				});
+
+				miniAudio.addEventListener('play', () => {
+					updateMiniUi();
+					saveState();
+				});
+
+				miniAudio.addEventListener('pause', () => {
+					updateMiniUi();
+					saveState();
+				});
+			}
+
+			const controller = {
+				init: () => {
+					bindMiniControls();
+					hydrateMiniPlayer();
+				}
+			};
+
+			window.__artiumMiniPlayerController = controller;
+			document.addEventListener('turbo:load', controller.init);
+			controller.init();
+		})();
+	</script>
+</body>
+
+</html>

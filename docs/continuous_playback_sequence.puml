@@ -1,0 +1,25 @@
+@startuml forgotpwd_sequence_simplified
+title Forgot Password - Interface to Entity Sequence
+
+actor User
+boundary "Forgot Password Interface" as ForgotPWDInterface
+control ForgotPWDController
+entity UserRepository
+entity UserEntity
+
+User -> ForgotPWDInterface: Enter email and submit
+ForgotPWDInterface -> ForgotPWDController: POST /forgotpwd (email)
+ForgotPWDController -> UserRepository: findOneBy(email)
+UserRepository -> UserEntity: load user data
+UserEntity --> UserRepository: user/null
+UserRepository --> ForgotPWDController: user/null
+
+alt User exists
+    ForgotPWDController -> UserEntity: setResetToken(token, expiresAt)
+    UserEntity --> ForgotPWDController: token assigned
+    ForgotPWDController --> ForgotPWDInterface: Success message
+else User not found
+    ForgotPWDController --> ForgotPWDInterface: Error message
+end
+
+@enduml

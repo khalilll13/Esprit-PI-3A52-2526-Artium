@@ -1,0 +1,425 @@
+{% extends 'base_artiste.html.twig' %}
+
+{% block title %}{{ 'Mes Collections'|trans }}{% endblock %}
+
+{% block artiste_content %}
+<!-- media START -->
+            <div class="card">
+              <!-- Card header START -->
+              
+              <div class="card-header d-sm-flex align-items-center justify-content-between border-0 pb-0">
+                <!-- Button modal -->
+                <div class="col-md-6">
+                  <form method="GET" action="{{ path('collection_search_first') }}" class="d-flex gap-2">
+                    <input type="search" name="q" class="form-control" placeholder="Rechercher une Collection..." value="{{ app.request.get('q') }}">
+                    <button type="submit" class="btn btn-primary">Search</button>
+                  </form>
+                </div>
+                <a class="btn btn-sm btn-primary-soft" href="#" data-bs-toggle="modal" data-bs-target="#modalCreateAlbum"> <i class="fa-solid fa-plus pe-1"></i> Ajouter Collection</a>
+              </div>
+              <div style="margin-top: 20px; padding: 0 20px;">
+                {% for collection in collections %}
+                  <div class="mb-3">
+                    <div class="d-flex align-items-center justify-content-between p-2">
+                      <button class="btn btn-link flex-grow-1 text-start p-0" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-{{ collection.id }}" aria-expanded="false" aria-controls="collapse-{{ collection.id }}" style="text-decoration: none; border: none; background: none;">
+                        <div class="flex-grow-1">
+                          <div class="d-flex align-items-center gap-2">
+                            <h5 class="mb-1 fw-bold" style="color: #333; font-size: 1.1rem;">{{ collection.titre }}</h5> 
+                          </div>                   
+                          {% if collection.description %}
+                            <p class="text-muted mb-0" style="font-size: 0.9rem; line-height: 1.5; word-wrap: break-word; white-space: normal; max-width: 100%; color: #777;">{{ collection.description }}</p>
+                          {% endif %}
+                        </div>
+                      </button>
+                      <div class="d-flex align-items-center gap-2">
+                        <div class="dropdown">
+                          <a href="#" class="text-secondary" id="collectionAction{{ collection.id }}" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-three-dots"></i>
+                          </a>
+                          <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="collectionAction{{ collection.id }}">
+                            <li>
+                              <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#modalEditCollection{{ collection.id }}">
+                                <i class="fa-solid fa-edit pe-2"></i>Modifier
+                              </a>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                              <form method="POST" action="{{ path('collection_delete', {'id': collection.id}) }}" class="m-0">
+                                <button type="submit" class="dropdown-item text-danger">
+                                  <i class="fa-solid fa-trash pe-2"></i>Supprimer
+                                </button>
+                              </form>
+                            </li>
+                          </ul>
+                        </div>
+                        <i class="bi bi-chevron-down" id="chevron-{{ collection.id }}" style="transition: transform 0.3s ease; font-size: 1rem; cursor: pointer;" data-bs-toggle="collapse" data-bs-target="#collapse-{{ collection.id }}"></i>
+                      </div>
+                    </div>
+                    <div class="collapse" id="collapse-{{ collection.id }}">
+                      <div class="ps-3 pt-2 pb-3" style="border-left: 3px solid #ddd;">
+                        {% if collection.oeuvres|length > 0 %}
+                          <div class="row g-3">
+                            {% for oeuvre in collection.oeuvres %}
+                              <!-- Oeuvre Photo item START -->
+                              <div class="col-sm-6 col-md-4 col-lg-3">
+                                <!-- Photo -->
+                                {% if oeuvre.image %}
+                                  <a href="#" data-bs-toggle="modal" data-bs-target="#collectionPostModal{{ oeuvre.id }}">
+                                    <img class="rounded img-fluid" src="{{ path('app_collection_oeuvre_image', {'id': oeuvre.id}) }}" alt="{{ oeuvre.titre }}">
+                                  </a>
+                                {% else %}
+                                  <div class="bg-light rounded" style="height: 200px; display: flex; align-items: center; justify-content: center;">
+                                    <span class="text-muted">No image</span>
+                                  </div>
+                                {% endif %}
+                                <!-- Likes and comments count -->
+                                <ul class="nav nav-stack py-2 small">
+                                  <li class="nav-item">
+                                    <a class="nav-link" href="#!"> <i class="bi bi-heart-fill text-danger pe-1"></i>{{ oeuvre.likes is defined ? (oeuvre.likes|length) : 0 }} </a>
+                                  </li>
+                                  <li class="nav-item">
+                                    <a class="nav-link" href="#!"> <i class="bi bi-chat-left-text-fill pe-1"></i>{{ oeuvre.commentaires is defined ? (oeuvre.commentaires|length) : 0 }} </a>
+                                  </li>
+                                </ul>
+                              </div>
+                              <!-- Oeuvre Photo item END -->
+                            {% endfor %}
+                          </div>
+                        {% else %}
+                          <div class="text-muted">Aucune oeuvre</div>
+                        {% endif %}
+                      </div>
+                    </div>
+                    <hr class="my-2" style="border: none; border-top: 1px solid #ddd;">
+                  </div>
+                  
+                  <!-- Include modals for oeuvres in this collection -->
+                  {% if collection.oeuvres|length > 0 %}
+                    {% for oeuvre in collection.oeuvres %}
+                      {% if oeuvre.image %}
+                        {% set imageUrl = path('app_collection_oeuvre_image', {'id': oeuvre.id}) %}
+                        {% include 'Front Office/favoris/_favoris_post_modal.html.twig' with {
+                          oeuvre: oeuvre,
+                          imageUrl: imageUrl,
+                          modalId: 'collectionPostModal' ~ oeuvre.id
+                        } %}
+                      {% endif %}
+                    {% endfor %}
+                  {% endif %}
+                {% endfor %}
+              </div>
+
+              <style>
+                .btn-link:hover { background-color: #f9f9f9; }
+                .collapse { animation: slideDown 0.3s ease; }
+                .collapse.show ~ hr { border-top: 1px solid #ccc; }
+                .dropdown > a { font-size: 1.2rem; text-decoration: none; }
+                .dropdown > a:hover { color: #0d6efd !important; }
+              </style>
+
+              <!-- Card header END -->
+              <!-- Card body START -->
+              <div class="card-body">
+                <!-- Photos of you tab START -->
+                <div class="row g-3">
+
+                  
+
+                </div>
+                <!-- Photos of you tab END -->
+              </div>
+              <!-- Card body END -->
+            </div>
+            <!-- media END -->
+
+<!-- Modal for adding collection START -->
+<div class="modal fade" id="modalCreateAlbum" tabindex="-1" role="dialog" aria-labelledby="modalCreateAlbumLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalCreateAlbumLabel">Ajouter une Collection</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form method="POST" action="{{ path('app_collections_store') }}" novalidate data-turbo="false">
+        <div class="modal-body">
+          <div class="mb-3">
+            {{ form_label(form.titre) }}
+    {{ form_widget(form.titre, {
+        'attr': {
+            'class': 'form-control' ~ (form.titre.vars.errors|length > 0 ? ' is-invalid' : ''),
+            'required': true,
+            'placeholder': 'Entrez le titre'
+        }
+    }) }}
+    {% if form.titre.vars.errors|length > 0 %}
+        <div class="invalid-feedback">
+            {{ form_errors(form.titre) }}
+        </div>
+    {% endif %}
+          </div>
+          <div class="mb-3">
+            {{ form_label(form.description) }}
+    {{ form_widget(form.description, {
+        'attr': {
+      'class': 'form-control' ~ (form.description.vars.errors|length > 0 ? ' is-invalid' : ''),
+            'rows': '4',
+      'required': true,
+        'placeholder': 'Entrez la description'
+        }
+    }) }}
+    {% if form.description.vars.errors|length > 0 %}
+      <div class="invalid-feedback">
+        {{ form_errors(form.description) }}
+      </div>
+    {% endif %}
+
+          </div>
+          {{ form_rest(form) }}
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+          <button type="submit" class="btn btn-primary">Ajouter Collection</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% if form.titre.vars.errors|length > 0 or form.description.vars.errors|length > 0 %}
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    var modalElement = document.getElementById('modalCreateAlbum');
+    if (modalElement) {
+      var myModal = bootstrap.Modal.getOrCreateInstance(modalElement);
+      myModal.show();
+    }
+  });
+</script>
+{% endif %}
+{% if editErrorCollectionId is defined and editErrorCollectionId %}
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    var modalElement = document.getElementById('modalEditCollection{{ editErrorCollectionId }}');
+    if (modalElement) {
+      var myModal = bootstrap.Modal.getOrCreateInstance(modalElement);
+      myModal.show();
+    }
+  });
+</script>
+{% endif %}
+<!-- Modal for adding collection END -->
+
+{% for collection in collections %}
+  <!-- Edit modal for each collection -->
+  <div class="modal fade" id="modalEditCollection{{ collection.id }}" tabindex="-1" aria-labelledby="modalEditCollectionLabel{{ collection.id }}" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="modalEditCollectionLabel{{ collection.id }}">Modifier Collection</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <form method="POST" action="{{ path('collection_edit', {'id': collection.id}) }}" novalidate data-turbo="false">
+          <div class="modal-body">
+            <div class="mb-3">
+              {{ form_label(formEdit[collection.id].titre) }}
+              {{ form_widget(formEdit[collection.id].titre, {'attr': {'class': 'form-control' ~ (formEdit[collection.id].titre.vars.errors|length > 0 ? ' is-invalid' : ''), 'placeholder': 'Entrez le titre de la collection'}}) }}
+              {% if formEdit[collection.id].titre.vars.errors|length > 0 %}
+                <div class="invalid-feedback">
+                  {{ form_errors(formEdit[collection.id].titre) }}
+                </div>
+              {% endif %}
+            </div>
+            <div class="mb-3">
+              {{ form_label(formEdit[collection.id].description) }}
+              {{ form_widget(formEdit[collection.id].description, {
+                'attr': {
+                  'class': 'form-control' ~ (formEdit[collection.id].description.vars.errors|length > 0 ? ' is-invalid' : ''),
+                  'rows': '4',
+                  'placeholder': 'Entrez la description de la collection'
+                }
+              }) }}
+              {% if formEdit[collection.id].description.vars.errors|length > 0 %}
+                <div class="invalid-feedback">
+                  {{ form_errors(formEdit[collection.id].description) }}
+                </div>
+              {% endif %}
+            </div>
+            {{ form_rest(formEdit[collection.id]) }}
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+            <button type="submit" class="btn btn-primary">Modifier Collection</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+{% endfor %}
+
+<script>
+// Load more comments per post
+document.addEventListener('click', function(e) {
+  const commentsBtn = e.target.closest('.comments-load-more, .fav-comments-load-more');
+    if (!commentsBtn) {
+        return;
+    }
+
+    e.preventDefault();
+
+    const modal = commentsBtn.closest('.modal');
+    if (!modal) {
+        return;
+    }
+
+    const loadText = commentsBtn.querySelector('.comments-load-text');
+    const loader = commentsBtn.querySelector('.comments-loader');
+
+    if (loadText) {
+        loadText.style.display = 'none';
+    }
+    if (loader) {
+        loader.style.display = 'inline-flex';
+    }
+
+    setTimeout(() => {
+        const hiddenComments = modal.querySelectorAll('.comment-item.hidden-comment.d-none');
+        const revealCount = Math.min(3, hiddenComments.length);
+
+        for (let i = 0; i < revealCount; i++) {
+            hiddenComments[i].classList.remove('d-none');
+        }
+
+        if (loadText) {
+            loadText.style.display = 'inline';
+        }
+        if (loader) {
+            loader.style.display = 'none';
+        }
+
+        const remaining = modal.querySelectorAll('.comment-item.hidden-comment.d-none').length;
+        if (remaining === 0) {
+            const btnContainer = commentsBtn.closest('.pt-2');
+            if (btnContainer) {
+                btnContainer.style.display = 'none';
+            }
+        }
+    }, 400);
+});
+
+// Chevron rotation for collections
+document.addEventListener('DOMContentLoaded', function() {
+    const collapseElements = document.querySelectorAll('[id^="collapse-"]');
+    collapseElements.forEach(function(collapseElement) {
+        const collectionId = collapseElement.id.replace('collapse-', '');
+        const chevron = document.getElementById('chevron-' + collectionId);
+        
+        collapseElement.addEventListener('show.bs.collapse', function() {
+            if (chevron) {
+                chevron.style.transform = 'rotate(180deg)';
+            }
+        });
+        
+        collapseElement.addEventListener('hide.bs.collapse', function() {
+            if (chevron) {
+                chevron.style.transform = 'rotate(0deg)';
+            }
+        });
+    });
+});
+</script>
+
+<style>
+	.favoris-post-modal .modal-dialog {
+		max-width: min(1240px, calc(100vw - 48px));
+		margin: 24px auto;
+	}
+
+	.favoris-post-modal .modal-content {
+		border-radius: 0.9rem;
+		overflow: hidden;
+		max-height: calc(100vh - 48px);
+	}
+
+	.favoris-post-close {
+		position: absolute;
+		top: 12px;
+		right: 12px;
+		z-index: 3;
+		background-color: rgba(255, 255, 255, 0.9);
+		border-radius: 50%;
+	}
+
+	.favoris-post-modal .modal-body {
+		padding: 0;
+	}
+
+	.favoris-post-modal .row {
+		min-height: min(760px, calc(100vh - 110px));
+	}
+
+	.favoris-post-media-wrap {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		background: var(--bs-light);
+		padding: 18px;
+	}
+
+	.favoris-post-media-wrap img {
+		max-width: 100%;
+		max-height: min(700px, calc(100vh - 150px));
+		width: auto;
+		height: auto;
+		object-fit: contain;
+	}
+
+	.favoris-post-details {
+		height: min(760px, calc(100vh - 110px));
+		overflow: hidden;
+		overflow-x: hidden;
+		display: flex;
+		flex-direction: column;
+		gap: 0.5rem;
+	}
+
+	.favoris-post-scroll {
+		flex: 1 1 auto;
+		min-height: 0;
+		overflow-y: auto;
+		padding-right: 6px;
+	}
+
+	.favoris-post-modal .fav-comments-container .comment-item {
+		margin-bottom: 0.9rem;
+	}
+
+	.favoris-post-modal .fav-comments-container .comment-item:last-child {
+		margin-bottom: 0;
+	}
+
+	@media (max-width: 991px) {
+		.favoris-post-modal .modal-dialog {
+			max-width: calc(100vw - 20px);
+			margin: 10px auto;
+		}
+
+		.favoris-post-modal .modal-content {
+			max-height: calc(100vh - 20px);
+		}
+
+		.favoris-post-modal .row,
+		.favoris-post-details {
+			height: auto;
+		}
+
+		.favoris-post-scroll {
+			overflow: visible;
+			padding-right: 0;
+		}
+
+		.favoris-post-media-wrap img {
+			max-height: 48vh;
+		}
+	}
+</style>
+
+{% endblock %}

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+
+<title>Evenement index</title>
+
+{% block body %}
+    <h1>Evenement index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Titre</th>
+                <th>Description</th>
+                <th>Date_debut</th>
+                <th>Date_fin</th>
+                <th>Date_creation</th>
+                <th>Type</th>
+                <th>Image_couverture</th>
+                <th>Statut</th>
+                <th>Capacite_max</th>
+                <th>Prix_ticket</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for evenement in evenements %}
+            <tr>
+                <td>{{ evenement.id }}</td>
+                <td>{{ evenement.titre }}</td>
+                <td>{{ evenement.description }}</td>
+                <td>{{ evenement.dateDebut ? evenement.dateDebut|date('Y-m-d H:i:s') : '' }}</td>
+                <td>{{ evenement.dateFin ? evenement.dateFin|date('Y-m-d H:i:s') : '' }}</td>
+                <td>{{ evenement.dateCreation ? evenement.dateCreation|date('Y-m-d') : '' }}</td>
+                <td>{{ evenement.type }}</td>
+                <td>{{ evenement.imageCouverture }}</td>
+                <td>{{ evenement.statut }}</td>
+                <td>{{ evenement.capaciteMax }}</td>
+                <td>{{ evenement.prixTicket }}</td>
+                <td>
+                    <a href="{{ path('app_evenement_show', {'id': evenement.id}) }}">show</a>
+                    <a href="{{ path('app_evenement_edit', {'id': evenement.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="12">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_evenement_new') }}">Create new</a>
+{% endblock %}

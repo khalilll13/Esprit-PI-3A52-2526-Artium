@@ -1,0 +1,111 @@
+{% set offcanvas_id = 'offcanvasOeuvreEdit' %}
+{% set edit_route = edit_route|default('oeuvre_edit') %}
+{% set edit_url_pattern = path(edit_route, {'id': 999999}) %}
+
+<div class="offcanvas offcanvas-end" tabindex="-1" id="{{ offcanvas_id }}" aria-labelledby="{{ offcanvas_id }}Label" data-bs-backdrop="true" data-bs-scroll="false" style="width: 600px; z-index: 2000;">
+	<div class="offcanvas-header">
+		<h3 class="offcanvas-title" id="{{ offcanvas_id }}Label">Modifier l'Œuvre</h3>
+		<button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+	</div>
+	<div class="offcanvas-body" data-simplebar>
+		<div id="offcanvasFormContainer" style="min-height: 300px;">
+			<p class="text-muted">Chargement du formulaire...</p>
+		</div>
+	</div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+	const offcanvasElement = document.getElementById('{{ offcanvas_id }}');
+	const formContainer = document.getElementById('offcanvasFormContainer');
+
+	function attachOffcanvasSubmitHandler(oeuvreId) {
+		const form = document.getElementById('offcanvasOeuvreFormFields');
+		if (!form) {
+			return;
+		}
+
+		form.addEventListener('submit', function(e) {
+			e.preventDefault();
+			console.log('Form submitted');
+
+			const formData = new FormData(form);
+
+			for (let [key, value] of formData.entries()) {
+				if (value instanceof File) {
+					console.log(key + ':', value.name);
+				} else {
+					console.log(key + ':', value);
+				}
+			}
+
+			console.log('Submitting to:', `{{ edit_url_pattern }}`.replace('999999', oeuvreId));
+
+			fetch(`{{ edit_url_pattern }}`.replace('999999', oeuvreId), {
+				method: 'POST',
+				body: formData,
+				headers: {
+					'X-Requested-With': 'XMLHttpRequest',
+				}
+			})
+			.then(response => {
+				console.log('POST response:', response.status, response.statusText);
+				const contentType = response.headers.get('content-type') || '';
+				if (contentType.includes('application/json')) {
+					return response.json().then(data => ({ type: 'json', data }));
+				}
+				return response.text().then(html => ({ type: 'html', html, status: response.status }));
+			})
+			.then(result => {
+				if (result.type === 'json') {
+					console.log('Response data:', result.data);
+					if (result.data.success) {
+						const offcanvas = new bootstrap.Offcanvas(offcanvasElement);
+						offcanvas.hide();
+						location.reload();
+					}
+					return;
+				}
+
+				if (result.type === 'html') {
+					formContainer.innerHTML = result.html;
+					attachOffcanvasSubmitHandler(oeuvreId);
+				}
+			})
+			.catch(error => {
+				console.error('Error:', error);
+				//alert('Erreur lors de la mise à jour: ' + error.message);
+			});
+		});
+	}
+	
+	// Handle offcanvas show event - load the form
+	offcanvasElement.addEventListener('show.bs.offcanvas', function(e) {
+		const button = e.relatedTarget;
+		const oeuvreId = button.getAttribute('data-oeuvre-id');
+		
+		console.log('Opening offcanvas for oeuvre:', oeuvreId);
+		
+		// Fetch the form from the server
+		fetch(`{{ edit_url_pattern }}`.replace('999999', oeuvreId), {
+			method: 'GET',
+			headers: {
+				'X-Requested-With': 'XMLHttpRequest',
+			}
+		})
+		.then(response => {
+			console.log('GET response:', response.status);
+			return response.text();
+		})
+		.then(html => {
+			console.log('Form HTML received:', html.substring(0, 200));
+			formContainer.innerHTML = html;
+			attachOffcanvasSubmitHandler(oeuvreId);
+		})
+		.catch(error => {
+			console.error('Error loading form:', error);
+			formContainer.innerHTML = '<p class="text-danger">Erreur lors du chargement du formulaire</p>';
+		});
+	});
+});
+</script>

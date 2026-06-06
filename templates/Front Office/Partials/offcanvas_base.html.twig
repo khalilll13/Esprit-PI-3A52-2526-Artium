@@ -1,0 +1,22 @@
+{% set offcanvas_id = offcanvas_id|default('offcanvasGeneric') %}
+{% set title = title|default('Popup') %}
+{% set subtitle = subtitle|default('') %}
+{% set width = width|default('600px') %}
+{% set z_index = z_index|default(2000) %}
+
+<div class="offcanvas offcanvas-end" tabindex="-1" id="{{ offcanvas_id }}" aria-labelledby="{{ offcanvas_id }}Label" data-bs-backdrop="true" data-bs-scroll="false" style="width: {{ width }}; z-index: {{ z_index }};">
+	<div class="offcanvas-body" data-simplebar>
+		<div class="offcanvas-header px-2 pt-0">
+			<div>
+				<h3 class="offcanvas-title mb-0" id="{{ offcanvas_id }}Label">{{ title }}</h3>
+				{% if subtitle %}
+					<small class="text-muted">{{ subtitle }}</small>
+				{% endif %}
+			</div>
+			<button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+		</div>
+		<div class="container">
+			{% block offcanvas_body %}{% endblock %}
+		</div>
+	</div>
+</div>

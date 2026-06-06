@@ -1,0 +1,75 @@
+{% extends 'base_amateur.html.twig' %}
+
+{% block title %}{{ 'Détails'|trans }}{% endblock %}
+
+{% block amateur_content %}
+    <div class="card card-body mb-4" id="book-1">
+      <div class="row g-4 align-items-center">
+        <div class="col-md-4">
+          <img class="img-fluid rounded" src="assets/images/events/01.jpg" alt="The Silent Library cover">
+        </div>
+        <div class="col-md-8">
+          <h3 class="mb-1">The Silent Library</h3>
+          <p class="text-muted mb-2">by Lina Kacem</p>
+          <div class="d-flex flex-wrap gap-2 mb-3">
+            <span class="badge bg-primary-subtle text-primary">Fiction</span>
+            <span class="badge bg-secondary-subtle text-secondary">French</span>
+            <span class="badge bg-success-subtle text-success">Available</span>
+          </div>
+          <p class="mb-3">A quiet town hides a secret archive where every book changes its reader, pushing them to uncover the truth behind the shelves.</p>
+          <div class="row g-3">
+            <div class="col-sm-6">
+              <small class="text-muted d-block">Pages</small>
+              <span>320</span>
+            </div>
+            <div class="col-sm-6">
+              <small class="text-muted d-block">ISBN</small>
+              <span>978-1-4028-9462-6</span>
+            </div>
+            <div class="col-sm-6">
+              <small class="text-muted d-block">Shelf</small>
+              <span>FIC-KAC</span>
+            </div>
+          </div>
+          <div class="d-flex flex-wrap gap-2 mt-4">
+            <a class="btn btn-success" href="#">Rent this book</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card card-body" id="book-2">
+      <div class="row g-4 align-items-center">
+        <div class="col-md-4">
+          <img class="img-fluid rounded" src="assets/images/events/02.jpg" alt="Atlas of Light cover">
+        </div>
+        <div class="col-md-8">
+          <h3 class="mb-1">Atlas of Light</h3>
+          <p class="text-muted mb-2">by Omar Benali</p>
+          <div class="d-flex flex-wrap gap-2 mb-3">
+            <span class="badge bg-primary-subtle text-primary">History</span>
+            <span class="badge bg-secondary-subtle text-secondary">Arabic</span>
+            <span class="badge bg-success-subtle text-success">Available</span>
+          </div>
+          <p class="mb-3">A journey through coastal cities and the artists who shaped them, blending travel notes with archival sketches.</p>
+          <div class="row g-3">
+            <div class="col-sm-6">
+              <small class="text-muted d-block">Pages</small>
+              <span>412</span>
+            </div>
+            <div class="col-sm-6">
+              <small class="text-muted d-block">ISBN</small>
+              <span>978-0-356-10234-9</span>
+            </div>
+            <div class="col-sm-6">
+              <small class="text-muted d-block">Shelf</small>
+              <span>HIS-BEN</span>
+            </div>
+          </div>
+          <div class="d-flex flex-wrap gap-2 mt-4">
+            <a class="btn btn-success" href="#">Rent this book</a>
+          </div>
+        </div>
+      </div>
+    </div>
+{% endblock %}

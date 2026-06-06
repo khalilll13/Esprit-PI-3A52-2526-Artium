@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>{% block title %}{% endblock %}</title>
+        <!-- Required meta tags back -->
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="author" content="Codescandy" />
+
+        <!-- Favicon icon back-->
+        <link rel="icon" href="{{asset('assetsback/images/iconn.ico')}}" />
+
+        <!-- Dark mode JS back -->
+        <script src="{{ asset('assetsback/js/vendors/darkMode.js') }}"></script>
+
+        {% block stylesheets %}
+            <!-- Backoffice Template Css -->
+            <link href="{{ asset('assetsback/fonts/feather/feather.css') }}" rel="stylesheet" />
+            <link href="{{ asset('assetsback/libs/bootstrap-icons/font/bootstrap-icons.min.css') }}" rel="stylesheet" />
+            <link href="{{ asset('assetsback/libs/simplebar/dist/simplebar.min.css') }}" rel="stylesheet" />
+
+            <link rel="stylesheet" href="{{ asset('assetsback/libs/flatpickr/dist/flatpickr.min.css') }}" />
+            <link rel="stylesheet" href="{{ asset('assetsback/css/theme.min.css') }}">
+            <link href="{{ asset('assetsback/libs/tiny-slider/dist/tiny-slider.css') }}" rel="stylesheet">
+
+        {% endblock %}
+    </head>
+
+    <body>
+            {% block body %}{% endblock %}
+
+        <!-- Backoffice Template Scripts -->
+            <script src="{{ asset('assetsback/libs/@popperjs/core/dist/umd/popper.min.js') }}"></script>
+            <script src="{{ asset('assetsback/libs/bootstrap/dist/js/bootstrap.min.js') }}"></script>
+            <script src="{{ asset('assetsback/libs/simplebar/dist/simplebar.min.js') }}"></script>
+
+            <script src="{{ asset('assetsback/libs/tiny-slider/dist/min/tiny-slider.js') }}"></script>
+            <script src="{{ asset('assetsback/libs/jsvectormap/dist/jsvectormap.min.js') }}"></script>
+            <script src="{{ asset('assetsback/libs/jsvectormap/dist/maps/world.js') }}"></script>
+            <script src="{{ asset('assetsback/libs/apexcharts/dist/apexcharts.min.js') }}"></script>
+            <script src="{{ asset('assetsback/js/vendors/chart.js') }}"></script>
+            <script src="{{ asset('assetsback/js/vendors/tnsSlider.js') }}"></script>
+            <script src="{{ asset('assetsback/js/vendors/tooltip.js') }}"></script>
+            <script src="{{ asset('assetsback/libs/flatpickr/dist/flatpickr.min.js') }}"></script>
+            <script src="{{ asset('assetsback/js/vendors/flatpickr.js') }}"></script>
+            <script src="{{ asset('assetsback/libs/typed.js/dist/typed.umd.js') }}"></script>
+            <script src="{{ asset('assetsback/js/vendors/typed.js') }}"></script>
+
+            <script src="{{ asset('assetsback/js/theme.min.js') }}"></script>
+            <script src="{{ asset('assetsback/js/vendors/validation.js') }}"></script>
+    </body>
+</html>

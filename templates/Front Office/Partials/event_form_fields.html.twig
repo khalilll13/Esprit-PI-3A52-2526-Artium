@@ -1,0 +1,58 @@
+{{ form_start(form, { attr: { class: 'row g-3', novalidate: 'novalidate', 'data-turbo': 'false' }, enctype: 'multipart/form-data' }) }}
+  {% if form.vars.submitted and form.vars.errors|length > 0 %}
+    <div class="col-12">
+      <div class="alert alert-danger mb-2">
+        {{ form_errors(form) }}
+      </div>
+    </div>
+  {% endif %}
+  <div class="col-md-6">
+    {{ form_row(form.titre, { attr: { class: 'form-control' } }) }}
+  </div>
+  <div class="col-md-6">
+    {{ form_row(form.type, { attr: { class: 'form-select' } }) }}
+  </div>
+  <div class="col-md-6">
+    {{ form_row(form.date_debut, { attr: { class: 'form-control' } }) }}
+  </div>
+  <div class="col-md-6">
+    {{ form_row(form.date_fin, { attr: { class: 'form-control' } }) }}
+  </div>
+  <div class="col-md-6">
+    {{ form_row(form.capacite_max, { attr: { class: 'form-control' } }) }}
+  </div>
+  <div class="col-md-6">
+    {{ form_row(form.prix_ticket, { attr: { class: 'form-control' } }) }}
+  </div>
+  {% if form.statut is defined %}
+    <div class="col-md-6">
+      {{ form_row(form.statut, { attr: { class: 'form-select' } }) }}
+    </div>
+  {% endif %}
+  <div class="col-md-6">
+    {{ form_row(form.galerie, { attr: { class: 'form-select' } }) }}
+  </div>
+  <div class="col-12">
+    {{ form_row(form.imageFile, { attr: { class: 'form-control' } }) }}
+    {% if form.vars.value is defined and form.vars.value and attribute(form.vars.value, 'imageCouverture') %}
+      {% set currentCover = attribute(form.vars.value, 'imageCouverture') %}
+      {% if currentCover starts with 'http://' or currentCover starts with 'https://' %}
+        {% set currentCoverUrl = currentCover %}
+      {% elseif currentCover starts with '/' %}
+        {% set currentCoverUrl = currentCover %}
+      {% else %}
+        {% set currentCoverUrl = '/' ~ currentCover|trim('/') %}
+      {% endif %}
+      <div class="mt-2">
+        <small class="text-muted d-block mb-1">Couverture actuelle</small>
+        <img src="{{ currentCoverUrl }}" alt="Couverture actuelle" class="rounded border" style="width: 140px; height: 100px; object-fit: cover;">
+      </div>
+    {% endif %}
+  </div>
+  <div class="col-12">
+    {{ form_row(form.description, { attr: { class: 'form-control', rows: 4 } }) }}
+  </div>
+  <div class="col-12 d-flex justify-content-end">
+    <button class="btn btn-primary" type="submit">{{ submit_label|default('Enregistrer') }}</button>
+  </div>
+{{ form_end(form) }}

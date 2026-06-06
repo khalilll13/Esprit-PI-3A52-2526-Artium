@@ -1,0 +1,155 @@
+{% extends 'base_admin.html.twig' %}
+
+{%block title %}{{ 'Oeuvre Details'|trans }}{% endblock %}
+
+{% block admin_content %}
+        <div class="row">
+            <!-- Page Header -->
+            <div class="col-lg-12 col-md-12 col-12">
+              <div class="border-bottom pb-3 mb-3 d-flex align-items-center justify-content-between">
+                <div class="d-flex flex-column gap-1">
+                  <h1 class="mb-0 h1 fw-bold">Détail de l’œuvre</h1>
+                  <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                      <li class="breadcrumb-item">
+                        <a href="{{ path('app_admin') }}">Tableau de Bord</a>
+                      </li>
+                      <li class="breadcrumb-item active" aria-current="page"><a href="{{ path('oeuvres') }}">Toutes Les Oeuvres</a></li>
+                      <li class="breadcrumb-item active" aria-current="page">{{ oeuvre.titre }}</li>
+                    </ol>
+                  </nav>
+                </div>
+              </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-12 col-md-12 col-12">
+            <div class="card rounded-3 p-3">
+              <link rel="stylesheet" href="{{ asset('css/oeuvre_details.css') }}">
+
+              <div class="oeuvre-card">
+                <div class="oeuvre-image">
+                  {% if oeuvre.image %}
+                    <img src="{{ path('oeuvre_image', {'id': oeuvre.id}) }}" alt="{{ oeuvre.titre }}">
+                  {% else %}
+                    <div class="text-center text-muted">Aucune image disponible</div>
+                  {% endif %}
+                </div>
+
+                <div class="oeuvre-detail">
+                  <div class="d-flex justify-content-between align-items-start">
+                    {% if oeuvre.collection and oeuvre.collection.artiste %}
+                      {% set initials = (oeuvre.collection.artiste.nom|first|upper)|default('A') ~ (oeuvre.collection.artiste.prenom|first|upper)|default('') %}
+                      <div class="d-flex align-items-center gap-2">
+                        <div class="artist-avatar bg-primary">{{ initials }}</div>
+                        <div>
+                          <div class="fw-semibold">{{ oeuvre.collection.artiste.nom }} {{ oeuvre.collection.artiste.prenom }}</div>
+                        </div>
+                      </div>
+                    {% endif %}
+                    <div>
+                      <h6 class="text-muted mb-1">Titre</h6>
+                      <h2 class="h4 mb-1">{{ oeuvre.titre }}</h2>
+                    </div>
+                    <div class="text-end">
+                      {% if oeuvre.type %}
+                        <span class="badge badge-type bg-{{ oeuvre.type.color }} text-white">{{ oeuvre.type.value }}</span>
+                      {% else %}
+                        <span class="badge badge-type bg-secondary text-white">—</span>
+                      {% endif %}
+                    </div>
+                  </div>
+
+                  <div class="oeuvre-description mt-3">
+                    <div class="text-muted small"><strong>Date:</strong> {{ oeuvre.dateCreation ? oeuvre.dateCreation|date('d M Y') : 'Date inconnue' }}</div>
+                    <h6 class="text-muted">Description</h6>
+                    <div>
+                      {{ oeuvre.description ? oeuvre.description|raw : '<span class="text-muted">Pas de description</span>' }}
+                    </div>
+                  </div>
+
+                  {# comments moved below into the second card to allow scrolling when many #}
+
+                  <div class="oeuvre-meta row mt-3">
+                    <div class="col-md-6">
+                      <dl class="row mb-0">
+                        <dt class="col-4 text-muted">Collection</dt>
+                        <dd class="col-8">{{ oeuvre.collection ? oeuvre.collection.titre : '—' }}</dd>
+                        
+                      </dl>
+                    </div>
+
+                    <div class="col-md-6">
+                      <div class="d-flex justify-content-end gap-3">
+                        <div class="stat-pill">
+                          <i class="bi bi-heart-fill text-danger"></i>
+                          <small class="fw-semibold">{{ oeuvre.likes is defined ? (oeuvre.likes|length) : 0 }}</small>
+                        </div>
+                        <div class="stat-pill">
+                          <i class="bi bi-chat-fill text-info"></i>
+                          <small class="fw-semibold">{{ oeuvre.commentaires is defined ? (oeuvre.commentaires|length) : 0 }}</small>
+                        </div>
+                        <div class="stat-pill">
+                          <i class="bi bi-star-fill text-warning"></i>
+                          <small class="fw-semibold">{{ oeuvre.userFav is defined ? (oeuvre.userFav|length) : 0 }}</small>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="mt-4 d-flex align-items-center justify-content-start gap-2">
+                    
+
+                    <div class="ms-auto">
+                      <a href="{{ path('oeuvres') }}" class="btn btn-light">Retour</a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <br>
+              <div class="card rounded-3 p-3 comments-box">
+                <h6 class="mb-2">Commentaires</h6>
+                {% if oeuvre.commentaires is defined and oeuvre.commentaires|length > 0 %}
+                  <div style="max-height:380px; overflow:auto;">
+                    <ul class="list-group list-group-flush">
+                      {% for commentaire in oeuvre.commentaires %}
+                        {% set cinit = commentaire.user ? (commentaire.user.nom|first|upper ~ commentaire.user.prenom|first|upper) : 'AN' %}
+                        <li class="list-group-item comment-item">
+                          <div class="comment-avatar bg-secondary">{{ cinit }}</div>
+                          <div>
+                            <div class="d-flex justify-content-between align-items-start comment-meta">
+                              <div>
+                                {{ commentaire.user ? (commentaire.user.nom ~ ' ' ~ commentaire.user.prenom) : 'Anonyme' }} {% if commentaire.dateCommentaire %}<span class="text-muted">• {{ commentaire.dateCommentaire|date('d M Y') }}</span>{% endif %}
+                              </div>
+                              <div class="dropdown">
+                                <button class="btn btn-link p-0 text-muted text-decoration-none" type="button" id="commentActions{{ commentaire.id }}" data-bs-toggle="dropdown" aria-expanded="false">
+                                  <i class="fe fe-more-horizontal"></i>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="commentActions{{ commentaire.id }}">
+                                  <li>
+                                    <form method="post" action="{{ path('app_oeuvre_comment_delete', {'id': commentaire.id}) }}" onsubmit="return confirm('Supprimer ce commentaire ?');">
+                                      <input type="hidden" name="_token" value="{{ csrf_token('delete_comment' ~ commentaire.id) }}">
+                                      <button type="submit" class="dropdown-item text-danger">
+                                        <i class="fe fe-trash-2 me-1"></i>Supprimer
+                                      </button>
+                                    </form>
+                                  </li>
+                                </ul>
+                              </div>
+                            </div>
+                            <div class="comment-text">{{ commentaire.texte }}</div>
+                          </div>
+                        </li>
+                      {% endfor %}
+                    </ul>
+                  </div>
+                {% else %}
+                  <div class="text-muted">Aucun commentaire</div>
+                {% endif %}
+              </div>
+            </div>
+         </div>
+            
+
+{% endblock %}

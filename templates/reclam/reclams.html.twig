@@ -1,0 +1,654 @@
+{% extends 'base_admin.html.twig' %}
+
+{%block title %}{{ 'Réclamations'|trans }}{% endblock %}
+
+{% import _self as ui %}
+
+{% macro statut_badge(statut) %}
+  {% set badge_class = statut == 'Traitée' ? 'bg-success' : (statut == 'En cours' ? 'bg-info' : 'bg-warning') %}
+  <span class="badge-dot {{ badge_class }} me-1 d-inline-block align-middle"></span>
+  {{ statut }}
+{% endmacro %}
+
+{% macro reclamations_table(reclamations, typeFilter) %}
+  <div class="table-responsive">
+    <table class="table mb-0 text-nowrap table-centered table-hover table-with-checkbox">
+      <thead class="table-light">
+        <tr>
+          <th>Texte</th>
+          <th>Date envoi</th>
+          <th>Utilisateur</th>
+          <th>Type</th>
+          <th>Statut</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% set hasRows = false %}
+        {% for reclamation in reclamations %}
+          {% if (typeFilter is null or (reclamation.type and reclamation.type.value == typeFilter)) and reclamation.statut.value != 'Archivée' %}
+            {% set hasRows = true %}
+            <tr>
+             
+              <td>
+                {% if reclamation.texte|length > 60 %}
+                  {{ reclamation.texte|slice(0, 60) ~ '...' }}
+                {% else %}
+                  {{ reclamation.texte }}
+                {% endif %}
+              </td>
+              <td>{{ reclamation.dateCreation ? reclamation.dateCreation|date('d/m/Y') : '-' }}</td>
+              <td>
+                {% if reclamation.user %}
+                  <div class="d-flex flex-column">
+                    <span class="fw-semibold">{{ reclamation.user.prenom }} {{ reclamation.user.nom }}</span>
+                    <span class="text-muted small">{{ reclamation.user.email }}</span>
+                  </div>
+                {% else %}
+                  <span class="text-muted">Utilisateur inconnu</span>
+                {% endif %}
+              </td>
+              <td>
+                <div>{{ reclamation.type ? reclamation.type.value : '-' }}</div>
+                <div class="text-muted small">Reponses: {{ reclamation.reponses|length }}</div>
+              </td>
+              <td>
+                {% if reclamation.statut %}
+                  {{ ui.statut_badge(reclamation.statut.value) }}
+                {% else %}
+                  <span class="text-muted">-</span>
+                {% endif %}
+              </td>
+              <td>
+                <span class="dropdown dropstart">
+                  <a
+                    class="btn-icon btn btn-ghost btn-sm rounded-circle"
+                    href="#"
+                    role="button"
+                    id="reclamDropdown{{ reclamation.id }}"
+                    data-bs-toggle="dropdown"
+                    data-bs-offset="-20,20"
+                    aria-expanded="false">
+                    <i class="fe fe-more-vertical"></i>
+                  </a>
+                  <span class="dropdown-menu" aria-labelledby="reclamDropdown{{ reclamation.id }}">
+                    <span class="dropdown-header">Actions</span>
+                    <button
+                      type="button"
+                      class="dropdown-item"
+                      data-bs-toggle="offcanvas"
+                      data-bs-target="#offcanvasResponse-{{ reclamation.id }}"
+                      aria-controls="offcanvasResponse-{{ reclamation.id }}">
+                      <i class="fe fe-message-circle dropdown-item-icon"></i>
+                      Repondre
+                    </button>
+                    {% if reclamation.statut.value == 'Traitée' %}
+                      <form method="post" action="{{ path('app_reclamation_admin_archive', {'id': reclamation.id}) }}" style="display: inline;">
+                        <input type="hidden" name="_token" value="{{ csrf_token('archive' ~ reclamation.id) }}">
+                        <button class="dropdown-item" type="submit">
+                          <i class="fe fe-archive dropdown-item-icon"></i>
+                          Archiver
+                        </button>
+                      </form>
+                    {% endif %}
+                    <form method="post" action="{{ path('app_reclamation_admin_delete', {'id': reclamation.id}) }}" onsubmit="return confirm('Supprimer cette reclamation ?');" style="display: inline;">
+                      <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ reclamation.id) }}">
+                      <button class="dropdown-item text-danger" type="submit">
+                        <i class="fe fe-trash dropdown-item-icon"></i>
+                        Supprimer
+                      </button>
+                    </form>
+                  </span>
+                </span>
+              </td>
+            </tr>
+          {% endif %}
+        {% endfor %}
+        {% if not hasRows %}
+          <tr>
+            <td colspan="7" class="text-center py-5">
+              <i class="fe fe-inbox" style="font-size: 3rem; color: #ccc;"></i>
+              <p class="text-muted mt-3 mb-0">Aucune réclamation trouvée</p>
+            </td>
+          </tr>
+        {% endif %}
+      </tbody>
+    </table>
+  </div>
+{% endmacro %}
+
+{% macro reclamations_table_archived(reclamations) %}
+  <div class="table-responsive">
+    <table class="table mb-0 text-nowrap table-centered table-hover table-with-checkbox">
+      <thead class="table-light">
+        <tr>
+          <th>Texte</th>
+          <th>Date envoi</th>
+          <th>Utilisateur</th>
+          <th>Type</th>
+          <th>Statut</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% set hasRows = false %}
+        {% for reclamation in reclamations %}
+          {% if reclamation.statut.value == 'Archivée' %}
+            {% set hasRows = true %}
+            <tr>
+              <td>
+                {% if reclamation.texte|length > 60 %}
+                  {{ reclamation.texte|slice(0, 60) ~ '...' }}
+                {% else %}
+                  {{ reclamation.texte }}
+                {% endif %}
+              </td>
+              <td>{{ reclamation.dateCreation ? reclamation.dateCreation|date('d/m/Y') : '-' }}</td>
+              <td>
+                {% if reclamation.user %}
+                  <div class="d-flex flex-column">
+                    <span class="fw-semibold">{{ reclamation.user.prenom }} {{ reclamation.user.nom }}</span>
+                    <span class="text-muted small">{{ reclamation.user.email }}</span>
+                  </div>
+                {% else %}
+                  <span class="text-muted">Utilisateur inconnu</span>
+                {% endif %}
+              </td>
+              <td>
+                <div>{{ reclamation.type ? reclamation.type.value : '-' }}</div>
+                <div class="text-muted small">Reponses: {{ reclamation.reponses|length }}</div>
+              </td>
+              <td>
+                <span class="badge bg-secondary">
+                  <i class="fe fe-archive me-1"></i>
+                  Archivée
+                </span>
+              </td>
+              <td>
+                <span class="dropdown dropstart">
+                  <a
+                    class="btn-icon btn btn-ghost btn-sm rounded-circle"
+                    href="#"
+                    role="button"
+                    id="reclamDropdown{{ reclamation.id }}"
+                    data-bs-toggle="dropdown"
+                    data-bs-offset="-20,20"
+                    aria-expanded="false">
+                    <i class="fe fe-more-vertical"></i>
+                  </a>
+                  <span class="dropdown-menu" aria-labelledby="reclamDropdown{{ reclamation.id }}">
+                    <span class="dropdown-header">Actions</span>
+                    <form method="post" action="{{ path('app_reclamation_admin_unarchive', {'id': reclamation.id}) }}" style="display: inline;">
+                      <input type="hidden" name="_token" value="{{ csrf_token('unarchive' ~ reclamation.id) }}">
+                      <button class="dropdown-item" type="submit">
+                        <i class="fe fe-inbox dropdown-item-icon"></i>
+                        Désarchiver
+                      </button>
+                    </form>
+                    <form method="post" action="{{ path('app_reclamation_admin_delete', {'id': reclamation.id}) }}" onsubmit="return confirm('Supprimer cette reclamation archivée ?');" style="display: inline;">
+                      <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ reclamation.id) }}">
+                      <button class="dropdown-item text-danger" type="submit">
+                        <i class="fe fe-trash dropdown-item-icon"></i>
+                        Supprimer définitivement
+                      </button>
+                    </form>
+                  </span>
+                </span>
+              </td>
+            </tr>
+          {% endif %}
+        {% endfor %}
+        {% if not hasRows %}
+          <tr>
+            <td colspan="7" class="text-center py-5">
+              <i class="fe fe-inbox" style="font-size: 3rem; color: #ccc;"></i>
+              <p class="text-muted mt-3 mb-0">Aucune réclamation archivée</p>
+            </td>
+          </tr>
+        {% endif %}
+      </tbody>
+    </table>
+  </div>
+{% endmacro %}
+
+{% block admin_content %}
+    <div class="row">
+            <!-- Page Header -->
+    <div class="col-lg-12 col-md-12 col-12">
+              <div class="border-bottom pb-3 mb-3 d-flex align-items-center justify-content-between">
+                <div class="d-flex flex-column gap-1">
+                  <h1 class="mb-0 h1 fw-bold">Liste des réclamations</h1>
+                  <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                      <li class="breadcrumb-item">
+                        <a href="{{ path('app_admin') }}">Tableau de Bord</a>
+                      </li>
+                      <li class="breadcrumb-item active" aria-current="page">Réclamations</li>
+                    </ol>
+                  </nav>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-lg-12 col-md-12 col-12">
+              <!-- Card -->
+              <div class="card rounded-3">
+                <!-- Card Header -->
+                <div class="card-header p-0">
+
+                  <ul class="nav nav-lb-tab border-bottom-0" id="tab" role="tablist">
+                    <li class="nav-item">
+                      <a class="nav-link active" id="all-post-tab" data-bs-toggle="pill" href="#all-post" role="tab" aria-controls="all-post" aria-selected="true">Tous les types</a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link" id="published-tab" data-bs-toggle="pill" href="#published" role="tab" aria-controls="published" aria-selected="false">Paiement</a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link" id="scheduled-tab" data-bs-toggle="pill" href="#scheduled" role="tab" aria-controls="scheduled" aria-selected="false">Oeuvre</a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link" id="draft-tab" data-bs-toggle="pill" href="#draft" role="tab" aria-controls="draft" aria-selected="false">Evènement</a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link" id="deleted-tab" data-bs-toggle="pill" href="#deleted" role="tab" aria-controls="deleted" aria-selected="false">Compte</a>
+                    </li>
+                    <li class="nav-item ms-auto">
+                      <a class="nav-link" id="archive-tab" data-bs-toggle="pill" href="#archive" role="tab" aria-controls="archive" aria-selected="false">
+                        <i class="fe fe-archive me-2"></i>Archivées
+                      </a>
+                    </li>
+                  </ul>
+                </div>
+                <div class="p-4">
+                  <!-- Formulaire de filtres (auto-soumission) -->
+                  <form method="get" id="filterForm" class="row g-3 align-items-end">
+                    <!-- Recherche textuelle -->
+                    <div class="col-12 col-md-5 col-lg-4">
+                      <div class="position-relative">
+                        <span class="position-absolute ps-3 search-icon" style="top: 50%; transform: translateY(-50%);">
+                          <i class="fe fe-search"></i>
+                        </span>
+                        <input type="search" name="q" class="form-control ps-6" placeholder="Rechercher" value="{{ search_query|default('') }}" onchange="document.getElementById('filterForm').submit()" />
+                      </div>
+                    </div>
+                    
+                    <!-- Filtre Statut -->
+                    <div class="col-12 col-md-3 col-lg-2">
+                      <select name="statut" class="form-select" onchange="document.getElementById('filterForm').submit()">
+                        <option value="">Tous les statuts</option>
+                        <option value="Traitée" {% if selected_statut == 'Traitée' %}selected{% endif %}>Traité</option>
+                        <option value="Non traitée" {% if selected_statut == 'Non traitée' %}selected{% endif %}>Non traité</option>
+                        <option value="Archivée" {% if selected_statut == 'Archivée' %}selected{% endif %}>Archivé</option>
+                      </select>
+                    </div>
+                    
+                    <!-- Filtre Date -->
+                    <div class="col-12 col-md-4 col-lg-4">
+                      <input type="date" name="date_from" class="form-control" value="{{ date_from|default('') }}" onchange="document.getElementById('filterForm').submit()" />
+                    </div>
+                  </form>
+                </div>
+                
+                <div>
+                  <div class="tab-content" id="tabContent">
+                    <div class="tab-pane fade show active" id="all-post" role="tabpanel" aria-labelledby="all-post-tab">
+                      {{ ui.reclamations_table(reclamations, null) }}
+                    </div>
+                    <div class="tab-pane fade" id="published" role="tabpanel" aria-labelledby="published-tab">
+                      {{ ui.reclamations_table(reclamations, 'Paiement') }}
+                    </div>
+                    <div class="tab-pane fade" id="scheduled" role="tabpanel" aria-labelledby="scheduled-tab">
+                      {{ ui.reclamations_table(reclamations, 'Oeuvre') }}
+                    </div>
+                    <div class="tab-pane fade" id="draft" role="tabpanel" aria-labelledby="draft-tab">
+                      {{ ui.reclamations_table(reclamations, 'Evènement') }}
+                    </div>
+                    <div class="tab-pane fade" id="deleted" role="tabpanel" aria-labelledby="deleted-tab">
+                      {{ ui.reclamations_table(reclamations, 'Compte') }}
+                    </div>
+                    <div class="tab-pane fade" id="archive" role="tabpanel" aria-labelledby="archive-tab">
+                      {{ ui.reclamations_table_archived(reclamations) }}
+                    </div>
+                  </div>
+                </div>
+                {% for reclamation in reclamations %}
+                  {% set create_errors = responseCreateForms[reclamation.id] is defined
+                    and (responseCreateForms[reclamation.id].vars.errors|length > 0
+                      or responseCreateForms[reclamation.id].contenu.vars.errors|length > 0) %}
+                  {% set edit_errors = false %}
+                  {% for reponse in reclamation.reponses %}
+                    {% if responseEditForms[reponse.id] is defined
+                      and (responseEditForms[reponse.id].vars.errors|length > 0
+                        or responseEditForms[reponse.id].contenu.vars.errors|length > 0) %}
+                      {% set edit_errors = true %}
+                    {% endif %}
+                  {% endfor %}
+                  {% set offcanvas_open = create_errors or edit_errors %}
+                  <div
+                    class="offcanvas offcanvas-end{{ offcanvas_open ? ' show' : '' }}"
+                    tabindex="-1"
+                    id="offcanvasResponse-{{ reclamation.id }}"
+                    data-bs-backdrop="false"
+                    data-bs-scroll="true"
+                    aria-hidden="{{ offcanvas_open ? 'false' : 'true' }}"
+                    style="width: 600px; z-index: 2000;{{ offcanvas_open ? ' visibility: visible;' : '' }}">
+                    <div class="offcanvas-body" data-simplebar>
+                      <div class="offcanvas-header px-2 pt-0">
+                        <div class="d-flex flex-column">
+                          <div class="d-flex align-items-center gap-2">
+                            <h3 class="offcanvas-title mb-0">Repondre a la reclamation #{{ reclamation.id }}</h3>
+                            <span class="badge bg-info">
+                              {{ reclamation.reponses|length }} reponse{{ reclamation.reponses|length > 1 ? 's' : '' }}
+                            </span>
+                          </div>
+                          <span class="text-muted small">Fil de discussion et reponses admin</span>
+                        </div>
+                        <button
+                          type="button"
+                          class="btn-close text-reset"
+                          data-bs-dismiss="offcanvas"
+                          aria-label="Close"></button>
+                      </div>
+                      <div class="container">
+                        <div class="d-flex flex-column gap-4">
+                          
+                          {# Détails de la réclamation originale #}
+                          <div class="card border shadow-sm">
+                            <div class="card-header bg-light border-bottom">
+                              <div class="d-flex align-items-center gap-2">
+                                <span class="rounded-circle bg-warning text-dark d-inline-flex align-items-center justify-content-center" style="width: 30px; height: 30px;">
+                                  <i class="fe fe-alert-circle"></i>
+                                </span>
+                                <div>
+                                  <h5 class="mb-0">Réclamation originale</h5>
+                                  <span class="text-muted small">
+                                    {{ reclamation.user ? reclamation.user.prenom ~ ' ' ~ reclamation.user.nom : 'Utilisateur' }} - 
+                                    {{ reclamation.dateCreation ? reclamation.dateCreation|date('d/m/Y') : '-' }}
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
+                            <div class="card-body">
+                              <div class="mb-3">
+                                <label class="form-label fw-semibold">Type de réclamation</label>
+                                <div>
+                                  <span class="badge bg-primary">{{ reclamation.type ? reclamation.type.value : '-' }}</span>
+                                  {% if reclamation.statut %}
+                                    {{ ui.statut_badge(reclamation.statut.value) }}
+                                  {% endif %}
+                                </div>
+                              </div>
+                              <div class="mb-3">
+                                <label class="form-label fw-semibold">Message</label>
+                                <div class="p-3 bg-light rounded">
+                                  {{ reclamation.texte }}
+                                </div>
+                              </div>
+                              {% if reclamation.fileName %}
+                                <div>
+                                  <label class="form-label fw-semibold">Fichier joint</label>
+                                  <div class="d-flex align-items-center gap-2 p-3 bg-light rounded">
+                                    <i class="fe fe-file text-primary" style="font-size: 1.5rem;"></i>
+                                    <div class="flex-grow-1">
+                                      <div class="fw-medium">{{ reclamation.fileName }}</div>
+                                      <div class="text-muted small">Document attaché</div>
+                                    </div>
+                                    {% set fileUrl = reclamation.fileName starts with 'http' ? reclamation.fileName : 'http://127.0.0.1/img/' ~ reclamation.fileName %}
+                                    <a href="{{ fileUrl }}" 
+                                       target="_blank" 
+                                       class="btn btn-sm btn-primary">
+                                        <i class="fe fe-eye me-1"></i>
+                                      Ouvrir
+                                    </a>
+                                  </div>
+                                </div>
+                              {% endif %}
+                            </div>
+                          </div>
+
+                          <div class="card border-0 shadow-sm bg-body-tertiary">
+                            <div class="card-header bg-transparent border-0 pb-0">
+                              <div class="d-flex align-items-center justify-content-between">
+                                <div class="d-flex align-items-center gap-2">
+                                  <span class="rounded-circle bg-primary text-white d-inline-flex align-items-center justify-content-center" style="width: 30px; height: 30px;">
+                                    <i class="fe fe-edit-3"></i>
+                                  </span>
+                                  <div>
+                                    <h5 class="mb-0">Nouvelle reponse</h5>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                            <div class="card-body">
+                              {% if responseCreateForms[reclamation.id] is defined %}
+                                {{ form_start(responseCreateForms[reclamation.id], {
+                                  attr: { class: 'row g-3', 'data-turbo': 'false', 'novalidate': 'novalidate' },
+                                  action: path('app_reponse_admin_create', { id: reclamation.id }),
+                                  method: 'POST'
+                                }) }}
+                                <div class="col-12">
+                                  {{ form_errors(responseCreateForms[reclamation.id]) }}
+                                </div>
+                                <div class="col-12">
+                                  <div class="d-flex align-items-center justify-content-between mb-2">
+                                    {{ form_label(responseCreateForms[reclamation.id].contenu, null, {label_attr: {class: 'mb-0'}}) }}
+                                    {% if aiSuggestions[reclamation.id] is defined and aiSuggestions[reclamation.id] %}
+                                      <span class="badge bg-primary">
+                                        <i class="fe fe-zap me-1"></i>
+                                        Suggestion IA générée
+                                      </span>
+                                    {% endif %}
+                                  </div>
+                                  {% set contenu_has_errors = responseCreateForms[reclamation.id].contenu.vars.errors|length > 0 %}
+                                  {% set ai_suggestion = aiSuggestions[reclamation.id] is defined ? aiSuggestions[reclamation.id] : 'Ecrire une reponse...' %}
+                                  {{ form_widget(responseCreateForms[reclamation.id].contenu, {
+                                    attr: {
+                                      class: 'form-control' ~ (contenu_has_errors ? ' is-invalid' : ''),
+                                      rows: 7,
+                                      placeholder: ai_suggestion,
+                                      'data-ai-content': ai_suggestion
+                                    }
+                                  }) }}
+                                  {% for error in responseCreateForms[reclamation.id].contenu.vars.errors %}
+                                    <div class="invalid-feedback d-block">{{ error.message }}</div>
+                                  {% endfor %}
+                                  {% if aiSuggestions[reclamation.id] is defined and aiSuggestions[reclamation.id] and aiSuggestions[reclamation.id] != 'Ecrire une reponse...' %}
+                                    <div class="form-text text-primary">
+                                      <i class="fe fe-lightbulb me-1"></i>
+                                      <small><strong>Astuce :</strong> Double-cliquez dans le champ pour insérer la suggestion IA</small>
+                                    </div>
+                                  {% endif %}
+                                </div>
+                                <div class="col-12">
+                                  <div class="alert alert-info mb-0">
+                                    <i class="fe fe-info me-2"></i>
+                                    <small>Le statut de la reclamation passera automatiquement a "Traitee" apres votre reponse.</small>
+                                  </div>
+                                </div>
+                                <div class="col-12 d-flex gap-2">
+                                  <button class="btn btn-primary" type="submit">Enregistrer</button>
+                                  <button
+                                    type="button"
+                                    class="btn btn-outline-secondary"
+                                    data-bs-dismiss="offcanvas"
+                                    aria-label="Close">Fermer</button>
+                                </div>
+                                {{ form_end(responseCreateForms[reclamation.id]) }}
+                              {% else %}
+                                <p class="text-muted mb-0">Formulaire indisponible.</p>
+                              {% endif %}
+                            </div>
+                          </div>
+
+                          <div>
+                            <div class="d-flex align-items-center justify-content-between mb-3">
+                              <div class="d-flex align-items-center gap-2">
+                                <span class="rounded-circle bg-secondary text-white d-inline-flex align-items-center justify-content-center" style="width: 28px; height: 28px;">
+                                  <i class="fe fe-message-square"></i>
+                                </span>
+                                <h5 class="mb-0">Reponses existantes</h5>
+                              </div>
+                              <span class="badge bg-secondary">
+                                {{ reclamation.reponses|length }} reponse{{ reclamation.reponses|length > 1 ? 's' : '' }}
+                              </span>
+                            </div>
+                            {% if reclamation.reponses|length > 0 %}
+                              <div class="ps-3" style="border-left: 2px dashed #dee2e6;">
+                                {% for reponse in reclamation.reponses %}
+                                  <div class="position-relative mb-4">
+                                    <span class="position-absolute top-0 start-0 translate-middle bg-primary rounded-circle" style="width: 10px; height: 10px;"></span>
+                                    <div class="border rounded-3 p-3 bg-white shadow-sm">
+                                      <div class="d-flex justify-content-between align-items-start">
+                                        <div class="d-flex align-items-center gap-2">
+                                          <span class="rounded-circle bg-primary text-white d-inline-flex align-items-center justify-content-center" style="width: 28px; height: 28px;">
+                                            {{ reponse.userAdmin ? reponse.userAdmin.prenom|slice(0, 1) : 'A' }}
+                                          </span>
+                                          <div>
+                                            <div class="fw-semibold">
+                                              {{ reponse.userAdmin ? reponse.userAdmin.prenom ~ ' ' ~ reponse.userAdmin.nom : 'Admin' }}
+                                            </div>
+                                            <div class="text-muted small">
+                                              {{ reponse.dateReponse ? reponse.dateReponse|date('d/m/Y H:i') : '-' }}
+                                            </div>
+                                          </div>
+                                        </div>
+                                        <form
+                                          method="post"
+                                          action="{{ path('app_reponse_admin_delete', {id: reponse.id}) }}"
+                                          onsubmit="return confirm('Supprimer cette reponse ?');">
+                                          <input type="hidden" name="_token" value="{{ csrf_token('delete_response' ~ reponse.id) }}" />
+                                          <button class="btn btn-sm btn-outline-danger" type="submit">Supprimer</button>
+                                        </form>
+                                      </div>
+                                      <div class="mt-3">
+                                        {% if responseEditForms[reponse.id] is defined %}
+                                          {{ form_start(responseEditForms[reponse.id], {
+                                            attr: { class: 'row g-3', 'data-turbo': 'false', 'novalidate': 'novalidate' },
+                                            action: path('app_reponse_admin_edit', { id: reponse.id }),
+                                            method: 'POST'
+                                          }) }}
+                                          <div class="col-12">
+                                            {{ form_errors(responseEditForms[reponse.id]) }}
+                                          </div>
+                                          <div class="col-12">
+                                            <div class="p-2 bg-light rounded-3">
+                                              {{ form_label(responseEditForms[reponse.id].contenu) }}
+                                              {% set edit_contenu_has_errors = responseEditForms[reponse.id].contenu.vars.errors|length > 0 %}
+                                              {{ form_widget(responseEditForms[reponse.id].contenu, {
+                                                attr: {
+                                                  class: 'form-control' ~ (edit_contenu_has_errors ? ' is-invalid' : ''),
+                                                  rows: 4,
+                                                  placeholder: 'Mettre a jour la reponse...'
+                                                }
+                                              }) }}
+                                              {% for error in responseEditForms[reponse.id].contenu.vars.errors %}
+                                                <div class="invalid-feedback d-block">{{ error.message }}</div>
+                                              {% endfor %}
+                                            </div>
+                                          </div>
+                                          <div class="col-12 d-flex gap-2">
+                                            <button class="btn btn-outline-primary" type="submit">Mettre a jour</button>
+                                          </div>
+                                          {{ form_end(responseEditForms[reponse.id]) }}
+                                        {% else %}
+                                          <p class="text-muted mb-0">Formulaire indisponible.</p>
+                                        {% endif %}
+                                      </div>
+                                    </div>
+                                  </div>
+                                {% endfor %}
+                              </div>
+                            {% else %}
+                              <p class="text-muted">Aucune reponse pour le moment.</p>
+                            {% endif %}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                {% endfor %}
+                <!-- Card Footer -->
+                <div class="card-footer">
+                  <nav>
+                    <ul class="pagination justify-content-center mb-0">
+                      {# BOUTON PREVIOUS (Page précédente) #}
+                      <li class="page-item {{ current_page|default(1) == 1 ? 'disabled' : '' }}">
+                        <a class="page-link mx-1 rounded" href="{{ current_page|default(1) > 1 ? path('app_reclamation_admin_index', {page: current_page|default(1) - 1}) : '#' }}" aria-label="Previous">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="currentColor" class="bi bi-chevron-left" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"></path>
+                          </svg>
+                        </a>
+                      </li>
+                      {# BOUTONS DE NUMÉROS DE PAGE #}
+                      {% for p in 1..total_pages|default(1) %}
+                      <li class="page-item {{ p == current_page|default(1) ? 'active' : '' }}">
+                        <a class="page-link mx-1 rounded" href="{{ path('app_reclamation_admin_index', {page: p}) }}">{{ p }}</a>
+                      </li>
+                      {% endfor %}
+                      {# BOUTON NEXT (Page suivante) #}
+                      <li class="page-item {{ current_page|default(1) == total_pages|default(1) ? 'disabled' : '' }}">
+                        <a class="page-link mx-1 rounded" href="{{ current_page|default(1) < total_pages|default(1) ? path('app_reclamation_admin_index', {page: current_page|default(1) + 1}) : '#' }}" aria-label="Next">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="currentColor" class="bi bi-chevron-right" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"></path>
+                          </svg>
+                        </a>
+                      </li>
+                    </ul>
+                  </nav>
+                </div>
+              </div>
+            </div>
+          </div>
+    </div>
+
+    <script>
+        // Script pour gérer l'insertion de la suggestion IA au double-clic
+        document.addEventListener('DOMContentLoaded', function() {
+            const textareas = document.querySelectorAll('textarea[data-ai-content]');
+            
+            textareas.forEach(function(textarea) {
+                const aiContent = textarea.getAttribute('data-ai-content');
+                
+                // Ignorer si pas de suggestion IA valide
+                if (!aiContent || aiContent === 'Ecrire une reponse...') {
+                    return;
+                }
+                
+                // Ajouter un indicateur visuel au focus
+                textarea.addEventListener('focus', function() {
+                    if (!this.value || this.value.trim() === '') {
+                        this.style.borderColor = '#0d6efd';
+                        this.style.boxShadow = '0 0 0 0.25rem rgba(13, 110, 253, 0.25)';
+                    }
+                });
+                
+                textarea.addEventListener('blur', function() {
+                    this.style.borderColor = '';
+                    this.style.boxShadow = '';
+                });
+                
+                // Double-clic pour insérer la suggestion complète
+                textarea.addEventListener('dblclick', function() {
+                    if (!this.value || this.value.trim() === '') {
+                        this.value = aiContent;
+                        
+                        // Animati1on de succès
+                        this.style.backgroundColor = '#d1e7dd';
+                        setTimeout(() => {
+                            this.style.backgroundColor = '';
+                        }, 600);
+                        
+                        // Ajuster la hauteur du textarea
+                        this.style.height = 'auto';
+                        this.style.height = this.scrollHeight + 'px';
+                    }
+                });
+                
+                // Info-bulle
+                textarea.title = '💡 Double-cliquez pour insérer la suggestion IA';
+            });
+        });
+    </script>
+    
+{% endblock %}

@@ -1,0 +1,39 @@
+{% extends 'base_admin.html.twig' %}
+
+{% block title %}Nouvel utilisateur{% endblock %}
+
+{% block admin_content %}
+<div class="row">
+    <div class="col-lg-12">
+        <div class="border-bottom pb-3 mb-4">
+            <h1 class="mb-0 h2 fw-bold">Ajouter un nouvel utilisateur</h1>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ path('app_admin') }}">Tableau de bord</a></li>
+                    <li class="breadcrumb-item"><a href="{{ path('app_user_index') }}">Utilisateurs</a></li>
+                    <li class="breadcrumb-item active">Nouveau</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-10 offset-lg-1">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title mb-0">Informations de l'utilisateur</h4>
+            </div>
+            <div class="card-body">
+                {{ include('user/_form.html.twig', {'button_label': 'Créer'}) }}
+            </div>
+        </div>
+
+        <div class="mt-3">
+            <a href="{{ path('app_user_index') }}" class="btn btn-outline-secondary">
+                <i class="fe fe-arrow-left me-2"></i>Retour à la liste
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

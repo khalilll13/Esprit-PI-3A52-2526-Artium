@@ -1,0 +1,142 @@
+<div class="glightbox-desc {{ descClass }}">
+	<div class="d-flex align-items-center justify-content-between">
+		<div class="d-flex align-items-center">
+			<div class="avatar avatar-story me-2">
+				<a href="#!"><img class="avatar-img rounded-circle" src="{{ asset('assetsfront/images/avatar/default.jpg') }}" alt=""></a>
+			</div>
+			<div>
+				<div class="nav nav-divider">
+					<h6 class="nav-item card-title mb-0">
+						<a href="#!">{{ (oeuvre.collection and oeuvre.collection.artiste) ? (oeuvre.collection.artiste.nom ~ ' ' ~ oeuvre.collection.artiste.prenom) : 'Artiste Inconnu' }}</a>
+					</h6>
+					<span class="nav-item small">{{ oeuvre.dateCreation ? oeuvre.dateCreation|date('d F Y') : '' }}</span>
+				</div>
+				<p class="mb-0 small">{{ (oeuvre.collection and oeuvre.collection.artiste and oeuvre.collection.artiste.specialite) ? oeuvre.collection.artiste.specialite.value : 'Spécialité non renseignée' }}</p>
+			</div>
+		</div>
+	</div>
+
+	<h5 class="mt-3 mb-2">{{ oeuvre.titre }}</h5>
+	<p class="mb-3">{{ oeuvre.description }}</p>
+
+	<ul class="nav nav-stack py-2 small">
+		<li class="nav-item">
+			{% set userLiked = false %}
+			{% for like in oeuvre.likes %}
+				{% if like.user.id == app.user.id %}
+					{% set userLiked = true %}
+				{% endif %}
+			{% endfor %}
+			<a class="nav-link like-toggle" data-turbo="false" href="#" data-oeuvre-id="{{ oeuvre.id }}" data-liked="{{ userLiked ? 'true' : 'false' }}">
+				<i class="bi bi-heart{{ userLiked ? '-fill text-danger' : '' }} pe-1"></i>
+				<span class="like-count">{{ oeuvre.likes ? oeuvre.likes|length : 0 }}</span>
+			</a>
+		</li>
+		<li class="nav-item">
+			<a class="nav-link" href="#!">
+				<i class="bi bi-chat-fill pe-1"></i>Commentaires (<span class="comment-count" data-oeuvre-id="{{ oeuvre.id }}">{{ oeuvre.commentaires ? oeuvre.commentaires|length : 0 }}</span>)
+			</a>
+		</li>
+		<li class="nav-item ms-sm-auto d-flex align-items-center">
+			<i class="bi bi-star-fill text-warning fa-fw pe-1"></i>
+			<span>{{ oeuvre.userFav|length }}</span>
+			<span class="ms-1">favoris</span>
+		</li>
+	</ul>
+
+	<div class="d-flex mb-3">
+		<div class="avatar avatar-xs me-2">
+			<a href="#!"><img class="avatar-img rounded-circle" src="{{ asset('assetsfront/images/avatar/default.jpg') }}" alt=""></a>
+		</div>
+		<form class="w-100" action="{{ path('favoris_commentaire', {'id': oeuvre.id}) }}" method="post">
+			<div class="position-relative">
+				<textarea name="contenu" data-autoresize class="form-control bg-light rounded pe-5" rows="1" placeholder="Ajouter un commentaire..."></textarea>
+				<button class="btn btn-link text-primary position-absolute top-50 end-0 translate-middle-y me-2 p-0" type="submit" aria-label="Publier le commentaire">
+					<i class="bi bi-send-fill fs-5"></i>
+				</button>
+			</div>
+		</form>
+	</div>
+
+	{% if oeuvre.commentaires and oeuvre.commentaires|length > 0 %}
+		<div class="fav-comments-container">
+		<ul class="comment-wrap list-unstyled mb-0">
+			{% for commentaire in oeuvre.commentaires %}
+				<li class="comment-item{% if loop.index > 3 %} hidden-comment d-none{% endif %}">
+					<div class="d-flex">
+						<div class="avatar avatar-xs">
+							<a href="#!"><img class="avatar-img rounded-circle" src="{{ asset('assetsfront/images/avatar/default.jpg') }}" alt=""></a>
+						</div>
+						<div class="ms-2 w-100">
+							<div class="bg-light rounded-start-top-0 p-3 rounded">
+								<div class="d-flex justify-content-between">
+									<h6 class="mb-1"><a href="#!">{{ commentaire.user ? (commentaire.user.nom ~ ' ' ~ commentaire.user.prenom) : 'Utilisateur' }}</a></h6>
+									<div class="d-flex align-items-center">
+										<small class="ms-2">{{ commentaire.dateCommentaire ? commentaire.dateCommentaire|date('d F Y') : '' }}</small>
+										{% if commentaire.user and app.user and commentaire.user.id == app.user.id %}
+											<div class="dropdown ms-2">
+												<a href="#" class="text-secondary btn btn-sm btn-link p-0" id="commentActionFav{{ commentaire.id }}{{ oeuvre.id }}" data-bs-toggle="dropdown" data-turbo="false" aria-expanded="false">
+													<i class="bi bi-three-dots"></i>
+												</a>
+												<ul class="dropdown-menu dropdown-menu-end shadow-sm" aria-labelledby="commentActionFav{{ commentaire.id }}{{ oeuvre.id }}">
+													<li>
+														<button type="button" class="dropdown-item comment-edit-toggle" data-edit-id="favEditComment{{ commentaire.id }}" data-view-id="favCommentText{{ commentaire.id }}">
+															<i class="bi bi-pencil-square text-primary pe-2"></i>Modifier
+														</button>
+													</li>
+													<li><hr class="dropdown-divider"></li>
+													<li>
+													<form method="post" action="{{ path('favoris_commentaire_delete', {'id': commentaire.id}) }}" class="m-0">
+														<input type="hidden" name="_token" value="{{ csrf_token('delete_comment_' ~ commentaire.id) }}">
+															<input type="hidden" name="oeuvre_id" value="{{ oeuvre.id }}">
+															<button type="submit" class="dropdown-item text-danger">
+																<i class="bi bi-trash3 pe-2"></i>Supprimer
+															</button>
+														</form>
+													</li>
+												</ul>
+											</div>
+										{% endif %}
+									</div>
+								</div>
+								<div id="favCommentText{{ commentaire.id }}" class="small mb-0">{{ commentaire.texte }}</div>
+								{% if commentaire.user and app.user and commentaire.user.id == app.user.id %}
+								<form method="post" action="{{ path('favoris_commentaire_edit', {'id': commentaire.id}) }}" class="d-none" id="favEditComment{{ commentaire.id }}">
+									<div class="position-relative">
+										<textarea name="contenu" class="form-control bg-white" rows="2">{{ commentaire.texte }}</textarea>
+										<input type="hidden" name="_token" value="{{ csrf_token('edit_comment_' ~ commentaire.id) }}">
+											<input type="hidden" name="oeuvre_id" value="{{ oeuvre.id }}">
+											<div class="d-flex gap-2 mt-2">
+												<button type="submit" class="btn btn-sm btn-primary">
+													<i class="bi bi-check2"></i>Enregistrer
+												</button>
+												<button type="button" class="btn btn-sm btn-outline-secondary comment-edit-cancel" data-edit-id="favEditComment{{ commentaire.id }}" data-view-id="favCommentText{{ commentaire.id }}">
+													<i class="bi bi-x-lg"></i>Annuler
+												</button>
+											</div>
+										</div>
+									</form>
+								{% endif %}
+							</div>
+						</div>
+					</div>
+				</li>
+			{% endfor %}
+		</ul>
+		{% if oeuvre.commentaires|length > 3 %}
+			<div class="pt-2">
+				<a href="#" role="button" class="btn btn-link btn-link-loader btn-sm text-secondary d-flex align-items-center fav-comments-load-more">
+					<div class="spinner-dots me-2 comments-loader" style="display: none;">
+						<span class="spinner-dot"></span>
+						<span class="spinner-dot"></span>
+						<span class="spinner-dot"></span>
+					</div>
+					<span class="comments-load-text">Voir plus de commentaires</span>
+				</a>
+			</div>
+		{% endif %}
+		</div>
+	{% else %}
+		<p class="text-muted small mb-0">Aucun commentaire pour le moment.</p>
+	{% endif %}
+</div>

@@ -1,0 +1,162 @@
+{% extends 'base_amateur.html.twig' %}
+
+{% block title %}{{ 'Fil d’actualites'|trans }}{% endblock %}
+
+{% block amateur_content %}
+  <div class="card h-100">
+    <div class="card-header d-sm-flex align-items-center text-center justify-content-sm-between border-0 pb-0">
+      <h1 class="h4 card-title">Découvrir les évènements </h1>
+    </div>
+    <div class="card-body">
+      <div class="mb-4">
+        <form method="get" action="{{ path('app_eventsfrontkeyword') }}" class="d-flex gap-2">
+          <input 
+            type="text" 
+            name="query" 
+            class="form-control" 
+            placeholder="Chercher des évènements (recherche intelligent)..."
+            value="{{ search_query|default('') }}"
+            aria-label="Search events">
+          <button type="submit" class="btn btn-sm btn-primary">
+            Rechercher
+          </button>
+        </form>
+      </div>
+
+      <ul class="nav nav-tabs nav-bottom-line justify-content-center justify-content-md-start">
+        <li class="nav-item">
+          <a class="nav-link active" data-bs-toggle="tab" href="#tab-all">Tous</a>
+        </li>
+        {% for type in types %}
+          <li class="nav-item">
+            <a class="nav-link" data-bs-toggle="tab" href="#tab-{{ loop.index }}">{{ type.value }}</a>
+          </li>
+        {% endfor %}
+      </ul>
+
+      <div class="tab-content mb-0 pb-0">
+        <div class="tab-pane fade show active" id="tab-all">
+          <div class="row g-4">
+            {% for row in all_rows %}
+              {% set evenement = row.evenement %}
+              <div class="col-sm-6 col-xl-4">
+                <div class="card h-100 border-0 shadow-sm position-relative">
+                  <div class="position-relative">
+                    {% if row.image %}
+                      <img class="img-fluid rounded-top" src="{{ row.image }}" alt="{{ evenement.titre }}" style="height: 190px; width: 100%; object-fit: cover;">
+                    {% else %}
+                      <div class="bg-light rounded-top d-flex align-items-center justify-content-center" style="height: 190px;">
+                        <i class="bi bi-image text-muted fs-2"></i>
+                      </div>
+                    {% endif %}
+                    <div class="badge bg-dark text-white position-absolute top-0 start-0 m-2">
+                      {{ evenement.type ? evenement.type.value : 'Evenement' }}
+                    </div>
+                  </div>
+                  <div class="card-body">
+                    <div class="d-flex align-items-start justify-content-between mb-2">
+                      <h5 class="mb-2 text-dark">
+                        {{ evenement.titre }}
+                        {% if row.ai_score is defined %}
+                          <span class="badge bg-success ms-2">{{ row.ai_score }}/10</span>
+                        {% endif %}
+                      </h5>
+                      
+                      <form method="post" action="{{ path('app_payment_checkout', { id: evenement.id }) }}" style="position: relative; z-index: 10;" data-turbo="false">
+                        <input type="hidden" name="_token" value="{{ csrf_token('buy_ticket_' ~ evenement.id) }}">
+                        <button class="btn btn-sm btn-outline-primary" type="submit" aria-label="Acheter ticket">
+                          <i class="bi bi-ticket-perforated"></i>
+                        </button>
+                      </form>
+                    </div>
+                    <a class="stretched-link" href="{{ path('app_eventdetails', { id: evenement.id }) }}" aria-label="Voir les détails"></a>
+                    <div class="small text-muted mb-2">
+                      <i class="bi bi-calendar-check pe-1"></i>{{ evenement.dateDebut ? evenement.dateDebut|date('D, d M Y H:i') : '' }}
+                    </div>
+                    <div class="small text-muted mb-2">
+                      <i class="bi bi-geo-alt pe-1"></i>{{ evenement.galerie ? evenement.galerie.localisation : 'Lieu a definir' }}
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center">
+                      <span class="small text-muted">
+                        <i class="bi bi-people pe-1"></i>{{ evenement.capaciteMax }} places
+                      </span>
+                      <span class="fw-semibold">
+                        {{ evenement.prixTicket }} TND
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            {% else %}
+              <div class="col-12">
+                <div class="text-center text-muted py-5">Aucun evenement pour le moment.</div>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+
+        {% for type in types %}
+          {% set rows = grouped_rows[type.value] %}
+          <div class="tab-pane fade" id="tab-{{ loop.index }}">
+            <div class="row g-4">
+              {% for row in rows %}
+                {% set evenement = row.evenement %}
+                <div class="col-sm-6 col-xl-4">
+                  <div class="card h-100 border-0 shadow-sm position-relative">
+                    <div class="position-relative">
+                      {% if row.image %}
+                        <img class="img-fluid rounded-top" src="{{ row.image }}" alt="{{ evenement.titre }}" style="height: 190px; width: 100%; object-fit: cover;">
+                      {% else %}
+                        <div class="bg-light rounded-top d-flex align-items-center justify-content-center" style="height: 190px;">
+                          <i class="bi bi-image text-muted fs-2"></i>
+                        </div>
+                      {% endif %}
+                      <div class="badge bg-dark text-white position-absolute top-0 start-0 m-2">
+                        {{ type.value }}
+                      </div>
+                    </div>
+                    <div class="card-body">
+                      <div class="d-flex align-items-start justify-content-between mb-2">
+                          <h5 class="mb-2 text-dark">
+                            {{ evenement.titre }}
+                            {% if row.ai_score is defined %}
+                              <span class="badge bg-success ms-2">{{ row.ai_score }}/10</span>
+                            {% endif %}
+                          </h5>
+                        <form method="post" action="{{ path('app_payment_checkout', { id: evenement.id }) }}" style="position: relative; z-index: 10;" data-turbo="false">
+                          <input type="hidden" name="_token" value="{{ csrf_token('buy_ticket_' ~ evenement.id) }}">
+                          <button class="btn btn-sm btn-outline-primary" type="submit" aria-label="Acheter ticket">
+                            <i class="bi bi-ticket-perforated"></i>
+                          </button>
+                        </form>
+                      </div>
+                      <a class="stretched-link" href="{{ path('app_eventdetails', { id: evenement.id }) }}" aria-label="Voir les détails"></a>
+                      <div class="small text-muted mb-2">
+                        <i class="bi bi-calendar-check pe-1"></i>{{ evenement.dateDebut ? evenement.dateDebut|date('D, d M Y H:i') : '' }}
+                      </div>
+                      <div class="small text-muted mb-2">
+                        <i class="bi bi-geo-alt pe-1"></i>{{ evenement.galerie ? evenement.galerie.localisation : 'Lieu a definir' }}
+                      </div>
+                      <div class="d-flex justify-content-between align-items-center">
+                        <span class="small text-muted">
+                          <i class="bi bi-people pe-1"></i>{{ evenement.capaciteMax }} places
+                        </span>
+                        <span class="fw-semibold">
+                          {{ evenement.prixTicket }} TND
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              {% else %}
+                <div class="col-12">
+                  <div class="text-center text-muted py-5">Aucun evenement pour ce type.</div>
+                </div>
+              {% endfor %}
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+{% endblock %}

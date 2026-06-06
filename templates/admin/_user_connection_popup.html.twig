@@ -1,0 +1,50 @@
+
+
+<div class="modal-header" style="background: #f8fafc; color: #222; border-bottom: 2px solid #43cea2;">
+    <h5 class="modal-title" style="color: #222; font-weight:600;">
+        <i class="bi bi-clock-history me-2" style="color: #43cea2;"></i> Historique des connexions
+    </h5>
+    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+</div>
+<div class="modal-body bg-light">
+    {% if connections|length > 0 %}
+        <div class="row g-4">
+            {% for connection in connections %}
+                <div class="col-12 col-md-6">
+                    <div class="card shadow-sm border-0 h-100" style="border-radius: 16px; background: #fafdff;">
+                        <div class="card-body px-3 py-2" style="background: #fafdff; border: 1.5px solid #2196f3; border-radius: 16px;">
+                            <div class="d-flex align-items-center gap-2 mb-2">
+                                <span class="badge bg-primary d-flex align-items-center justify-content-center" style="font-size:1.05rem; border-radius: 8px; width: 1.8rem; height: 1.8rem; background-color: #2196f3 !important;">
+                                    <i class="bi bi-person-check" style="color:#fff;"></i>
+                                </span>
+                                <span class="fw-bold text-primary" style="font-size:1.01rem; letter-spacing:0.3px;">{{ connection.connectedAt|date('d/m/Y H:i:s') }}</span>
+                            </div>
+                            <div class="d-flex align-items-center mb-1" style="font-size:0.97rem;">
+                                <i class="bi bi-globe2" style="color:#1976d2; margin-right:0.4rem; font-size:1.01rem;"></i>
+                                <span class="fw-semibold text-dark" style="font-size:0.97rem;">IP :</span>
+                                <span class="ms-1 text-dark" style="font-size:0.97rem;">{{ connection.ipAddress }}</span>
+                            </div>
+                            <div class="d-flex align-items-center mb-1" style="font-size:0.93rem;">
+                                <i class="bi bi-laptop" style="color:#1976d2; margin-right:0.4rem; font-size:1.01rem;"></i>
+                                <span class="fw-semibold text-dark" style="font-size:0.93rem;">Navigateur :</span>
+                                <span class="ms-1 text-muted small" style="font-size:0.93rem;">{{ connection.browser }}</span>
+                            </div>
+                            <div class="d-flex align-items-center mb-1" style="font-size:0.93rem;">
+                                <i class="bi bi-windows" style="color:#1976d2; margin-right:0.4rem; font-size:1.01rem;"></i>
+                                <span class="fw-semibold text-dark" style="font-size:0.93rem;">OS :</span>
+                                <span class="ms-1 text-muted small" style="font-size:0.93rem;">{{ connection.os }}</span>
+                            </div>
+                            <div class="d-flex align-items-center mb-1" style="font-size:0.93rem;">
+                                <i class="bi bi-display" style="color:#1976d2; margin-right:0.4rem; font-size:1.01rem;"></i>
+                                <span class="fw-semibold text-dark" style="font-size:0.93rem;">Appareil :</span>
+                                <span class="ms-1 text-muted small" style="font-size:0.93rem;">{{ connection.device }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="alert alert-info text-center py-4"><i class="bi bi-info-circle me-2"></i> Aucune connexion enregistrée.</div>
+    {% endif %}
+</div>

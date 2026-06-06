@@ -1,0 +1,108 @@
+.profile-nav .nav-link {
+    position: relative;
+    padding-bottom: 0.5rem;
+}
+
+.profile-nav .nav-link::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 3px;
+    background: #0d6efd;
+    transform: translateX(-30%) scaleX(0);
+    transform-origin: left center;
+    opacity: 0;
+    transition: transform 220ms ease, opacity 220ms ease;
+}
+
+.profile-nav .nav-link.active::after {
+    transform: translateX(0) scaleX(1);
+    opacity: 1;
+    animation: profile-nav-slide 260ms ease-out;
+}
+
+.profile-nav .nav-link:hover::after {
+    transform: translateX(0) scaleX(1);
+    opacity: 0.6;
+}
+
+@keyframes profile-nav-slide {
+    from {
+        transform: translateX(-30%) scaleX(0.2);
+        opacity: 0.2;
+    }
+    to {
+        transform: translateX(0) scaleX(1);
+        opacity: 1;
+    }
+}
+
+.navbar .oeuvres-toggle::after {
+    margin-left: 0;
+}
+
+.navbar .oeuvres-toggle {
+    padding-right: 0;
+    padding-left: 0;
+}
+
+.navbar .oeuvres-toggle.dropdown-toggle-split {
+    padding-left: 0;
+}
+
+.navbar .oeuvres-group {
+    gap: 0;
+}
+
+.navbar .oeuvres-group .nav-link:first-child {
+    padding-right: 0;
+}
+
+.offcanvas-backdrop {
+    z-index: 3000 !important;
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+}
+
+/*used to be .offcanvas {*/
+.offcanvas.show {
+    z-index: 3010 !important;
+    position: fixed;
+}
+
+header.fixed-top {
+    z-index: 1020;
+}
+
+
+/* Comment form submit button styles */
+
+.comment-submit-button {
+    cursor: pointer;
+    transition: transform 120ms ease, opacity 120ms ease;
+}
+
+.comment-submit-button:hover {
+    opacity: 0.85;
+    transform: translateY(-1px);
+}
+
+.comment-submit-button:active {
+    opacity: 0.7;
+    transform: translateY(0);
+}
+
+.comment-submit-button:focus-visible {
+    outline: 2px solid rgba(13, 110, 253, 0.35);
+    outline-offset: 2px;
+    border-radius: 999px;
+}
+
+.comment-text {
+    overflow-wrap: anywhere;
+    word-break: break-word;
+}

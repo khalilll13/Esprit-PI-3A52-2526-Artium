@@ -1,0 +1,377 @@
+{% extends 'base_artiste.html.twig' %}
+
+{% block title %}{{ 'Mes Oeuvres'|trans }}{% endblock %}
+
+{% block artiste_content %}
+<!-- Share feed START -->
+
+          <div class="card card-body">
+            <div class="d-flex mb-3">
+              <!-- Avatar -->
+              <div class="avatar avatar-xs me-2">
+                <a href="#">
+                  {% if app.user.photoProfilUrl %}
+                    <img class="avatar-img rounded-circle" src="{{ app.user.photoProfilUrl }}" alt="">
+                  {% else %}
+                    <span class="avatar-img rounded-circle d-flex align-items-center justify-content-center bg-light text-secondary-emphasis position-relative" style="width:32px;height:32px;">
+                      <i class="bi bi-person fs-5 position-absolute top-50 start-50 translate-middle" style="opacity:0.5;"></i>
+                    </span>
+                  {% endif %}
+                </a>
+              </div>
+              <!-- Post input -->
+              <form class="w-100">
+                <input class="form-control pe-4 border-0 bg-light" placeholder="Ajouter une nouvelle œuvre..." readonly data-bs-toggle="modal" data-bs-target="#modalCreateOeuvre">              
+              </form>
+            </div>
+            <!-- Share feed toolbar START -->
+            <ul class="nav nav-pills nav-stack small fw-normal">
+              <li class="nav-item">
+                <a class="nav-link bg-light py-1 px-2 mb-0" href="#!" data-bs-toggle="modal" data-bs-target="#feedActionPhoto"> <i class="bi bi-image-fill text-success pe-2"></i>Photo</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link bg-light py-1 px-2 mb-0" href="#!" data-bs-toggle="modal" data-bs-target="#feedActionVideo"> <i class="bi bi-camera-reels-fill text-info pe-2"></i>Video</a>
+              </li>
+              <li class="nav-item">
+                <a href="#" class="nav-link bg-light py-1 px-2 mb-0" data-bs-toggle="modal" data-bs-target="#modalCreateEvents"> <i class="bi bi-calendar2-event-fill text-danger pe-2"></i>Event </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link bg-light py-1 px-2 mb-0" href="#!" data-bs-toggle="modal" data-bs-target="#modalCreateFeed"> <i class="bi bi-emoji-smile-fill text-warning pe-2"></i>Feeling /Activity</a>
+              </li>
+             
+            </ul>
+            <!-- Share feed toolbar END -->
+          </div>
+          <!-- Share feed END -->
+
+          <!-- Card feed item START -->
+          {% for oeuvre in oeuvres %}
+
+<div class="card mb-4">
+
+  <!-- Card Header -->
+  <div class="card-header border-0 pb-0">
+    <div class="d-flex align-items-center justify-content-between">
+      
+      <div class="d-flex align-items-center">
+        <!-- Avatar -->
+        <div class="avatar avatar-story me-2">
+          <a href="#">
+            {% if oeuvre.collection and oeuvre.collection.artiste and oeuvre.collection.artiste.photoProfilUrl %}
+              <img class="avatar-img rounded-circle" src="{{ oeuvre.collection.artiste.photoProfilUrl }}" alt="">
+            {% else %}
+              <span class="avatar-img rounded-circle d-flex align-items-center justify-content-center bg-light text-secondary-emphasis position-relative" style="width:48px;height:48px;">
+                <i class="bi bi-person fs-5 position-absolute top-50 start-50 translate-middle" style="opacity:0.5;"></i>
+              </span>
+            {% endif %}
+          </a>
+        </div>
+
+        <!-- Author Info -->
+        <div>
+          <div class="nav nav-divider">
+            <h6 class="nav-item card-title mb-0">
+              <a href="#!">
+                {{ (oeuvre.collection and oeuvre.collection.artiste) ? (oeuvre.collection.artiste.nom ~ ' ' ~ oeuvre.collection.artiste.prenom) : 'Artiste Inconnu' }}
+              </a>
+            </h6>
+            <span class="nav-item small">{{ oeuvre.dateCreation ? oeuvre.dateCreation|date('d F Y') : '' }}</span>
+          </div>
+          <p class="mb-0 small">{{ (oeuvre.collection and oeuvre.collection.artiste and oeuvre.collection.artiste.specialite) ? oeuvre.collection.artiste.specialite.value : 'Spécialité non renseignée' }}</p>
+        </div>
+      </div>
+
+      <!-- Dropdown -->
+      <div class="dropdown">
+        <a href="#" class="text-secondary btn btn-secondary-soft-hover py-1 px-2"
+           data-bs-toggle="dropdown">
+          <i class="bi bi-three-dots"></i>
+        </a>
+        <ul class="dropdown-menu dropdown-menu-end">
+          <li>
+            <form method="post"
+        action="{{ path('app_oeuvre_delete_front', {'id': oeuvre.id}) }}"
+        onsubmit="return confirm('Êtes-vous sûr(e) de vouloir supprimer cette œuvre ?');">
+
+      <input type="hidden" name="_token"
+             value="{{ csrf_token('delete' ~ oeuvre.id) }}">
+
+      <button class="dropdown-item text-danger">
+          <i class="bi bi-trash pe-2"></i> Supprimer
+      </button>
+  </form>
+          </li>
+          <li>
+            <button 
+        class="dropdown-item"
+        type="button"
+        data-bs-toggle="offcanvas" 
+        data-bs-target="#offcanvasOeuvreEdit"
+        data-oeuvre-id="{{ oeuvre.id }}"
+        data-titre="{{ oeuvre.titre }}"
+        data-description="{{ oeuvre.description }}"
+        data-type="{{ oeuvre.type ? oeuvre.type.value : '' }}"
+        data-date-creation="{{ oeuvre.dateCreation ? oeuvre.dateCreation|date('Y-m-d') : '' }}"
+        data-collection-id="{{ oeuvre.collection ? oeuvre.collection.id : '' }}">
+        
+        <i class="bi bi-pencil pe-2"></i> Modifier
+    </button>
+          </li>
+                  
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Card Body -->
+  <div class="card-body pb-0">
+    <h5 class="mb-2">{{ oeuvre.titre }}</h5>
+    <p>{{ oeuvre.description|raw }}
+      {% if oeuvre.type %}
+        <a href="#!" class="ms-2">#{{ oeuvre.type.value }}</a>
+      {% endif %}
+      {% if oeuvre.collection %}
+        <a href="#!" class="ms-1">#{{ oeuvre.collection.titre }}</a>
+      {% endif %}
+    </p>
+  </div>
+
+  <!-- Card img -->
+  {% if oeuvre.image %}
+  <div class="overflow-hidden mx-3 mb-2 rounded-3 border">
+    <img src="{{ path('app_oeuvre_front_image', {'id': oeuvre.id}) }}" 
+         class="img-fluid" 
+         alt="{{ oeuvre.titre }}"
+         style="width: 100%; max-height: 600px; object-fit: contain;">
+  </div>
+  {% endif %}
+
+  <!-- Feed react START -->
+  <div class="card-body pt-0">
+
+    <!-- Likes & Comments Count -->
+    <ul class="nav nav-stack py-3 small">
+      <li class="nav-item">
+        <a class="nav-link active" href="#">
+          <i class="bi bi-heart-fill pe-1 text-danger"></i>
+          <span class="like-count">{{ oeuvre.likes ? oeuvre.likes|length : 0 }}</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#">
+          <i class="bi bi-chat-fill pe-1"></i>Commentaires ({{ oeuvre.commentaires ? oeuvre.commentaires|length : 0 }})
+        </a>
+      </li>
+      <li class="nav-item ms-sm-auto d-flex align-items-center">
+        <i class="bi bi-star-fill text-warning fa-fw pe-1"></i>
+        <span>{{ oeuvre.userFav|length }}</span>
+        <span class="ms-1">favoris</span>
+      </li>
+    </ul>
+    <!-- Feed react END -->
+
+    
+
+    <!-- Comment wrap START -->
+    {% if oeuvre.commentaires and oeuvre.commentaires|length > 0 %}
+    <ul class="comment-wrap list-unstyled">
+      {% for commentaire in oeuvre.commentaires %}
+      <!-- Comment item START -->
+      <li class="comment-item{% if loop.index > 3 %} hidden-comment d-none{% endif %} mb-2">
+        <div class="d-flex">
+          <div class="avatar avatar-xs">
+            <img class="avatar-img rounded-circle"
+                 src="{{ asset('assetsfront/images/avatar/default.jpg') }}"
+                 alt="">
+          </div>
+
+          <div class="ms-2 w-100">
+            <div class="bg-light p-3 rounded">
+              <div class="d-flex justify-content-between">
+                <h6 class="mb-1">
+                  {{ commentaire.user.nom ?? 'User' }}
+                </h6>
+
+                <small class="ms-2">
+                  {{ commentaire.dateCommentaire ? commentaire.dateCommentaire|date('d F Y') : '' }}
+                </small>
+              </div>
+
+              <p class="small mb-0">
+                {{ commentaire.texte }}
+              </p>
+            </div>
+          </div>
+        </div>
+      </li>
+      <!-- Comment item END -->
+      {% endfor %}
+    </ul>
+    {% endif %}
+    <!-- Comment wrap END -->
+  </div>
+  <!-- Card body END -->
+  
+  <!-- Card footer START -->
+  {% if oeuvre.commentaires and oeuvre.commentaires|length > 3 %}
+  <div class="card-footer border-0 pt-0">
+    <!-- Load more comments -->
+    <a href="#" role="button"
+       class="btn btn-link btn-link-loader btn-sm text-secondary d-flex align-items-center comments-load-more">
+      <div class="spinner-dots me-2 comments-loader" style="display: none;">
+        <span class="spinner-dot"></span>
+        <span class="spinner-dot"></span>
+        <span class="spinner-dot"></span>
+      </div>
+      <span class="comments-load-text">Voir plus de commentaires</span>
+    </a>
+  </div>
+  {% endif %}
+  <!-- Card footer END -->
+</div>
+
+{% else %}
+  <div class="alert alert-info">
+    Aucune œuvre créée pour le moment.
+  </div>
+{% endfor %}
+
+          <!-- Card feed item END -->
+
+<div class="modal fade" id="modalCreateOeuvre" tabindex="-1">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content rounded-4">
+
+      <div class="modal-header">
+        <h5 class="modal-title">
+          <i class="bi bi-palette-fill me-2 text-primary"></i>
+          Ajouter une œuvre
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+
+      <div class="modal-body">
+        {{ form_start(form, {'action': path('app_oeuvre_new'),'method': 'POST','attr': {'enctype': 'multipart/form-data', 'novalidate': 'novalidate', 'data-turbo': 'false'}}) }}
+
+        {% if form.vars.submitted and form.vars.errors|length > 0 %}
+          <div class="alert alert-danger">
+            {{ form_errors(form) }}
+          </div>
+        {% endif %}
+
+        <div class="row g-3">
+
+          <div class="col-md-6">
+            {{ form_label(form.titre, null, {'label_attr': {'class': 'form-label fw-semibold'}}) }}
+            {{ form_widget(form.titre, {'attr': {'class': (form.titre.vars.errors|length > 0) ? 'form-control is-invalid' : 'form-control'}}) }}
+            {{ form_errors(form.titre) }}
+          </div>
+
+          <div class="col-12">
+            {{ form_label(form.description) }}
+            {{ form_widget(form.description, {'attr': {'class': (form.description.vars.errors|length > 0) ? 'form-control is-invalid' : 'form-control', 'rows': 3}}) }}
+            {{ form_errors(form.description) }}
+          </div>
+
+
+          <div class="col-md-6">
+            {{ form_label(form.collection) }}
+            {{ form_widget(form.collection, {'attr': {'class': (form.collection.vars.errors|length > 0) ? 'form-select is-invalid' : 'form-select'}}) }}
+            {{ form_errors(form.collection) }}
+          </div>
+
+          <div class="col-12">
+            {{ form_label(form.image) }}
+            {{ form_widget(form.image, {'attr': {'class': (form.image.vars.errors|length > 0) ? 'form-control is-invalid' : 'form-control'}}) }}
+            {{ form_errors(form.image) }}
+            {% if tempImagePresent|default(false) %}
+              <small class="text-success">
+                Image deja chargee.
+                {% if tempImageName is not empty %}
+                  Fichier: {{ tempImageName }}
+                {% endif %}
+              </small>
+            {% endif %}
+          </div>
+
+        </div>
+
+        <div class="mt-4 text-end">
+          <button type="submit" class="btn btn-primary px-4">
+            <i class="bi bi-plus-lg me-1"></i> Publier
+          </button>
+        </div>
+
+        {{ form_end(form) }}
+
+      </div>
+    </div>
+  </div>
+</div>
+
+{% include 'oeuvre/_offcanvas_edit.html.twig' with {'edit_route': 'oeuvre_edit'} %}
+{% if form.vars.submitted and not form.vars.valid %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const modalElement = document.getElementById('modalCreateOeuvre');
+  if (!modalElement) {
+    return;
+  }
+  const modalInstance = bootstrap.Modal.getOrCreateInstance(modalElement);
+  modalInstance.show();
+});
+</script>
+{% endif %}
+
+<script>
+// Load more comments per post
+document.addEventListener('click', function(e) {
+    const commentsBtn = e.target.closest('.comments-load-more');
+    if (!commentsBtn) {
+        return;
+    }
+
+    e.preventDefault();
+
+    const card = commentsBtn.closest('.card');
+    if (!card) {
+        return;
+    }
+
+    const loadText = commentsBtn.querySelector('.comments-load-text');
+    const loader = commentsBtn.querySelector('.comments-loader');
+
+    if (loadText) {
+        loadText.style.display = 'none';
+    }
+    if (loader) {
+        loader.style.display = 'inline-flex';
+    }
+
+    setTimeout(() => {
+        const hiddenComments = card.querySelectorAll('.comment-item.hidden-comment.d-none');
+        const revealCount = Math.min(3, hiddenComments.length);
+
+        for (let i = 0; i < revealCount; i++) {
+            hiddenComments[i].classList.remove('d-none');
+        }
+
+        if (loadText) {
+            loadText.style.display = 'inline';
+        }
+        if (loader) {
+            loader.style.display = 'none';
+        }
+
+        const remaining = card.querySelectorAll('.comment-item.hidden-comment.d-none').length;
+        if (remaining === 0) {
+            const footer = commentsBtn.closest('.card-footer');
+            if (footer) {
+                footer.style.display = 'none';
+            }
+        }
+    }, 400);
+});
+</script>
+{% endblock %}

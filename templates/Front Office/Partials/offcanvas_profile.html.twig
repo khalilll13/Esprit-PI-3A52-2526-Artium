@@ -1,0 +1,160 @@
+{% set offcanvas_id = offcanvas_id|default('offcanvasProfile') %}
+{% set title = title|default('Modifier profil') %}
+{% set subtitle = subtitle|default('Mettez a jour vos informations personnelles') %}
+{% set profile_form_action = profile_form_action|default('#') %}
+{% set password_form_action = password_form_action|default(path('app_changer_mot_de_passe')) %}
+{% set show_password_form = show_password_form|default(true) %}
+{% set user = user|default(app.user) %}
+{% set has_profile_form = form is defined and form is not null and form.vars is defined %}
+
+{% embed 'Front Office/Partials/offcanvas_base.html.twig' with {
+	offcanvas_id: offcanvas_id,
+	title: title,
+	subtitle: subtitle
+} %}
+	{% block offcanvas_body %}
+		<div class="card shadow-sm border-0">
+			<div class="card-body">
+				{% if has_profile_form %}
+				   {{ form_start(form, {'attr': {'class': 'row g-3', 'enctype': 'multipart/form-data', 'novalidate': 'novalidate', 'data-turbo': 'false'}, 'action': profile_form_action}) }}
+					   <div class="col-12">
+						   <div class="d-flex align-items-center gap-3">
+							   <div class="avatar avatar-xl">
+								{% if user and user.photoProfilUrl %}
+								    <img class="avatar-img rounded-circle" src="{{ user.photoProfilUrl }}" alt="">
+								{% else %}
+								    <span class="avatar-img rounded-circle d-flex align-items-center justify-content-center bg-light text-secondary-emphasis border border-secondary" style="width:80px;height:80px;">
+									    <i class="bi bi-person fs-2" style="opacity:0.5;"></i>
+								    </span>
+								{% endif %}
+							   </div>
+							   <div>
+								   {% if form.photoProfil is defined %}
+									   {{ form_row(form.photoProfil) }}
+								   {% endif %}
+							   </div>
+						   </div>
+					   </div>
+					   <div class="col-md-6">
+						   {% if form.nom is defined %}{{ form_row(form.nom) }}{% endif %}
+					   </div>
+					   <div class="col-md-6">
+						   {% if form.prenom is defined %}{{ form_row(form.prenom) }}{% endif %}
+					   </div>
+					   <div class="col-md-6">
+						   {% if form.email is defined %}{{ form_row(form.email) }}{% endif %}
+					   </div>
+					   <div class="col-md-6">
+						   {% if form.numTel is defined %}{{ form_row(form.numTel) }}{% endif %}
+					   </div>
+					   <div class="col-md-6">
+						   {% if form.ville is defined %}{{ form_row(form.ville) }}{% endif %}
+					   </div>
+					   <div class="col-md-6">
+						   {% if form.dateNaissance is defined %}{{ form_row(form.dateNaissance) }}{% endif %}
+					   </div>
+					   <div class="col-12">
+						   {% if form.biographie is defined %}{{ form_row(form.biographie) }}{% endif %}
+					   </div>
+
+
+					   {# Affichage strictement conditionnel selon le rôle #}
+					   <div class="col-12" id="specialite-field" style="display: {% if user and user.role is defined and user.role.value == 'ARTISTE' %}block{% else %}none{% endif %};">
+						   
+						   {% if form.specialite is defined %}{{ form_row(form.specialite) }}{% endif %}
+					   </div>
+					   <div class="col-12" id="centreInteret-field" style="display: {% if user and user.role is defined and user.role.value == 'AMATEUR' %}block{% else %}none{% endif %};">
+						  
+						   {% if form.centreInteret is defined %}{{ form_row(form.centreInteret) }}{% endif %}
+					   </div>
+
+					   <script>
+					   document.addEventListener('DOMContentLoaded', function() {
+						   var roleSelect = document.getElementById('user_role');
+						   var specialiteDiv = document.getElementById('specialite-field');
+						   var centreInteretDiv = document.getElementById('centreInteret-field');
+						   function updateFields() {
+							   if (!roleSelect) return;
+							   var role = roleSelect.value ? roleSelect.value.toUpperCase() : '';
+							   if (role.includes('AMATEUR')) {
+								   specialiteDiv.style.display = 'none';
+								   centreInteretDiv.style.display = 'block';
+							   } else if (role.includes('ARTISTE')) {
+								   specialiteDiv.style.display = 'block';
+								   centreInteretDiv.style.display = 'none';
+							   } else {
+								   specialiteDiv.style.display = 'none';
+								   centreInteretDiv.style.display = 'none';
+							   }
+						   }
+						   if (roleSelect) {
+							   roleSelect.addEventListener('change', updateFields);
+							   setTimeout(updateFields, 100); 
+						   }
+					   });
+					   </script>
+
+					   
+					   <div class="col-12"></div>
+					   <div class="col-md-6">
+						   {% if form.role is defined %}{{ form_row(form.role) }}{% endif %}
+					   </div>
+					   <div class="col-md-6">
+						   {% if form.statut is defined %}{{ form_row(form.statut) }}{% endif %}
+					   </div>
+					   <div class="col-12 d-flex justify-content-end mt-4">
+						   <button class="btn btn-primary px-4 py-2" type="submit">Enregistrer</button>
+					   </div>
+				   {{ form_end(form) }}
+				{% else %}
+					<div class="alert alert-info mb-0" role="alert">
+						Le formulaire de profil n'est pas disponible sur cette page.
+					</div>
+				{% endif %}
+			</div>
+		</div>
+
+		{% if show_password_form %}
+			<div class="card shadow-sm border-0 mt-4">
+				<div class="card-body">
+					<h5 class="mb-3">Modifier le mot de passe</h5>
+					<div class="alert alert-warning" role="alert">
+						<i class="fe fe-alert-triangle me-2"></i>
+						En modifiant votre mot de passe, vous serez automatiquement déconnecté(e) de la session en cours. Vous devrez vous reconnecter avec le nouveau mot de passe.
+					</div>
+					<form class="row g-3" action="{{ password_form_action }}" method="post">
+						<input type="hidden" name="_token" value="{{ csrf_token('change_password') }}">
+						<div class="col-12">
+							<label class="form-label" for="currentPassword">Mot de passe actuel</label>
+							<input class="form-control" type="password" id="currentPassword" name="currentPassword" placeholder="********">
+						</div>
+						<div class="col-md-6">
+							<label class="form-label" for="newPassword">Nouveau mot de passe</label>
+							<input class="form-control" type="password" id="newPassword" name="newPassword" placeholder="********">
+						</div>
+						<div class="col-md-6">
+							<label class="form-label" for="confirmPassword">Confirmer</label>
+							<input class="form-control" type="password" id="confirmPassword" name="confirmPassword" placeholder="********">
+						</div>
+						<div class="col-12 d-flex justify-content-end">
+							<button class="btn btn-outline-primary" type="submit">Mettre a jour</button>
+						</div>
+					</form>
+				</div>
+			</div>
+		{% endif %}
+	{% endblock %}
+{% endembed %}
+
+{% if has_profile_form and form.vars.submitted and not form.vars.valid %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+	const offcanvasElement = document.getElementById('{{ offcanvas_id }}');
+	if (!offcanvasElement) {
+		return;
+	}
+	const offcanvas = bootstrap.Offcanvas.getOrCreateInstance(offcanvasElement);
+	offcanvas.show();
+});
+</script>
+{% endif %}

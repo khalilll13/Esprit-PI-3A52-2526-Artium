@@ -1,0 +1,1013 @@
+{% extends 'base_admin.html.twig' %}
+
+{%block title %}{{ 'Oeuvres'|trans }}{% endblock %}
+
+{% block admin_content %}
+          <div class="row">
+            <!-- Page Header -->
+            <div class="col-lg-12 col-md-12 col-12">
+              <div class="border-bottom pb-3 mb-3 d-flex align-items-center justify-content-between">
+                <div class="d-flex flex-column gap-1">
+                  <h1 class="mb-0 h1 fw-bold">Tous les Oeuvres</h1>
+                  <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                      <li class="breadcrumb-item">
+                        <a href="{{ path('app_admin') }}">Tableau de Bord</a>
+                      </li>
+                      <li class="breadcrumb-item active" aria-current="page">Tous les Oeuvres</li>
+                    </ol>
+                  </nav>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-lg-12 col-md-12 col-12">
+              <!-- Card -->
+              <div class="card rounded-3">
+                <!-- Card Header -->
+                <div class="card-header p-0">
+                  <ul class="nav nav-lb-tab border-bottom-0" id="tab" role="tablist">
+                    <li class="nav-item">
+                      <a class="nav-link active" id="all-post-tab" data-bs-toggle="pill" href="#all-post" role="tab" aria-controls="all-post" aria-selected="true">Tout</a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link" id="published-tab" data-bs-toggle="pill" href="#published" role="tab" aria-controls="published" aria-selected="false">Peinture</a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link" id="scheduled-tab" data-bs-toggle="pill" href="#scheduled" role="tab" aria-controls="scheduled" aria-selected="false">Sculpture</a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link" id="draft-tab" data-bs-toggle="pill" href="#draft" role="tab" aria-controls="draft" aria-selected="false">Photohgraphie</a>
+                    </li>
+                  </ul>
+                </div>
+                <div class="p-4">
+                  <div class="d-flex align-items-center gap-3">
+                    <!-- Search Form -->
+                    <form class="d-flex align-items-center flex-grow-1" method="get" action="{{ path('oeuvres') }}" id="searchForm" style="max-width: 300px;">
+                      <span class="position-absolute ps-3 search-icon">
+                        <i class="fe fe-search"></i>
+                      </span>
+                      <input type="search" name="q" class="form-control ps-6" placeholder="Rechercher Oeuvre" value="{{ currentQuery }}" />
+                      <input type="hidden" name="sort" id="sortInput" value="{{ sortBy }}" />
+                      <input type="hidden" name="order" id="orderInput" value="{{ sortOrder }}" />
+                      <input type="hidden" name="tab" id="tabInput" value="{{ activeTab|default('all-post') }}" />
+                    </form>
+
+                    <!-- Sort Dropdown and Order Button -->
+                    <div class="d-flex align-items-center gap-2">
+                      <select id="sortSelect" class="form-select" style="width: 200px;">
+                        <option value="" disabled selected>Trier par...</option>
+                        <option value="favoris" {{ sortBy == 'favoris' ? 'selected' : '' }}>Favoris</option>
+                        <option value="commentaires" {{ sortBy == 'commentaires' ? 'selected' : '' }}>Commentaires</option>
+                        <option value="likes" {{ sortBy == 'likes' ? 'selected' : '' }}>J'aimes</option>
+                      </select>
+                      <button type="button" class="btn btn-outline-primary" id="orderToggle" onclick="toggleOrder()">
+                        {{ sortOrder == 'ASC' ? '↑ ASC' : '↓ DESC' }}
+                      </button>
+                    </div>
+
+                    <!-- Delete All Button -->
+                    <div class="ms-auto">
+                      <button type="button" class="btn btn-primary" id="deleteAllBtn" onclick="bulkDeleteOeuvres()">Supprimer tout</button>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Hidden bulk delete form -->
+                <form id="bulkDeleteForm" method="post" action="{{ path('oeuvre_bulk_delete') }}" style="display:none;">
+                  <input type="hidden" name="_token" value="{{ csrf_token('bulk_delete_oeuvre') }}">
+                  <div id="bulkIds"></div>
+                </form>
+
+                <script>
+                  // Initialize checkAll listener on page load
+                  document.addEventListener('DOMContentLoaded', function() {
+                    setupCheckboxListeners();
+                  });
+
+                  function setupCheckboxListeners() {
+                    // Get all checkAll checkboxes (one per tab)
+                    const checkAllBoxes = document.querySelectorAll('#checkAll');
+                    checkAllBoxes.forEach(checkbox => {
+                      checkbox.addEventListener('change', function() {
+                        toggleAllInTab(this);
+                      });
+                    });
+                  }
+
+                  function toggleAllInTab(checkAllBox) {
+                    // Find the closest table and toggle all checkboxes in that table
+                    const table = checkAllBox.closest('table');
+                    if (table) {
+                      const checkboxes = table.querySelectorAll('input[type="checkbox"][id^="post"]');
+                      checkboxes.forEach(checkbox => {
+                        checkbox.checked = checkAllBox.checked;
+                      });
+                    }
+                  }
+
+                  function bulkDeleteOeuvres() {
+                    // Collect all checked checkboxes across all tabs
+                    const checkedBoxes = document.querySelectorAll('input[type="checkbox"][id^="post"]:checked');
+                    
+                    if (checkedBoxes.length === 0) {
+                      alert('Veuillez sélectionner au moins une œuvre à supprimer.');
+                      return;
+                    }
+
+                    if (!confirm('Êtes-vous sûr de vouloir supprimer ' + checkedBoxes.length + ' œuvre(s) ?')) {
+                      return;
+                    }
+
+                    // Collect IDs and add to form
+                    const bulkIdsContainer = document.getElementById('bulkIds');
+                    bulkIdsContainer.innerHTML = '';
+                    
+                    checkedBoxes.forEach(checkbox => {
+                      const id = checkbox.id.replace('post', '');
+                      const input = document.createElement('input');
+                      input.type = 'hidden';
+                      input.name = 'ids[]';
+                      input.value = id;
+                      bulkIdsContainer.appendChild(input);
+                    });
+
+                    // Submit the form
+                    document.getElementById('bulkDeleteForm').submit();
+                  }
+
+                  // Track active tab on change
+                  document.querySelectorAll('.nav-lb-tab .nav-link').forEach(function(tab) {
+                    tab.addEventListener('shown.bs.tab', function(e) {
+                      const targetId = e.target.getAttribute('href').substring(1);
+                      document.getElementById('tabInput').value = targetId;
+                    });
+                  });
+
+                  // Restore active tab on page load
+                  document.addEventListener('DOMContentLoaded', function() {
+                    const activeTabId = new URLSearchParams(window.location.search).get('tab') || 'all-post';
+                    const tabElement = document.querySelector('[href="#' + activeTabId + '"]');
+                    if (tabElement) {
+                      const tab = new bootstrap.Tab(tabElement);
+                      tab.show();
+                    }
+
+                    // Update tabInput with the active tab from URL
+                    document.getElementById('tabInput').value = activeTabId;
+
+                    // Attach sort change listener
+                    const sortSelect = document.getElementById('sortSelect');
+                    if (sortSelect) {
+                      sortSelect.addEventListener('change', function() {
+                        if (this.value) {
+                          // Get the currently active tab
+                          const activeTab = document.querySelector('.nav-lb-tab .nav-link.active');
+                          const currentTab = activeTab ? activeTab.getAttribute('href').substring(1) : 'all-post';
+                          const currentQuery = new URLSearchParams(window.location.search).get('q') || '';
+                          let url = '{{ path("oeuvres") }}?sort=' + encodeURIComponent(this.value) + '&order=ASC&tab=' + encodeURIComponent(currentTab);
+                          if (currentQuery) {
+                            url += '&q=' + encodeURIComponent(currentQuery);
+                          }
+                          console.log('Sorting by:', this.value, ' Order: ASC, Tab:', currentTab, 'URL:', url);
+                          window.location.href = url;
+                        }
+                      });
+                    }
+                  });
+
+                  function toggleOrder() {
+                    // Update tabInput to reflect the currently active tab before submitting
+                    const activeTab = document.querySelector('.nav-lb-tab .nav-link.active');
+                    if (activeTab) {
+                      const currentTab = activeTab.getAttribute('href').substring(1);
+                      document.getElementById('tabInput').value = currentTab;
+                    }
+                    
+                    const currentOrder = document.getElementById('orderInput').value;
+                    document.getElementById('orderInput').value = currentOrder === 'ASC' ? 'DESC' : 'ASC';
+                    document.getElementById('searchForm').submit();
+                  }
+                </script>
+
+                <div>
+                
+              <div class="tab-content" id="tabContent">
+                    <!-- ALL -->
+                    <!-- Tab -->
+                    <div class="tab-pane fade show active" id="all-post" role="tabpanel" aria-labelledby="all-post-tab">
+                      <div class="table-responsive">
+                        <!-- Table -->
+                        <table class="table mb-0 text-nowrap table-centered table-hover table-with-checkbox table-centered table-hover">
+                          <!-- Table Head -->
+                          <thead class="table-light">
+                            <tr>
+                              <th>
+                                <div class="form-check">
+                                  <input type="checkbox" class="form-check-input" id="checkAll" />
+                                  <label class="form-check-label" for="checkAll"></label>
+                                </div>
+                              </th>
+                              <th>Oeuvre</th>
+                              <th>Catégorie</th>
+                              <th>Collection</th>
+                              <th>Date de publication</th>
+                              <th>Artiste</th>
+                              <th>J'aimes</th>
+                              <th>Commentaires</th>
+                              <th>Favoris</th>
+                              <th></th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {# Render search results or all oeuvres #}
+                            {% set displayOeuvres = isSearchActive ? searchResultsPaginated : oeuvres %}
+                            {% for oeuvre in displayOeuvres %}
+                            <tr>
+                              <td>
+                                <div class="form-check">
+                                  <input type="checkbox" class="form-check-input" id="post{{ oeuvre.id }}" />
+                                  <label class="form-check-label" for="post{{ oeuvre.id }}"></label>
+                                </div>
+                              </td>
+                              <td>
+                                <h5 class="mb-0">
+                                  <a  class="text-inherit">{{ oeuvre.titre }}</a>
+                                </h5>
+                              </td>
+                              <td>
+                                {% if oeuvre.type %}
+                                  <span class="badge bg-{{ oeuvre.type.color }} text-white">{{ oeuvre.type.value }}</span>
+                                {% else %}
+                                  <span class="badge bg-secondary text-white">—</span>
+                                {% endif %}
+                              </td>
+                              <td>
+                                <a  class="text-inherit">{{ oeuvre.collection ? oeuvre.collection.titre : '—' }}</a>
+                              </td>
+                              <td class="text-center">{{ oeuvre.dateCreation ?  oeuvre.dateCreation|date('d M Y') : '—' }}</td>
+                              <td>
+                                <div class="d-flex align-items-center flex-row gap-2">
+                                  <h5 class="mb-0">{{ (oeuvre.collection and oeuvre.collection.artiste) ? (oeuvre.collection.artiste.nom ~ ' ' ~ oeuvre.collection.artiste.prenom) : '—' }}</h5>
+                                </div>
+                              </td>
+                              <td class="text-center">
+                                <div class="d-flex align-items-center justify-content-center gap-1">
+                                <i class="bi bi-heart-fill text-danger"></i>
+                                <span class="fw-semibold">{{ (oeuvre.likes ? oeuvre.likes|filter(like => like.liked) : [])|length }}</span>
+                                </div>
+                              </td>
+
+                              <td class="text-center">
+                                <div class="d-flex align-items-center justify-content-center gap-1">
+                                <i class="bi bi-chat-fill text-info"></i>
+                                <span class="fw-semibold">{{ oeuvre.commentaires ? oeuvre.commentaires|length : 0 }}</span>
+                                </div>
+                              </td>
+                              <td class="text-center">
+                                <div class="d-flex align-items-center justify-content-center gap-1">
+                                  <i class="bi bi-star-fill text-warning"></i>
+                                  <span class="fw-semibold">{{ oeuvre.userFav ? oeuvre.userFav|length : 0 }}</span>
+                                </div>
+                              </td>
+
+                              <td>
+                                <span class="dropdown dropstart">
+                                  <a
+                                    class="btn-icon btn btn-ghost btn-sm rounded-circle"
+                                    href="#"
+                                    role="button"
+                                    id="courseDropdown{{ oeuvre.id }}"
+                                    data-bs-toggle="dropdown"
+                                    data-bs-offset="-20,20"
+                                    aria-expanded="false">
+                                    <i class="fe fe-more-vertical"></i>
+                                  </a>
+                                  <span class="dropdown-menu" aria-labelledby="courseDropdown{{ oeuvre.id }}">
+                                    <span class="dropdown-header">Paramètres</span>
+                                    <a class="dropdown-item" href="{{ path('app_oeuvre_details', {'id': oeuvre.id}) }}">
+                                      <i class="fe fe-eye dropdown-item-icon"></i>
+                                      Détails
+                                    </a>
+                                    {# Bouton Modifier #}
+                                    <button 
+                                      class="dropdown-item" 
+                                      type="button"
+                                      data-bs-toggle="offcanvas" 
+                                      data-bs-target="#offcanvasOeuvreEdit"
+                                      data-oeuvre-id="{{ oeuvre.id }}"
+                                      data-titre="{{ oeuvre.titre }}"
+                                      data-description="{{ oeuvre.description }}"
+                                      data-type="{{ oeuvre.type ? oeuvre.type.value : '' }}"
+                                      data-date-creation="{{ oeuvre.dateCreation ? oeuvre.dateCreation|date('Y-m-d') : '' }}"
+                                      data-collection-id="{{ oeuvre.collection ? oeuvre.collection.id : '' }}">
+                                      <i class="fe fe-edit dropdown-item-icon"></i>
+                                      Modifier
+                                    </button>
+                                    <button 
+                                      class="dropdown-item" 
+                                      type="button"
+                                      onclick="document.getElementById('deleteForm{{ oeuvre.id }}').submit();" style="color: inherit; text-decoration: none;">
+                                      <i class="fe fe-trash dropdown-item-icon"></i>
+                                      Supprimer
+                                    </button>
+                                    <form id="deleteForm{{ oeuvre.id }}" method="post" action="{{ path('app_oeuvre_delete', {'id': oeuvre.id}) }}" style="display:none;">
+                                      <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ oeuvre.id) }}">
+                                    </form>
+                                  </span>
+                                </span>
+                              </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                              <td colspan="9">Aucune œuvre trouvée.</td>
+                            </tr>
+                            {% endfor %}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+
+                  
+                <!-- PEINTURE -->
+                  
+                  
+                    <!-- Tab -->
+                    <div class="tab-pane fade" id="published" role="tabpanel" aria-labelledby="published-tab">
+                      <div class="table-responsive">
+                        <!-- Table -->
+                        <table class="table mb-0 text-nowrap table-centered table-hover table-with-checkbox table-centered table-hover">
+                          <!-- Table Head -->
+                          <thead class="table-light">
+                            <tr>
+                              <th>
+                                <div class="form-check">
+                                  <input type="checkbox" class="form-check-input" id="checkAll" />
+                                  <label class="form-check-label" for="checkAll"></label>
+                                </div>
+                              </th>
+                              <th>Oeuvre</th>
+                              <th>Catégorie</th>
+                              <th>Collection</th>
+                              <th>Date de publication</th>
+                              <th>Artiste</th>
+                              <th>J'aimes</th>
+                              <th>Commentaires</th>
+                              <th>Favoris</th>
+                              <th></th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {# Render all oeuvres in the same table layout (no image column) #}
+                            {% for oeuvre in peintures %}
+                            <tr>
+                              <td>
+                                <div class="form-check">
+                                  <input type="checkbox" class="form-check-input" id="post{{ oeuvre.id }}" />
+                                  <label class="form-check-label" for="post{{ oeuvre.id }}"></label>
+                                </div>
+                              </td>
+                              <td>
+                                <h5 class="mb-0">
+                                  <a  class="text-inherit">{{ oeuvre.titre }}</a>
+                                </h5>
+                              </td>
+                              <td>
+                                {% if oeuvre.type %}
+                                  <span class="badge bg-{{ oeuvre.type.color }} text-white">{{ oeuvre.type.value }}</span>
+                                {% else %}
+                                  <span class="badge bg-secondary text-white">—</span>
+                                {% endif %}
+                              </td>
+                              <td>
+                                <a  class="text-inherit">{{ oeuvre.collection ? oeuvre.collection.titre : '—' }}</a>
+                              </td>
+                              <td class="text-center">{{ oeuvre.dateCreation ?  oeuvre.dateCreation|date('d M Y') : '—' }}</td>
+                              <td>
+                                <div class="d-flex align-items-center flex-row gap-2">
+                                  <h5 class="mb-0">{{ (oeuvre.collection and oeuvre.collection.artiste) ? (oeuvre.collection.artiste.nom ~ ' ' ~ oeuvre.collection.artiste.prenom) : '—' }}</h5>
+                                </div>
+                              </td>
+                              <td class="text-center">
+                                <div class="d-flex align-items-center justify-content-center gap-1">
+                                <i class="bi bi-heart-fill text-danger"></i>
+                                <span class="fw-semibold">{{ (oeuvre.likes ? oeuvre.likes|filter(like => like.liked) : [])|length }}</span>
+                                </div>
+                              </td>
+
+                              <td class="text-center">
+                                <div class="d-flex align-items-center justify-content-center gap-1">
+                                <i class="bi bi-chat-fill text-info"></i>
+                                <span class="fw-semibold">{{ oeuvre.commentaires ? oeuvre.commentaires|length : 0 }}</span>
+                                </div>
+                              </td>
+                              <td class="text-center">
+                                <div class="d-flex align-items-center justify-content-center gap-1">
+                                  <i class="bi bi-star-fill text-warning"></i>
+                                  <span class="fw-semibold">{{ oeuvre.userFav ? oeuvre.userFav|length : 0 }}</span>
+                                </div>
+                              </td>
+
+                              <td>
+                                <span class="dropdown dropstart">
+                                  <a
+                                    class="btn-icon btn btn-ghost btn-sm rounded-circle"
+                                    href="#"
+                                    role="button"
+                                    id="courseDropdown{{ oeuvre.id }}"
+                                    data-bs-toggle="dropdown"
+                                    data-bs-offset="-20,20"
+                                    aria-expanded="false">
+                                    <i class="fe fe-more-vertical"></i>
+                                  </a>
+                                  <span class="dropdown-menu" aria-labelledby="courseDropdown{{ oeuvre.id }}">
+                                    <span class="dropdown-header">Paramètres</span>
+                                    <a class="dropdown-item" href="{{ path('app_oeuvre_details', {'id': oeuvre.id}) }}">
+                                      <i class="fe fe-eye dropdown-item-icon"></i>
+                                      Détails
+                                    </a>
+                                    {# Bouton Modifier #}
+                                    <button 
+                                      class="dropdown-item" 
+                                      type="button"
+                                      data-bs-toggle="offcanvas" 
+                                      data-bs-target="#offcanvasOeuvreEdit"
+                                      data-oeuvre-id="{{ oeuvre.id }}"
+                                      data-titre="{{ oeuvre.titre }}"
+                                      data-description="{{ oeuvre.description }}"
+                                      data-type="{{ oeuvre.type ? oeuvre.type.value : '' }}"
+                                      data-date-creation="{{ oeuvre.dateCreation ? oeuvre.dateCreation|date('Y-m-d') : '' }}"
+                                      data-collection-id="{{ oeuvre.collection ? oeuvre.collection.id : '' }}">
+                                      <i class="fe fe-edit dropdown-item-icon"></i>
+                                      Modifier
+                                    </button>
+                                    <button 
+                                      class="dropdown-item" 
+                                      type="button"
+                                      onclick="document.getElementById('deleteForm{{ oeuvre.id }}').submit();" style="color: inherit; text-decoration: none;">
+                                      <i class="fe fe-trash dropdown-item-icon"></i>
+                                      Supprimer
+                                    </button>
+                                    <form id="deleteForm{{ oeuvre.id }}" method="post" action="{{ path('app_oeuvre_delete', {'id': oeuvre.id}) }}" style="display:none;">
+                                      <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ oeuvre.id) }}">
+                                    </form>
+                                  </span>
+                                </span>
+                              </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                              <td colspan="9">Aucune œuvre trouvée.</td>
+                            </tr>
+                            {% endfor %}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+
+                  
+                  
+                <!-- SCULPTURE -->
+                
+                    <!-- Tab -->
+                    <div class="tab-pane fade" id="scheduled" role="tabpanel" aria-labelledby="scheduled-tab">
+                      <div class="table-responsive">
+                        <!-- Table -->
+                        <table class="table mb-0 text-nowrap table-centered table-hover table-with-checkbox table-centered table-hover">
+                          <!-- Table Head -->
+                          <thead class="table-light">
+                            <tr>
+                              <th>
+                                <div class="form-check">
+                                  <input type="checkbox" class="form-check-input" id="checkAll" />
+                                  <label class="form-check-label" for="checkAll"></label>
+                                </div>
+                              </th>
+                              <th>Oeuvre</th>
+                              <th>Catégorie</th>
+                              <th>Collection</th>
+                              <th>Date de publication</th>
+                              <th>Artiste</th>
+                              <th>J'aimes</th>
+                              <th>Commentaires</th>
+                              <th>Favoris</th>
+                              <th></th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {# Render all oeuvres in the same table layout (no image column) #}
+                            {% for oeuvre in sculptures %}
+                            <tr>
+                              <td>
+                                <div class="form-check">
+                                  <input type="checkbox" class="form-check-input" id="post{{ oeuvre.id }}" />
+                                  <label class="form-check-label" for="post{{ oeuvre.id }}"></label>
+                                </div>
+                              </td>
+                              <td>
+                                <h5 class="mb-0">
+                                  <a  class="text-inherit">{{ oeuvre.titre }}</a>
+                                </h5>
+                              </td>
+                              <td>
+                                {% if oeuvre.type %}
+                                  <span class="badge bg-{{ oeuvre.type.color }} text-white">{{ oeuvre.type.value }}</span>
+                                {% else %}
+                                  <span class="badge bg-secondary text-white">—</span>
+                                {% endif %}
+                              </td>
+                              <td>
+                                <a  class="text-inherit">{{ oeuvre.collection ? oeuvre.collection.titre : '—' }}</a>
+                              </td>
+                              <td class="text-center">{{ oeuvre.dateCreation ?  oeuvre.dateCreation|date('d M Y') : '—' }}</td>
+                              <td>
+                                <div class="d-flex align-items-center flex-row gap-2">
+                                  <h5 class="mb-0">{{ (oeuvre.collection and oeuvre.collection.artiste) ? (oeuvre.collection.artiste.nom ~ ' ' ~ oeuvre.collection.artiste.prenom) : '—' }}</h5>
+                                </div>
+                              </td>
+                              <td class="text-center">
+                                <div class="d-flex align-items-center justify-content-center gap-1">
+                                <i class="bi bi-heart-fill text-danger"></i>
+                                <span class="fw-semibold">{{ (oeuvre.likes ? oeuvre.likes|filter(like => like.liked) : [])|length }}</span>
+                                </div>
+                              </td>
+
+                              <td class="text-center">
+                                <div class="d-flex align-items-center justify-content-center gap-1">
+                                <i class="bi bi-chat-fill text-info"></i>
+                                <span class="fw-semibold">{{ oeuvre.commentaires ? oeuvre.commentaires|length : 0 }}</span>
+                                </div>
+                              </td>
+                              <td class="text-center">
+                                <div class="d-flex align-items-center justify-content-center gap-1">
+                                  <i class="bi bi-star-fill text-warning"></i>
+                                  <span class="fw-semibold">{{ oeuvre.userFav ? oeuvre.userFav|length : 0 }}</span>
+                                </div>
+                              </td>
+
+                              <td>
+                                <span class="dropdown dropstart">
+                                  <a
+                                    class="btn-icon btn btn-ghost btn-sm rounded-circle"
+                                    href="#"
+                                    role="button"
+                                    id="courseDropdown{{ oeuvre.id }}"
+                                    data-bs-toggle="dropdown"
+                                    data-bs-offset="-20,20"
+                                    aria-expanded="false">
+                                    <i class="fe fe-more-vertical"></i>
+                                  </a>
+                                  <span class="dropdown-menu" aria-labelledby="courseDropdown{{ oeuvre.id }}">
+                                    <span class="dropdown-header">Paramètres</span>
+                                    <a class="dropdown-item" href="{{ path('app_oeuvre_details', {'id': oeuvre.id}) }}">
+                                      <i class="fe fe-eye dropdown-item-icon"></i>
+                                      Détails
+                                    </a>
+                                    {# Bouton Modifier#}
+                                    <button 
+                                      class="dropdown-item" 
+                                      type="button"
+                                      data-bs-toggle="offcanvas" 
+                                      data-bs-target="#offcanvasOeuvreEdit"
+                                      data-oeuvre-id="{{ oeuvre.id }}"
+                                      data-titre="{{ oeuvre.titre }}"
+                                      data-description="{{ oeuvre.description }}"
+                                      data-type="{{ oeuvre.type ? oeuvre.type.value : '' }}"
+                                      data-date-creation="{{ oeuvre.dateCreation ? oeuvre.dateCreation|date('Y-m-d') : '' }}"
+                                      data-collection-id="{{ oeuvre.collection ? oeuvre.collection.id : '' }}">
+                                      <i class="fe fe-edit dropdown-item-icon"></i>
+                                      Modifier
+                                    </button> 
+                                    <button 
+                                      class="dropdown-item" 
+                                      type="button"
+                                      onclick="document.getElementById('deleteForm{{ oeuvre.id }}').submit();" style="color: inherit; text-decoration: none;">
+                                      <i class="fe fe-trash dropdown-item-icon"></i>
+                                      Supprimer
+                                    </button>
+                                    <form id="deleteForm{{ oeuvre.id }}" method="post" action="{{ path('app_oeuvre_delete', {'id': oeuvre.id}) }}" style="display:none;">
+                                      <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ oeuvre.id) }}">
+                                    </form>
+                                  </span>
+                                </span>
+                              </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                              <td colspan="9">Aucune œuvre trouvée.</td>
+                            </tr>
+                            {% endfor %}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+
+                  
+                 
+                <!-- PHOTO -->
+                
+                  
+                    <!-- Tab -->
+                    <div class="tab-pane fade" id="draft" role="tabpanel" aria-labelledby="draft-tab">
+                      <div class="table-responsive">
+                        <!-- Table -->
+                        <table class="table mb-0 text-nowrap table-centered table-hover table-with-checkbox table-centered table-hover">
+                          <!-- Table Head -->
+                          <thead class="table-light">
+                            <tr>
+                              <th>
+                                <div class="form-check">
+                                  <input type="checkbox" class="form-check-input" id="checkAll" />
+                                  <label class="form-check-label" for="checkAll"></label>
+                                </div>
+                              </th>
+                              <th>Oeuvre</th>
+                              <th>Catégorie</th>
+                              <th>Collection</th>
+                              <th>Date de publication</th>
+                              <th>Artiste</th>
+                              <th>J'aimes</th>
+                              <th>Commentaires</th>
+                              <th>Favoris</th>
+                              <th></th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {# Render all oeuvres in the same table layout (no image column) #}
+                            {% for oeuvre in photos %}
+                            <tr>
+                              <td>
+                                <div class="form-check">
+                                  <input type="checkbox" class="form-check-input" id="post{{ oeuvre.id }}" />
+                                  <label class="form-check-label" for="post{{ oeuvre.id }}"></label>
+                                </div>
+                              </td>
+                              <td>
+                                <h5 class="mb-0">
+                                  <a  class="text-inherit">{{ oeuvre.titre }}</a>
+                                </h5>
+                              </td>
+                              <td>
+                                {% if oeuvre.type %}
+                                  <span class="badge bg-{{ oeuvre.type.color }} text-white">{{ oeuvre.type.value }}</span>
+                                {% else %}
+                                  <span class="badge bg-secondary text-white">—</span>
+                                {% endif %}
+                              </td>
+                              <td>
+                                <a  class="text-inherit">{{ oeuvre.collection ? oeuvre.collection.titre : '—' }}</a>
+                              </td>
+                              <td class="text-center">{{ oeuvre.dateCreation ?  oeuvre.dateCreation|date('d M Y') : '—' }}</td>
+                              <td>
+                                <div class="d-flex align-items-center flex-row gap-2">
+                                  <h5 class="mb-0">{{ (oeuvre.collection and oeuvre.collection.artiste) ? (oeuvre.collection.artiste.nom ~ ' ' ~ oeuvre.collection.artiste.prenom) : '—' }}</h5>
+                                </div>
+                              </td>
+                              <td class="text-center">
+                                <div class="d-flex align-items-center justify-content-center gap-1">
+                                <i class="bi bi-heart-fill text-danger"></i>
+                                <span class="fw-semibold">{{ (oeuvre.likes ? oeuvre.likes|filter(like => like.liked) : [])|length }}</span>
+                                </div>
+                              </td>
+
+                              <td class="text-center">
+                                <div class="d-flex align-items-center justify-content-center gap-1">
+                                <i class="bi bi-chat-fill text-info"></i>
+                                <span class="fw-semibold">{{ oeuvre.commentaires ? oeuvre.commentaires|length : 0 }}</span>
+                                </div>
+                              </td>
+                              <td class="text-center">
+                                <div class="d-flex align-items-center justify-content-center gap-1">
+                                  <i class="bi bi-star-fill text-warning"></i>
+                                  <span class="fw-semibold">{{ oeuvre.userFav ? oeuvre.userFav|length : 0 }}</span>
+                                </div>
+                              </td>
+
+                              <td>
+                                <span class="dropdown dropstart">
+                                  <a
+                                    class="btn-icon btn btn-ghost btn-sm rounded-circle"
+                                    href="#"
+                                    role="button"
+                                    id="courseDropdown{{ oeuvre.id }}"
+                                    data-bs-toggle="dropdown"
+                                    data-bs-offset="-20,20"
+                                    aria-expanded="false">
+                                    <i class="fe fe-more-vertical"></i>
+                                  </a>
+                                  <span class="dropdown-menu" aria-labelledby="courseDropdown{{ oeuvre.id }}">
+                                    <span class="dropdown-header">Paramètres</span>
+                                    <a class="dropdown-item" href="{{ path('app_oeuvre_details', {'id': oeuvre.id}) }}">
+                                      <i class="fe fe-eye dropdown-item-icon"></i>
+                                      Détails
+                                    </a>
+                                    {# Bouton Modifier #}
+                                    <button 
+                                      class="dropdown-item" 
+                                      type="button"
+                                      data-bs-toggle="offcanvas" 
+                                      data-bs-target="#offcanvasOeuvreEdit"
+                                      data-oeuvre-id="{{ oeuvre.id }}"
+                                      data-titre="{{ oeuvre.titre }}"
+                                      data-description="{{ oeuvre.description }}"
+                                      data-type="{{ oeuvre.type ? oeuvre.type.value : '' }}"
+                                      data-date-creation="{{ oeuvre.dateCreation ? oeuvre.dateCreation|date('Y-m-d') : '' }}"
+                                      data-collection-id="{{ oeuvre.collection ? oeuvre.collection.id : '' }}">
+                                      <i class="fe fe-edit dropdown-item-icon"></i>
+                                      Modifier
+                                    </button>
+                                    <button 
+                                      class="dropdown-item" 
+                                      type="button"
+                                      onclick="document.getElementById('deleteForm{{ oeuvre.id }}').submit();" style="color: inherit; text-decoration: none;">
+                                      <i class="fe fe-trash dropdown-item-icon"></i>
+                                      Supprimer
+                                    </button>
+                                    <form id="deleteForm{{ oeuvre.id }}" method="post" action="{{ path('app_oeuvre_delete', {'id': oeuvre.id}) }}" style="display:none;">
+                                      <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ oeuvre.id) }}">
+                                    </form>
+                                  </span>
+                                </span>
+                              </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                              <td colspan="9">Aucune œuvre trouvée.</td>
+                            </tr>
+                            {% endfor %}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+
+                  
+                  
+              </div>
+              </div>
+                <!-- Card Footer with Pagination -->
+                <div class="card-footer">
+                  <div id="pagination-all-post" class="tab-pagination">
+                    {% set paginationOeuvres = isSearchActive ? searchResultsPaginated : oeuvres %}
+                    {% if paginationOeuvres and paginationOeuvres.getPageCount > 1 %}
+                    <nav>
+                      <ul class="pagination justify-content-center mb-0">
+                        {% if paginationOeuvres.getCurrentPageNumber > 1 %}
+                        <li class="page-item">
+                          <a class="page-link mx-1 rounded" href="{{ path('oeuvres', {page: paginationOeuvres.getCurrentPageNumber - 1, sort: sortBy, order: sortOrder, tab: 'all-post', q: currentQuery}) }}">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="currentColor" class="bi bi-chevron-left" viewBox="0 0 16 16">
+                              <path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"></path>
+                            </svg>
+                          </a>
+                        </li>
+                        {% else %}
+                        <li class="page-item disabled">
+                          <a class="page-link mx-1 rounded" href="#" tabindex="-1" aria-disabled="true">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="currentColor" class="bi bi-chevron-left" viewBox="0 0 16 16">
+                              <path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"></path>
+                            </svg>
+                          </a>
+                        </li>
+                        {% endif %}
+                        
+                        {% for pageNum in 1..paginationOeuvres.getPageCount %}
+                          {% if pageNum == paginationOeuvres.getCurrentPageNumber %}
+                          <li class="page-item active">
+                            <a class="page-link mx-1 rounded" href="#">{{ pageNum }}</a>
+                          </li>
+                          {% else %}
+                          <li class="page-item">
+                            <a class="page-link mx-1 rounded" href="{{ path('oeuvres', {page: pageNum, sort: sortBy, order: sortOrder, tab: 'all-post', q: currentQuery}) }}">{{ pageNum }}</a>
+                          </li>
+                          {% endif %}
+                        {% endfor %}
+                        
+                        {% if paginationOeuvres.getCurrentPageNumber < paginationOeuvres.getPageCount %}
+                        <li class="page-item">
+                          <a class="page-link mx-1 rounded" href="{{ path('oeuvres', {page: paginationOeuvres.getCurrentPageNumber + 1, sort: sortBy, order: sortOrder, tab: 'all-post', q: currentQuery}) }}">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="currentColor" class="bi bi-chevron-right" viewBox="0 0 16 16">
+                              <path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"></path>
+                            </svg>
+                          </a>
+                        </li>
+                        {% else %}
+                        <li class="page-item disabled">
+                          <a class="page-link mx-1 rounded" href="#" tabindex="-1" aria-disabled="true">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="currentColor" class="bi bi-chevron-right" viewBox="0 0 16 16">
+                              <path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"></path>
+                            </svg>
+                          </a>
+                        </li>
+                        {% endif %}
+                      </ul>
+                    </nav>
+                    {% endif %}
+                  </div>
+                  
+                  <div id="pagination-published" class="tab-pagination" style="display:none;">
+                    {% if peintures.getPageCount > 1 %}
+                    <nav>
+                      <ul class="pagination justify-content-center mb-0">
+                        {% if peintures.getCurrentPageNumber > 1 %}
+                        <li class="page-item">
+                          <a class="page-link mx-1 rounded" href="{{ path('oeuvres', {page_peinture: peintures.getCurrentPageNumber - 1, sort: sortBy, order: sortOrder, tab: 'published', q: currentQuery}) }}">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="currentColor" class="bi bi-chevron-left" viewBox="0 0 16 16">
+                              <path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"></path>
+                            </svg>
+                          </a>
+                        </li>
+                        {% else %}
+                        <li class="page-item disabled">
+                          <a class="page-link mx-1 rounded" href="#" tabindex="-1">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="currentColor" class="bi bi-chevron-left" viewBox="0 0 16 16">
+                              <path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"></path>
+                            </svg>
+                          </a>
+                        </li>
+                        {% endif %}
+                        
+                        {% for pageNum in 1..peintures.getPageCount %}
+                          {% if pageNum == peintures.getCurrentPageNumber %}
+                          <li class="page-item active">
+                            <a class="page-link mx-1 rounded" href="#">{{ pageNum }}</a>
+                          </li>
+                          {% else %}
+                          <li class="page-item">
+                            <a class="page-link mx-1 rounded" href="{{ path('oeuvres', {page_peinture: pageNum, sort: sortBy, order: sortOrder, tab: 'published', q: currentQuery}) }}">{{ pageNum }}</a>
+                          </li>
+                          {% endif %}
+                        {% endfor %}
+                        
+                        {% if peintures.getCurrentPageNumber < peintures.getPageCount %}
+                        <li class="page-item">
+                          <a class="page-link mx-1 rounded" href="{{ path('oeuvres', {page_peinture: peintures.getCurrentPageNumber + 1, sort: sortBy, order: sortOrder, tab: 'published', q: currentQuery}) }}">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="currentColor" class="bi bi-chevron-right" viewBox="0 0 16 16">
+                              <path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"></path>
+                            </svg>
+                          </a>
+                        </li>
+                        {% else %}
+                        <li class="page-item disabled">
+                          <a class="page-link mx-1 rounded" href="#" tabindex="-1">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="currentColor" class="bi bi-chevron-right" viewBox="0 0 16 16">
+                              <path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"></path>
+                            </svg>
+                          </a>
+                        </li>
+                        {% endif %}
+                      </ul>
+                    </nav>
+                    {% endif %}
+                  </div>
+                  
+                  <div id="pagination-scheduled" class="tab-pagination" style="display:none;">
+                    {% if sculptures.getPageCount > 1 %}
+                    <nav>
+                      <ul class="pagination justify-content-center mb-0">
+                        {% if sculptures.getCurrentPageNumber > 1 %}
+                        <li class="page-item">
+                          <a class="page-link mx-1 rounded" href="{{ path('oeuvres', {page_sculpture: sculptures.getCurrentPageNumber - 1, sort: sortBy, order: sortOrder, tab: 'scheduled', q: currentQuery}) }}">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="currentColor" class="bi bi-chevron-left" viewBox="0 0 16 16">
+                              <path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"></path>
+                            </svg>
+                          </a>
+                        </li>
+                        {% else %}
+                        <li class="page-item disabled">
+                          <a class="page-link mx-1 rounded" href="#" tabindex="-1">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="currentColor" class="bi bi-chevron-left" viewBox="0 0 16 16">
+                              <path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"></path>
+                            </svg>
+                          </a>
+                        </li>
+                        {% endif %}
+                        
+                        {% for pageNum in 1..sculptures.getPageCount %}
+                          {% if pageNum == sculptures.getCurrentPageNumber %}
+                          <li class="page-item active">
+                            <a class="page-link mx-1 rounded" href="#">{{ pageNum }}</a>
+                          </li>
+                          {% else %}
+                          <li class="page-item">
+                            <a class="page-link mx-1 rounded" href="{{ path('oeuvres', {page_sculpture: pageNum, sort: sortBy, order: sortOrder, tab: 'scheduled', q: currentQuery}) }}">{{ pageNum }}</a>
+                          </li>
+                          {% endif %}
+                        {% endfor %}
+                        
+                        {% if sculptures.getCurrentPageNumber < sculptures.getPageCount %}
+                        <li class="page-item">
+                          <a class="page-link mx-1 rounded" href="{{ path('oeuvres', {page_sculpture: sculptures.getCurrentPageNumber + 1, sort: sortBy, order: sortOrder, tab: 'scheduled', q: currentQuery}) }}">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="currentColor" class="bi bi-chevron-right" viewBox="0 0 16 16">
+                              <path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"></path>
+                            </svg>
+                          </a>
+                        </li>
+                        {% else %}
+                        <li class="page-item disabled">
+                          <a class="page-link mx-1 rounded" href="#" tabindex="-1">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="currentColor" class="bi bi-chevron-right" viewBox="0 0 16 16">
+                              <path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"></path>
+                            </svg>
+                          </a>
+                        </li>
+                        {% endif %}
+                      </ul>
+                    </nav>
+                    {% endif %}
+                  </div>
+                  
+                  <div id="pagination-draft" class="tab-pagination" style="display:none;">
+                    {% if photos.getPageCount > 1 %}
+                    <nav>
+                      <ul class="pagination justify-content-center mb-0">
+                        {% if photos.getCurrentPageNumber > 1 %}
+                        <li class="page-item">
+                          <a class="page-link mx-1 rounded" href="{{ path('oeuvres', {page_photo: photos.getCurrentPageNumber - 1, sort: sortBy, order: sortOrder, tab: 'draft', q: currentQuery}) }}">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="currentColor" class="bi bi-chevron-left" viewBox="0 0 16 16">
+                              <path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"></path>
+                            </svg>
+                          </a>
+                        </li>
+                        {% else %}
+                        <li class="page-item disabled">
+                          <a class="page-link mx-1 rounded" href="#" tabindex="-1">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="currentColor" class="bi bi-chevron-left" viewBox="0 0 16 16">
+                              <path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"></path>
+                            </svg>
+                          </a>
+                        </li>
+                        {% endif %}
+                        
+                        {% for pageNum in 1..photos.getPageCount %}
+                          {% if pageNum == photos.getCurrentPageNumber %}
+                          <li class="page-item active">
+                            <a class="page-link mx-1 rounded" href="#">{{ pageNum }}</a>
+                          </li>
+                          {% else %}
+                          <li class="page-item">
+                            <a class="page-link mx-1 rounded" href="{{ path('oeuvres', {page_photo: pageNum, sort: sortBy, order: sortOrder, tab: 'draft', q: currentQuery}) }}">{{ pageNum }}</a>
+                          </li>
+                          {% endif %}
+                        {% endfor %}
+                        
+                        {% if photos.getCurrentPageNumber < photos.getPageCount %}
+                        <li class="page-item">
+                          <a class="page-link mx-1 rounded" href="{{ path('oeuvres', {page_photo: photos.getCurrentPageNumber + 1, sort: sortBy, order: sortOrder, tab: 'draft', q: currentQuery}) }}">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="currentColor" class="bi bi-chevron-right" viewBox="0 0 16 16">
+                              <path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"></path>
+                            </svg>
+                          </a>
+                        </li>
+                        {% else %}
+                        <li class="page-item disabled">
+                          <a class="page-link mx-1 rounded" href="#" tabindex="-1">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="currentColor" class="bi bi-chevron-right" viewBox="0 0 16 16">
+                              <path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"></path>
+                            </svg>
+                          </a>
+                        </li>
+                        {% endif %}
+                      </ul>
+                    </nav>
+                    {% endif %}
+                  </div>
+                </div>
+                
+                <script>
+                  // Show/hide pagination based on active tab
+                  document.addEventListener('DOMContentLoaded', function() {
+                    const tabs = document.querySelectorAll('.nav-lb-tab .nav-link');
+                    tabs.forEach(function(tab) {
+                      tab.addEventListener('shown.bs.tab', function(e) {
+                        // Hide all paginations
+                        document.querySelectorAll('.tab-pagination').forEach(p => p.style.display = 'none');
+                        
+                        // Show pagination for active tab
+                        const targetId = e.target.getAttribute('href').substring(1);
+                        const paginationId = 'pagination-' + targetId;
+                        const paginationEl = document.getElementById(paginationId);
+                        if (paginationEl) {
+                          paginationEl.style.display = 'block';
+                        }
+                      });
+                    });
+
+                    // Show correct pagination on page load
+                    const activeTabId = new URLSearchParams(window.location.search).get('tab') || 'all-post';
+                    const paginationId = 'pagination-' + activeTabId;
+                    const paginationEl = document.getElementById(paginationId);
+                    if (paginationEl) {
+                      document.querySelectorAll('.tab-pagination').forEach(p => p.style.display = 'none');
+                      paginationEl.style.display = 'block';
+                    }
+                  });
+                </script>
+              </div>
+            </div>
+          </div>
+
+          {# Include the offcanvas edit partial #}
+          {% include 'oeuvre/_offcanvas_edit.html.twig' with {'edit_route': 'app_oeuvre_edit'} %}
+
+{% endblock %}

@@ -1,0 +1,20 @@
+/* Styles for oeuvre details page */
+.oeuvre-card { display:flex; gap:28px; align-items:flex-start; padding:0; }
+.oeuvre-image { flex:0 0 420px; height:320px; border-radius:12px; overflow:hidden; background:linear-gradient(180deg,#fafafa,#f0f0f0); display:flex; align-items:center; justify-content:center; box-shadow:0 6px 18px rgba(23,24,24,0.06) }
+.oeuvre-image img { width:100%; height:100%; object-fit:cover; display:block }
+.oeuvre-detail { flex:1 1 auto }
+.oeuvre-description { max-height:220px; overflow:auto; padding-right:8px; background:#fff; border-radius:6px; padding:12px; border:1px solid #f0f0f0 }
+.oeuvre-meta { margin-top:14px }
+.badge-type { font-size:0.85rem; padding:0.4rem 0.6rem; border-radius:8px }
+.stat-pill { display:inline-flex; gap:8px; align-items:center; padding:6px 12px; border-radius:999px; background:#ffffff; border:1px solid #eee; box-shadow:0 4px 12px rgba(12,13,14,0.03) }
+.oeuvre-header { display:flex; gap:12px; align-items:center }
+.artist-avatar { width:56px; height:56px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-weight:700; color:#fff }
+.comments-box { background:#fff; border-radius:8px; border:1px solid #eef0f2 }
+.comment-item { display:flex; gap:12px; padding:10px 8px; align-items:flex-start }
+.comment-avatar { width:40px; height:40px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-weight:600; color:#fff; flex:0 0 40px }
+.comment-meta { font-size:0.82rem; color:#6b6f76 }
+.comment-text { white-space:pre-wrap }
+@media (max-width: 768px) {
+  .oeuvre-card { flex-direction:column }
+  .oeuvre-image { width:100%; flex:0 0 auto; height:240px }
+}

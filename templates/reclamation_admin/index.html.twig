@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+
+<title>Reclamation index</title>
+
+{% block body %}
+    <h1>Reclamation index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Texte</th>
+                <th>Date_creation</th>
+                <th>Statut</th>
+                <th>Type</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for reclamation in reclamations %}
+            <tr>
+                <td>{{ reclamation.id }}</td>
+                <td>{{ reclamation.texte }}</td>
+                <td>{{ reclamation.dateCreation ? reclamation.dateCreation|date('Y-m-d') : '' }}</td>
+                <td>{{ reclamation.statut }}</td>
+                <td>{{ reclamation.type }}</td>
+                <td>
+                    <a href="{{ path('app_reclamation_admin_show', {'id': reclamation.id}) }}">show</a>
+                    <a href="{{ path('app_reclamation_admin_edit', {'id': reclamation.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="6">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_reclamation_admin_new') }}">Create new</a>
+{% endblock %}

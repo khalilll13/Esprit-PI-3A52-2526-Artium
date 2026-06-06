@@ -1,0 +1,195 @@
+{% extends 'basesign.html.twig' %}
+
+{% block title %}Se connecter{% endblock %}
+
+{% block body %}
+<main>
+      <section class="container d-flex flex-column vh-100">
+        <div class="row align-items-center justify-content-center g-0 h-lg-100 py-8">
+          <div class="col-lg-5 col-md-8 py-8 py-xl-0">
+            <!-- Card -->
+            <div class="card shadow">
+              <!-- Card body -->
+              <div class="card-body p-6 d-flex flex-column gap-4">
+                <div>
+                 <!-- style="display: block; margin: 0 auto;" -->
+                  <!--<img src="{{ asset('assetsback/images/logo2.png') }}"class="logo" " />-->
+                  <img src="{{ asset('assetsback/images/logo2.png') }}" class="logo logo-light">
+                  <img src="{{ asset('assetsback/images/Colored PNG White Logo.png') }}" class="logo logo-dark">
+                  <div class="d-flex flex-column gap-1">
+                  <!-- style="text-align: center;"-->
+                    <h1 class="mb-0 fw-bold" >Se Connecter</h1>
+                    <span>
+                      Vous n’avez pas de compte?
+                      <a href="{{ path('app_signup') }}" class="ms-1">S'inscrire</a>
+                    </span>
+                  </div>
+                </div>
+                <!-- Form -->
+                <form method="post" action="{{ path('app_signin') }}" class="needs-validation" novalidate>
+                  {% if error %}
+                    <div class="alert alert-danger d-flex align-items-center mb-3" role="alert">
+                      <i class="fe fe-alert-circle me-2"></i>
+                      <div>{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+                    </div>
+                  {% endif %}
+                  <!-- Username -->
+                  <div class="mb-3">
+                    <label for="signInEmail" class="form-label">Adresse e-mail</label>
+                    <input type="email" id="signInEmail" class="form-control" name="email" value="{{ last_username }}" placeholder="Votre adresse e-mail" autocomplete="email" required />
+                    <div class="invalid-feedback">Adresse e-mail invalide</div>
+                  </div>
+                  <!-- Password -->
+                  <div class="mb-3">
+                    <label for="signInPassword" class="form-label">Mot de passe</label>
+                    <input type="password" id="signInPassword" class="form-control" name="password" placeholder="**************" autocomplete="current-password" required />
+                    <div class="invalid-feedback">Mot de passe invalide</div>
+                  </div>
+                  <!-- Checkbox -->
+                  <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+                  <div class="d-lg-flex justify-content-between align-items-center mb-4">
+                    <div class="form-check">
+                      <input type="checkbox" class="form-check-input" id="rememberme" />
+                      <label class="form-check-label" for="rememberme">Rester connecté</label>
+                    </div>
+                    <div>
+                      <a href="{{ path('app_forgot_pwd') }}">Mot de passe oublié ?</a>
+                    </div>
+                  </div>
+                  <div>
+                    <!-- Button -->
+                    <div class="d-grid">
+                      <button type="submit" class="btn btn-primary">Se Connecter</button>
+                    </div>
+                  </div>
+                  <div class="mb-4 text-center">
+                    <button type="button" class="btn btn-outline-primary w-100" id="showFaceLogin" style="margin-top: 10px;">Se connecter par reconnaissance faciale</button>
+                  </div>
+                  <div class="mb-3" id="faceLoginSection" style="display:none; text-align:center;">
+                    <label for="faceLoginPhoto" class="form-label">Photo pour connexion (reconnaissance faciale)</label>
+                    <div style="display:flex; flex-direction:column; align-items:center; justify-content:center;">
+                      <video id="video" width="320" height="240" autoplay style="display:block;"></video>
+                      <canvas id="canvas" width="320" height="240" style="display:none;"></canvas>
+                      <input type="file" id="faceLoginPhoto" class="form-control" name="photo" accept="image/*" style="display:none;" />
+                      <input type="file" id="symfonyFacePhoto" name="photo" style="display:none;" />
+                      <button type="button" class="btn btn-secondary mt-2" id="captureBtn" style="width:200px;">Prendre une photo</button>
+                    </div>
+                  </div>
+                  <script>
+                  const video = document.getElementById('video');
+                  const canvas = document.getElementById('canvas');
+                  const captureBtn = document.getElementById('captureBtn');
+                  const fileInput = document.getElementById('faceLoginPhoto');
+                  let previewImg = null;
+                  // Demande l'accès à la webcam uniquement si la section est affichée
+                  let streamStarted = false;
+                  function startStream() {
+                    if (!streamStarted) {
+                      navigator.mediaDevices.getUserMedia({ video: true })
+                        .then(stream => {
+                          video.srcObject = stream;
+                          streamStarted = true;
+                        })
+                        .catch(err => {
+                          alert("Impossible d'accéder à la caméra : " + err.message);
+                        });
+                    }
+                  }
+                  document.getElementById('showFaceLogin').addEventListener('click', function() {
+                    document.getElementById('faceLoginSection').style.display = '';
+                    this.style.display = 'none';
+                    startStream();
+                  });
+                  captureBtn.addEventListener('click', function() {
+                    canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+                    canvas.toBlob(function(blob) {
+                      const file = new File([blob], 'capture.jpg', { type: 'image/jpeg' });
+                      const dataTransfer = new DataTransfer();
+                      dataTransfer.items.add(file);
+                      fileInput.files = dataTransfer.files;
+                      // Synchronise avec le champ Symfony invisible
+                      const symfonyPhotoInput = document.getElementById('symfonyFacePhoto');
+                      if (symfonyPhotoInput) {
+                        symfonyPhotoInput.files = dataTransfer.files;
+                      }
+                      // Affiche un aperçu de la photo capturée
+                      if (!previewImg) {
+                        previewImg = document.createElement('img');
+                        previewImg.style.marginTop = '10px';
+                        previewImg.style.maxWidth = '200px';
+                        canvas.parentNode.appendChild(previewImg);
+                      }
+                      previewImg.src = URL.createObjectURL(blob);
+                    }, 'image/jpeg');
+                  });
+                  // Envoi AJAX pour la connexion faciale
+                  document.getElementById('faceLoginSection').insertAdjacentHTML('beforeend', `
+                    <button type="button" class="btn btn-success mt-2" id="faceLoginSubmit" style="width:200px;">Connexion faciale</button>
+                  `);
+                  document.getElementById('faceLoginSubmit').addEventListener('click', function() {
+                    const symfonyPhotoInput = document.getElementById('symfonyFacePhoto');
+                    const emailInput = document.getElementById('signInEmail');
+                    if (!symfonyPhotoInput.files.length || !emailInput.value) {
+                      alert('Veuillez prendre une photo et saisir votre email.');
+                      return;
+                    }
+                    const formData = new FormData();
+                    formData.append('photo', symfonyPhotoInput.files[0]);
+                    formData.append('email', emailInput.value);
+                    fetch("{{ path('app_face_signin') }}", {
+                      method: 'POST',
+                      body: formData,
+                      credentials: 'same-origin'
+                    })
+                    .then(response => {
+                      if (response.redirected) {
+                        window.location.href = response.url;
+                        return;
+                      }
+                      // Si le backend retourne une URL dans le body
+                      if (response.status === 200) {
+                        response.text().then(url => {
+                          if (url.startsWith('http') || url.startsWith('/')) {
+                            window.location.href = url;
+                          } else {
+                            window.location.href = "{{ path('app_admin') }}";
+                          }
+                        });
+                      } else {
+                        response.text().then(msg => alert(msg));
+                      }
+                    })
+                    .catch(err => alert('Erreur lors de la connexion faciale : ' + err));
+                  });
+                  </script>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      <div class="position-absolute bottom-0 m-4">
+        <div class="dropdown">
+          <button class="btn btn-light btn-icon rounded-circle d-flex align-items-center" type="button" aria-expanded="false" data-bs-toggle="dropdown" aria-label="Toggle theme (auto)">
+            <i class="bi theme-icon-active"></i>
+            <span class="visually-hidden bs-theme-text">Toggle theme</span>
+          </button>
+          <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="bs-theme-text">
+            <li>
+              <button type="button" class="dropdown-item d-flex align-items-center" data-bs-theme-value="light" aria-pressed="false">
+                <i class="bi theme-icon bi-sun-fill"></i>
+                <span class="ms-2">Clair</span>
+              </button>
+            </li>
+            <li>
+              <button type="button" class="dropdown-item d-flex align-items-center" data-bs-theme-value="dark" aria-pressed="false">
+                <i class="bi theme-icon bi-moon-stars-fill"></i>
+                <span class="ms-2">Sombre</span>
+              </button>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </main>
+
+{% endblock %}

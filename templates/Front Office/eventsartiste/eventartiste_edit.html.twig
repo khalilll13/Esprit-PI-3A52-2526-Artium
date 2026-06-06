@@ -1,0 +1,21 @@
+{% extends 'base_artiste.html.twig' %}
+
+{% block title %}{{ 'Modifier evenement'|trans }}{% endblock %}
+
+{% block artiste_content %}
+  <div class="card">
+    <div class="card-header border-0 pb-0 d-flex align-items-center justify-content-between">
+      <div>
+        <h5 class="card-title mb-1">Modifier evenement</h5>
+        <p class="small mb-0 text-muted">Mettez a jour les informations de votre evenement.</p>
+      </div>
+      <a class="btn btn-outline-secondary btn-sm" href="{{ path('app_eventsartiste') }}">Retour</a>
+    </div>
+    <div class="card-body">
+      {% include 'Front Office/Partials/event_form_fields.html.twig' with {
+        form: form,
+        submit_label: 'Mettre a jour'
+      } %}
+    </div>
+  </div>
+{% endblock %}

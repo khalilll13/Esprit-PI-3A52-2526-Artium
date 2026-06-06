@@ -1,0 +1,63 @@
+# This file is the entry point to configure your own services.
+# Files in the packages/ subdirectory configure your dependencies.
+
+# Put parameters here that don't need to change on each machine where the app is deployed
+# https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
+parameters:
+    recaptcha_site_key: '%env(RECAPTCHA_SITE_KEY)%'
+    user_photos_directory: '%kernel.project_dir%/public/uploads/user_photos'
+
+    
+    gemini_api_key: '%env(GEMINI_API_KEY)%'
+
+services:
+    # default configuration for services in *this* file
+    _defaults:
+        autowire: true      # Automatically injects dependencies in your services.
+        autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
+        bind:
+            string $apiKey: '%env(COHERE_API_KEY)%'
+    App\Service\EmbeddingService: ~
+
+        
+    # makes classes in src/ available to be used as services
+    # this creates a service per class whose id is the fully-qualified class name
+    App\:
+        resource: '../src/'
+        exclude:
+            - '../src/DependencyInjection/'
+            - '../src/Entity/'
+            - '../src/Kernel.php'
+    
+    App\Service\BookAiService:
+        arguments:
+            $gapiKey: '%gemini_api_key%'
+
+    App\Service\EmbeddingService:
+        arguments:
+            $apiKey: '%env(COHERE_API_KEY)%'
+
+
+    App\EventListener\UserConnectionListener:
+        tags:
+            - { name: kernel.event_listener, event: security.interactive_login, method: onSecurityInteractiveLogin }
+    # add more service definitions when explicit configuration is needed
+    # please note that last definitions always *replace* previous ones
+
+    # Configuration Hugging Face AI
+    App\Service\HuggingFaceAIService:
+        arguments:
+            $huggingFaceApiKey: '%env(HUGGING_FACE_API_KEY)%'
+
+    # Decorate Meilisearch manager to prevent indexing failures from breaking writes
+    App\Meili\SafeSearchManager:
+        decorates: 'meilisearch.manager'
+        arguments:
+            - '@App\Meili\SafeSearchManager.inner'
+            - '@logger'
+        public: false
+
+    # Configuration Stripe pour le PaymentController
+    App\Controller\PaymentController:
+        arguments:
+            $stripeSecretKey: '%env(STRIPE_SECRET_KEY)%'

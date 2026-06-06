@@ -1,0 +1,735 @@
+{% extends 'base_amateur.html.twig' %}
+
+{% block title %}{{ 'Bibliothèque'|trans }}{% endblock %}
+
+{% block amateur_content %}
+    <div class="card h-100" data-library-root>
+    <style>
+        /* Library card layout tweaks: keeps cards consistent and images cropped */
+        .library-cover{height:220px;overflow:hidden}
+        .library-cover img{width:100%;height:100%;object-fit:cover;display:block}
+        .library-card .card-body{min-height:220px;display:flex;flex-direction:column}
+        .library-description{display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
+        .library-card h6{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+        .library-details div{margin-bottom:.25rem}
+        .library-remaining{font-size:.85rem}
+        .library-card .btn{min-width:92px}
+        @media (max-width:576px){.library-cover{height:180px}.library-card .card-body{min-height:200px}}
+        /* Keep modal body scrollable so embedded PDF scrolls inside the details modal */
+        [data-library-root] .modal-body{max-height:calc(100vh - 200px);overflow:auto}
+        [data-library-root] .library-pdf{overflow:auto}
+        .progress{margin-top:6px;margin-bottom:10px}
+        .progress-bar{border-radius:10px}
+      </style>
+      <div class="card-header d-sm-flex align-items-center text-center justify-content-sm-between border-0 pb-0">
+        <div>
+          <h1 class="h4 card-title mb-1">Bibliotheque numerique</h1>
+        </div>
+        <form class="d-flex mt-3 mt-sm-0" role="search" method="get" action="{{ path('app_bibliofront') }}">
+          <input class="form-control form-control-sm me-2" name="q" type="search" placeholder="Rechercher un titre.." aria-label="Search" value="{{ search_q|default('') }}">
+          <select name="category" class="form-select form-select-sm me-2">
+            <option value="">Toutes les catégories</option>
+            {% for cat in categories|default([]) %}
+              <option value="{{ cat }}" {% if cat == search_category %}selected{% endif %}>{{ cat }}</option>
+            {% endfor %}
+          </select>
+          <button class="btn btn-sm btn-primary ms-2" type="submit">Recherche</button>
+        </form>
+      </div>
+      <div class="card-body">
+
+        <div class="d-flex flex-wrap align-items-center gap-2 mb-4">
+          <span class="badge bg-primary-subtle text-primary">Livres numériques</span>
+          <span class="badge bg-info-subtle text-info">Accès immédiat</span>
+          <span class="badge bg-success-subtle text-success">Louer & Lire</span>
+        </div>
+
+        {% if recommendations is not empty %}
+
+        <div class="row mb-5">
+
+          <!-- LEFT SIDE - Recommendations -->
+          <div class="col-md-8">
+            <h5 class="fw-bold mb-2">🤖 Systeme de Recommandation</h5>
+
+            <p class="text-muted small mb-3">
+              Basé sur vos habitudes de lecture
+              <strong>{{ userProfile|keys|first }}</strong>.
+            </p>
+
+            <div class="row g-3">
+              {% for book in recommendations %}
+                <div class="col-md-4">
+                  <div class="card shadow-sm border-0 h-100 hover-shadow">
+                    <img src="{{ path('livre_image', {'id': book.id}) }}" class="card-img-top" style="height:140px;object-fit:cover">
+
+                    <div class="card-body p-2">
+                      <small class="fw-semibold d-block">{{ book.titre }}</small>
+                      <div class="text-muted small">{{ book.categorie }}</div>
+                    </div>
+                  </div>
+                </div>
+              {% endfor %}
+            </div>
+          </div>
+
+
+
+        </div>
+
+        {% endif %}
+
+        <div class="row g-4">
+          {% for livre in livres %}
+            <div class="col-sm-6 col-xl-4">
+              <div
+                class="card h-100 library-card"
+                data-book-card
+                data-book-id="book-{{ livre.id }}"
+                data-title="{{ livre.titre|e('html_attr') }}"
+                data-author="{{ (livre.collection and livre.collection.artiste) ? (livre.collection.artiste.prenom ~ ' ' ~ livre.collection.artiste.nom)|e('html_attr') : '' }}"
+                data-pages=""
+                data-category="{{ livre.categorie|e('html_attr') }}"
+                data-price="{{ livre.prixLocation is not null ? (livre.prixLocation|number_format(2, ',', '.')) : '' }}"
+                data-price-value="{{ livre.prixLocation is not null ? livre.prixLocation : '' }}"
+                data-duration-days="{{ livreRentalDays[livre.id]|default(1) }}"
+                data-pdf-url="{{ livre.fichierPdf ? path('livre_pdf', {'id': livre.id})|e('html_attr') : '' }}"
+                {% set _statusStruct = livreStatus[livre.id] ?? null %}
+                {% set _statusString = 'available' %}
+                {% if _statusStruct and (_statusStruct.isActive is defined and _statusStruct.isActive) %}
+                  {% set _statusString = (_statusStruct.rentedByCurrentUser is defined and _statusStruct.rentedByCurrentUser) ? 'rented_by_you' : 'rented' %}
+                {% endif %}
+                data-initial-status="{{ _statusString }}"
+                data-active-date="{{ livreActiveDate[livre.id] is defined ? livreActiveDate[livre.id] : '' }}"
+                data-expiration-date="{{ livreExpirationDate[livre.id] is defined ? livreExpirationDate[livre.id] : '' }}"
+                data-rental-days="{{ livreRentalDays[livre.id] is defined ? livreRentalDays[livre.id] : '' }}"
+                data-remaining-days="{{ livreRemainingDays[livre.id] is defined ? livreRemainingDays[livre.id] : '' }}"
+              >
+                
+                  <div class="position-relative library-cover">
+                  <img class="img-fluid rounded-top" src="{{ livre.id ? path('livre_image', {'id': livre.id}) : asset('assetsfront/images/events/01.jpg') }}" alt="Couverture {{ livre.titre }}">
+                  {# Use controller's status directly - don't recalculate #}
+                  {% set statusStruct = livreStatus[livre.id] ?? null %}
+                  {% set isActive = statusStruct and (statusStruct.isActive is defined and statusStruct.isActive) %}
+                  {% set rentedByMe = statusStruct and (statusStruct.rentedByCurrentUser is defined and statusStruct.rentedByCurrentUser) %}
+
+                  {% if isActive %}
+                    {% if rentedByMe %}
+                      <span class="badge bg-warning text-dark mt-2 me-2 position-absolute top-0 end-0" data-book-status>Loué (toi)</span>
+                    {% else %}
+                      <span class="badge bg-success text-white mt-2 me-2 position-absolute top-0 end-0" data-book-status>Loué</span>
+                    {% endif %}
+                  {% else %}
+                    <span class="badge bg-secondary text-white mt-2 me-2 position-absolute top-0 end-0" data-book-status>Non loué</span>
+                  {% endif %}
+                </div>
+                <div class="card-body d-flex flex-column">
+                  <h6 class="mt-2 mb-1">{{ livre.titre }}</h6>
+                  <p class="small text-muted mb-2">Par {{ (livre.collection and livre.collection.artiste) ? (livre.collection.artiste.prenom ~ ' ' ~ livre.collection.artiste.nom) : '' }}</p>
+                  <div class="d-flex flex-wrap gap-2 mb-2">
+                    <span class="badge bg-light text-dark">{{ livre.categorie }}</span>
+                  </div>
+                  <p class="library-description mb-3">{{ livre.description ? (livre.description|length > 200 ? livre.description[:200] ~ '…' : livre.description) : '' }}</p>
+                  <div class="d-flex align-items-center justify-content-between mb-3">
+                    <div>
+                      <small class="text-muted d-block">Prix de location</small>
+                      <span class="fw-semibold">{{ livre.prixLocation is not null ? (livre.prixLocation|number_format(2, ',', '.') ~ '€') : '' }}</span>
+                    </div>
+                  </div>
+
+                    {% if isActive %}
+
+                    {% set remaining =
+                      livreRemainingDays[livre.id]|default(0)
+                    %}
+
+                    {% set total =
+                      livreRentalDays[livre.id]|default(1)
+                    %}
+
+                    {% set progress =
+                      total > 0
+                      ? (remaining / total * 100)|round
+                      : 0
+                    %}
+
+                    <div class="mt-3">
+
+                      <div class="d-flex justify-content-between align-items-center">
+
+                        <small class="text-muted progress-text">
+
+                          ⏳ {{ remaining }} / {{ total }} jours restants
+
+                        </small>
+
+                      </div>
+
+                      <div class="progress" style="height:12px;border-radius:10px;background:#e9ecef;">
+
+                        <div class="progress-bar
+
+                          {% if remaining > total * 0.6 %}
+                            bg-success
+                          {% elseif remaining > total * 0.3 %}
+                            bg-warning
+                          {% else %}
+                            bg-danger
+                          {% endif %}
+
+                        " style="width:{{ progress }}%;transition:width .6s ease;">
+
+                        </div>
+
+                      </div>
+
+                    </div>
+
+                    {% endif %}
+                      <div class="mt-auto d-flex align-items-center justify-content-between">
+                      <small class="text-muted library-remaining" data-book-remaining hidden></small>
+                      <div class="d-flex gap-2">
+                        <button class="btn btn-sm btn-primary" type="button" data-bs-toggle="modal" data-bs-target="#book-{{ livre.id }}-modal">Voir détails</button>
+
+                            {% if isActive and rentedByMe %}
+                              <a class="btn btn-sm btn-success"
+                               href="{{ path('book_read', {'id': livre.id}) }}"
+                               target="_blank"
+                               data-book-read
+                               data-book-id="{{ livre.id }}">
+                               Lire
+                              </a>
+                            {% else %}
+                              <button class="btn btn-sm btn-secondary" disabled>
+                               Lire
+                              </button>
+                            {% endif %}
+
+                      </div>
+                    </div>
+                </div>
+              </div>
+            </div>
+
+            {% set expiration = livreExpirationDate[livre.id] ?? null %}
+
+            <div class="modal fade" id="book-{{ livre.id }}-modal" tabindex="-1" aria-labelledby="book-{{ livre.id }}-modal-label" aria-hidden="true" data-book-modal data-book-id="book-{{ livre.id }}">
+              <div class="modal-dialog modal-dialog-centered modal-lg">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="book-{{ livre.id }}-modal-label">{{ livre.titre }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                    <div class="row g-4">
+                      <div class="col-md-4">
+                        <img class="img-fluid rounded" src="{{ livre.id ? path('livre_image', {'id': livre.id}) : asset('assetsfront/images/events/01.jpg') }}" alt="Couverture {{ livre.titre }}">
+                      </div>
+                      <div class="col-md-8">
+                        <p class="small text-muted mb-2">Auteur</p>
+                        <p>{{ livre.description ?: '' }}</p>
+                        <div class="library-details">
+                          <div><span class="fw-semibold">Auteur:</span> {{ (livre.collection and livre.collection.artiste) ? (livre.collection.artiste.prenom ~ ' ' ~ livre.collection.artiste.nom) : '' }}</div>
+                          <div><span class="fw-semibold">Catégorie:</span> {{ livre.categorie }}</div>
+                          <div><span class="fw-semibold">Prix de location:</span> {{ livre.prixLocation is not null ? (livre.prixLocation|number_format(2, ',', '.') ~ '€') : '' }}</div>
+                          <div><span class="fw-semibold">Date de début de location:</span> <span data-book-field="start">{{ isActive ? livreActiveDate[livre.id] : '' }}</span></div>
+                          <div><span class="fw-semibold">Date d'expiration de location:</span> <span data-book-field="expiration">{{ isActive and expiration ? expiration|date('Y-m-d') : '' }}</span></div>
+                          <div><span class="fw-semibold">Statut actuel:</span>
+                            {% if isActive %}
+                              {% if rentedByMe %}
+                                <span data-book-field="status">Loué par vous</span>
+                              {% else %}
+                                <span data-book-field="status">Loué</span>
+                              {% endif %}
+                            {% else %}
+                              <span data-book-field="status">Disponible</span>
+                            {% endif %}
+                          </div>
+                        </div>
+                        <div class="alert alert-warning small mt-3 mb-0" data-book-expired-message hidden>Rental expired. The book is available again.</div>
+                        <div class="mt-2" data-book-progress-holder hidden>
+                          <div class="d-flex align-items-center justify-content-between mb-1">
+                            <small class="text-muted">Jours restants: <span data-book-field="remaining">-</span></small>
+                            <small class="text-muted"><span data-book-field="progress-percent">0%</span></small>
+                          </div>
+                          <div class="progress" style="height:10px;">
+                            <div class="progress-bar" role="progressbar" style="width:0%" aria-valuemin="0" aria-valuemax="100" data-book-field="progress"></div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                      <div class="mt-4">
+                      <div class="d-flex flex-wrap align-items-center gap-2">
+                        <span class="text-muted small" data-book-lock-message hidden>Rent this book to access the content.</span>
+                        <button class="btn btn-sm btn-outline-secondary ms-2" type="button" data-book-rent data-book-id="{{ livre.id }}">Louer</button>
+                      </div>
+                      {# PDF embed removed from details modal per request #}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          {% else %}
+            <div class="col-12"><p class="text-muted">Aucun livre disponible.</p></div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+
+        {# Offcanvas rent UI (copied pattern from bibliothequeartiste modifier offcanvas) #}
+        <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasRentLivre" aria-labelledby="offcanvasRentLivreLabel">
+          <div class="offcanvas-header">
+            <h5 id="offcanvasRentLivreLabel">Louer le livre</h5>
+            <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+          </div>
+          <div class="offcanvas-body">
+            <form id="rentLivreForm" method="post" action="" class="row g-3" novalidate>
+              <input type="hidden" name="id" value="" />
+              <div class="col-12">
+                <label class="form-label">Titre</label>
+                <input type="text" class="form-control" name="titre">
+              </div>
+              <div class="col-6">
+                <label class="form-label">Prix / jour</label>
+                <div class="form-control-plaintext prix-par-jour">-</div>
+                <input type="hidden" name="prix_par_jour" value="">
+              </div>
+              <div class="col-6">
+                <label class="form-label">Nombre de jours</label>
+                <input type="number" min="1" step="1" value="1" class="form-control" name="nombre_jours" required inputmode="numeric">
+                <div class="invalid-feedback">Veuillez remplir ce champ et saisir un nombre entier positif.</div>
+              </div>
+              <div class="col-12">
+                <label class="form-label">Total</label>
+                <div class="fw-semibold rental-total">0.00€</div>
+              </div>
+              <hr>
+
+              <h6>Paiement</h6>
+
+              <div class="col-12">
+
+                <label class="form-label">
+                Carte bancaire
+                </label>
+
+                <div id="card-element" class="form-control" style="padding:12px"></div>
+
+                <div id="card-errors" class="text-danger mt-2"></div>
+
+              </div>
+              <div class="col-12 d-flex justify-content-end">
+                <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="offcanvas">Annuler</button>
+                <button type="submit" class="btn btn-primary">Confirmer la location</button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        {% block javascripts %}
+          <script src="https://js.stripe.com/v3/"></script>
+          <script>
+            // Initialize Stripe Elements at top of javascripts block
+            const stripe = Stripe("{{ stripe_public_key }}");
+            const elements = stripe.elements();
+            const cardElement = elements.create('card');
+            cardElement.mount('#card-element');
+            cardElement.on('change', function(event){
+              const displayError = document.getElementById('card-errors');
+              if (displayError) displayError.textContent = event.error ? event.error.message : '';
+            });
+
+            // Use the same offcanvas prefill pattern as in bibliothequeartiste
+            document.addEventListener('click', function(e){
+              const btn = e.target.closest('[data-book-rent]');
+              if (!btn) return;
+              e.preventDefault();
+
+              const form = document.getElementById('rentLivreForm');
+              if (!form) return;
+
+              const dataset = btn.dataset || {};
+              const id = dataset.bookId || btn.getAttribute('data-book-id') || '';
+              // try to find the original card element by its data-book-id="book-<id>"
+              const card = document.querySelector('[data-book-id="book-' + id + '"]') || btn.closest('[data-book-card]');
+              const titre = dataset.bookTitle || dataset.bookTitre || (card ? (card.dataset.title || '') : '') || '';
+              const prixRaw = (card ? (card.dataset.price || '') : '') || '';
+              const prixValue = (card ? (card.dataset.priceValue || '') : '') || prixRaw || '';
+              const status =
+                card ? (card.dataset.initialStatus || '') : '';
+
+              const expiration =
+                card ? (card.dataset.expirationDate || '') : '';
+
+              let stillActive = false;
+
+              if (expiration) {
+
+                const now = new Date();
+
+                const exp =
+                  new Date(expiration.replace(' ','T'));
+
+                stillActive = exp > now;
+
+              }
+
+              // block ONLY if truly still active
+              if (status !== 'available' && stillActive) {
+
+                alert('Livre déjà loué');
+
+                return;
+
+              }
+
+              const prix = prixRaw;
+
+              // set form action to rent endpoint (frontend confirm)
+              form.action = id ? ('/user-bibliotheque/louer/' + id + '/confirm') : '';
+              form.querySelector('[name="id"]').value = id;
+              const titreEl = form.querySelector('[name="titre"]'); if (titreEl) titreEl.value = titre || '';
+              const prixDisplay = form.querySelector('.prix-par-jour'); if (prixDisplay) prixDisplay.textContent = (prixValue !== '' ? parseFloat(prixValue).toFixed(2) + ' €' : '-');
+              const prixHidden = form.querySelector('[name="prix_par_jour"]'); if (prixHidden) prixHidden.value = prixValue;
+
+              const qty = form.querySelector('[name="nombre_jours"]');
+              function updateTotal(){
+                const n = Math.max(1, parseInt(qty.value, 10) || 1);
+                const p = parseFloat((prixValue || prix || '').toString().replace(',', '.')) || 0;
+                const total = (n * p).toFixed(2) + '€';
+                const totalEl = form.querySelector('.rental-total'); if (totalEl) totalEl.textContent = total;
+              }
+              if (qty) { qty.addEventListener('input', function(){ qty.classList.remove('is-invalid'); updateTotal(); }); updateTotal(); }
+
+            // populate details when a book modal is shown (date-only expiration logic)
+            document.querySelectorAll('[data-book-modal]').forEach(function(modalEl){
+              modalEl.addEventListener('show.bs.modal', function (ev) {
+                const id = modalEl.dataset.bookId || (modalEl.id || '').replace('book-','').replace('-modal','');
+                const card = document.querySelector('[data-book-id="book-' + id + '"]');
+                if (!card) return;
+
+                const status = card.dataset.initialStatus || 'available';
+                const days = parseInt(card.dataset.rentalDays || card.dataset.durationDays || '7', 10);
+                const startRaw = card.dataset.activeDate || '';
+                let expiration = card.dataset.expirationDate || '';
+
+                if (!expiration && startRaw) {
+                  try {
+                    const d = new Date(startRaw.replace(' ', 'T'));
+                    d.setDate(d.getDate() + days);
+                    expiration = d.toISOString().slice(0,19).replace('T',' ');
+                  } catch(e) { expiration = ''; }
+                }
+
+                // date-only comparison (ignore times of day)
+                let isActive = false;
+                if (expiration) {
+                  try {
+                    const now = new Date();
+                    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+                    const exp = new Date(expiration.replace(' ', 'T'));
+                    const expOnly = new Date(exp.getFullYear(), exp.getMonth(), exp.getDate());
+                    isActive = expOnly >= today;
+                  } catch (e) { isActive = false; }
+                }
+
+                const startEl = modalEl.querySelector('[data-book-field="start"]');
+                const expEl = modalEl.querySelector('[data-book-field="expiration"]');
+                const remEl = modalEl.querySelector('[data-book-field="remaining"]');
+                const statusEl = modalEl.querySelector('[data-book-field="status"]');
+                const progressHolder = modalEl.querySelector('[data-book-progress-holder]');
+                const progressBar = modalEl.querySelector('[data-book-field="progress"]');
+                const progressPercent = modalEl.querySelector('[data-book-field="progress-percent"]');
+                const expiredMsg = modalEl.querySelector('[data-book-expired-message]');
+
+                if (isActive) {
+                  // book currently rented (not expired)
+                  if (status === 'rented_by_you') {
+                    if (startEl) startEl.textContent = startRaw || '';
+                    if (expEl) expEl.textContent = expiration || '';
+                    if (statusEl) statusEl.textContent = 'Loué';
+
+                    // show progress/remaining
+                    if (progressHolder) progressHolder.hidden = false;
+                    if (expiration && remEl) {
+                      const now = new Date();
+                      const exp = new Date(expiration.replace(' ', 'T'));
+                      const diffMs = Math.max(0, exp - now);
+                      const diffDays = Math.ceil(diffMs / (1000*60*60*24));
+                      remEl.textContent = diffDays + ' jours';
+
+                      const totalDays = Math.max(1, days);
+                      const used = Math.max(0, totalDays - diffDays);
+                      const pct = Math.min(100, Math.round((used / totalDays) * 100));
+                      if (progressBar) {
+                        progressBar.style.width = pct + '%';
+                        const percentLeft = 100 - pct;
+                        progressBar.classList.remove('bg-success','bg-warning','bg-danger');
+                        if (percentLeft > 50) progressBar.classList.add('bg-success');
+                        else if (percentLeft > 20) progressBar.classList.add('bg-warning');
+                        else progressBar.classList.add('bg-danger');
+                      }
+                      if (progressPercent) progressPercent.textContent = pct + '%';
+                    }
+                    if (expiredMsg) expiredMsg.hidden = true;
+
+                  } else {
+                    // rented by another user: show expiration only
+                    if (startEl) startEl.textContent = '';
+                    if (expEl) expEl.textContent = expiration || '';
+                    if (statusEl) statusEl.textContent = 'Loué';
+                    if (progressHolder) progressHolder.hidden = true;
+                    if (remEl) remEl.textContent = '-';
+                    if (expiredMsg) expiredMsg.hidden = true;
+                  }
+                } else {
+                  // not rented or expired: hide dates and show 'Disponible'
+                  if (startEl) startEl.textContent = '';
+                  if (expEl) expEl.textContent = '';
+                  if (statusEl) statusEl.textContent = 'Disponible';
+                  if (progressHolder) progressHolder.hidden = true;
+                  if (remEl) remEl.textContent = '-';
+                  if (expiredMsg) expiredMsg.hidden = false;
+                }
+              });
+            });
+
+              // if a modal is open (we opened the offcanvas from inside a modal), hide it so inputs are focusable
+              const openModal = document.querySelector('.modal.show');
+              if (openModal) {
+                try {
+                  const modalInst = bootstrap.Modal.getInstance(openModal) || new bootstrap.Modal(openModal);
+                  modalInst.hide();
+                } catch (err) {
+                  // ignore
+                }
+              }
+
+              const off = bootstrap.Offcanvas.getOrCreateInstance(document.getElementById('offcanvasRentLivre'));
+              off.show();
+
+                // intercept submit to call JSON endpoint and update UI
+                form.addEventListener("submit", async function(ev)
+                {
+                ev.preventDefault();
+
+                const id = form.querySelector('[name="id"]').value;
+
+                const fd = new FormData(form);
+
+                try
+                {
+                  /* STEP 1 — create PaymentIntent */
+                  const res =
+                  await fetch(
+                    "/user-bibliotheque/payment-intent/" + id,
+                    {
+                      method:"POST",
+                      body:fd
+                    }
+                  );
+
+                  const json =
+                  await res.json();
+
+                  if(!json.clientSecret)
+                  {
+                    alert(json.message || "Erreur création paiement");
+                    return;
+                  }
+
+                  /* STEP 2 — confirm payment */
+                  const result =
+                  await stripe.confirmCardPayment(
+                    json.clientSecret,
+                    {
+                      payment_method:
+                      {
+                        card: cardElement
+                      }
+                    }
+                  );
+
+                  if(result.error)
+                  {
+                    alert(result.error.message);
+                    return;
+                  }
+
+                  const paymentIntentId =
+                  result.paymentIntent.id;
+
+                  /* STEP 3 — finalize rental */
+                  fd.append(
+                    "payment_intent_id",
+                    paymentIntentId
+                  );
+
+                  const res2 =
+                  await fetch(
+                    "/user-bibliotheque/louer/" + id + "/confirm",
+                    {
+                      method:"POST",
+                      body:fd
+                    }
+                  );
+
+                  const json2 =
+                  await res2.json();
+
+                  if(json2.success)
+                  {
+                    const remaining = json2.remaining;
+
+                    alert("Paiement réussi 🎉\nIl vous reste " 
+                          + remaining + 
+                          " location(s) cette heure.");
+
+                    location.reload();
+                  }
+                  else
+                  {
+                    alert(json2.message);
+                  }
+
+                }
+                catch(e)
+                {
+                  console.error(e);
+                  alert("Erreur paiement");
+                }
+                });
+
+            });
+          </script>
+          <script>
+            // Read button behavior: show French notifications when user can't read
+            document.addEventListener('click', function(e){
+              const btn = e.target.closest('[data-book-read]');
+              if (!btn) return;
+              const id = btn.dataset.bookId || '';
+              const card = document.querySelector('[data-book-id="book-' + id + '"]');
+              const status = card ? (card.dataset.initialStatus || '') : '';
+              if (status !== 'rented_by_you') {
+                e.preventDefault();
+                if (!status || status === 'available') {
+                  alert('Vous devez louer le livre pour le lire.');
+                } else {
+                  alert("Le livre est disponible uniquement pour la personne qui l'a loué.");
+                }
+              }
+            });
+          </script>
+          <script>
+
+function updateAllRentalProgress()
+{
+
+    document.querySelectorAll('[data-book-card]')
+    .forEach(function(card)
+    {
+
+        const expirationStr =
+            card.dataset.expirationDate;
+
+        const totalDays =
+            parseInt(card.dataset.rentalDays || 0);
+
+        if (!expirationStr || totalDays <= 0)
+        return;
+
+        const expiration =
+            new Date(expirationStr.replace(' ','T'));
+
+        const now =
+            new Date();
+
+        const diffMs =
+            expiration - now;
+
+        const remainingDays =
+            Math.ceil(diffMs / 86400000);
+
+        const progressBar =
+            card.querySelector('.progress-bar');
+
+        const text =
+          card.querySelector('.progress-text');
+
+        const badge =
+            card.querySelector('[data-book-status]');
+
+        const rentBtn =
+            card.closest('.col-sm-6')
+                .querySelector('[data-book-rent]');
+
+        const readBtn =
+            card.querySelector('[data-book-read]');
+
+        if (remainingDays <= 0)
+        {
+            if (progressBar)
+            progressBar.style.width = "0%";
+
+            if (badge)
+            {
+                badge.className =
+                "badge bg-secondary text-white mt-2 me-2 position-absolute top-0 end-0";
+
+                badge.textContent =
+                "Non loué";
+            }
+
+            if (text)
+            text.textContent =
+            "Disponible";
+
+            card.dataset.initialStatus =
+            "available";
+
+            return;
+        }
+
+        const progress =
+            Math.round(
+                (remainingDays / totalDays) * 100
+            );
+
+        if (text)
+          text.textContent = remainingDays + " / " + totalDays + " jours restants";
+
+        if (progressBar)
+        {
+            progressBar.style.width =
+            progress + "%";
+
+            progressBar.classList
+            .remove(
+                "bg-success",
+                "bg-warning",
+                "bg-danger"
+            );
+
+            if (remainingDays > totalDays * 0.6)
+                progressBar.classList.add("bg-success");
+
+            else if (remainingDays > totalDays * 0.3)
+                progressBar.classList.add("bg-warning");
+
+            else
+                progressBar.classList.add("bg-danger");
+        }
+
+    });
+
+}
+
+updateAllRentalProgress();
+
+/* update every minute */
+setInterval(updateAllRentalProgress, 60000);
+
+</script>
+        {% endblock %}
+      {% endblock %}
+

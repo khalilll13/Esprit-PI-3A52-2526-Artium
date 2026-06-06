@@ -1,0 +1,9 @@
+controllers:
+    resource:
+        path: ../src/Controller/
+        namespace: App\Controller
+    type: attribute
+
+reclamation_artiste:
+    resource: ../src/Controller/ReclamationArtisteController.php
+    type: attribute

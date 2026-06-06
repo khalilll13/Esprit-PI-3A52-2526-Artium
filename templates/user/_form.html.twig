@@ -1,0 +1,159 @@
+
+{# Affichage des erreurs globales #}
+{% if form is not null and form.vars.errors|length > 0 %}
+    <div class="alert alert-danger">
+        <ul class="mb-0">
+            {% for error in form.vars.errors %}
+                <li>{{ error.message }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endif %}
+
+{{ form_start(form, {'attr': {'class': 'needs-validation', 'novalidate': 'novalidate'}}) }}
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="mb-3">
+            {{ form_row(form.nom) }}
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="mb-3">
+            {{ form_row(form.prenom) }}
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="mb-3">
+            {{ form_row(form.email) }}
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="mb-3">
+            {{ form_row(form.dateNaissance) }}
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="mb-3">
+            {{ form_row(form.numTel) }}
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="mb-3">
+            {{ form_row(form.ville) }}
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="mb-3">
+            {{ form_row(form.role) }}
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="mb-3">
+            {{ form_row(form.statut) }}
+        </div>
+    </div>
+</div>
+
+{% if form.mdp is defined %}
+<div class="row">
+    <div class="col-12">
+        <div class="mb-3">
+            {{ form_row(form.mdp) }}
+            <small class="text-muted">Le mot de passe doit contenir au moins 6 caractères</small>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<div class="row">
+    <div class="col-12">
+        <div class="mb-3">
+            {{ form_row(form.biographie) }}
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="mb-3">
+
+        </div>
+    </div>
+</div>
+
+{# Les champs conditionnels - toujours présents mais affichés selon le rôle #}
+<div class="row" id="specialite-row">
+    <div class="col-md-6">
+        <div class="mb-3">
+            {{ form_row(form.specialite) }}
+        </div>
+    </div>
+</div>
+
+<div class="row" id="centreInteret-row">
+    <div class="col-md-6">
+        <div class="mb-3">
+            {{ form_row(form.centreInteret) }}
+        </div>
+    </div>
+</div>
+
+{{ form_rest(form) }}
+
+<div class="d-flex justify-content-end gap-2 mt-4">
+    <a href="{{ path('app_user_index') }}" class="btn btn-outline-secondary">
+        <i class="fe fe-x me-2"></i>Annuler
+    </a>
+    <button type="submit" class="btn btn-primary">
+        <i class="fe fe-save me-2"></i>{{ button_label|default('Enregistrer') }}
+    </button>
+</div>
+
+{{ form_end(form, {'render_rest': false}) }}
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const roleSelect = document.getElementById('user_role');
+    const specialiteRow = document.getElementById('specialite-row');
+    const centreInteretRow = document.getElementById('centreInteret-row');
+
+    function toggleFields() {
+        if (!roleSelect) return;
+        
+        const selectedRole = roleSelect.value.toLowerCase().trim();
+        
+        // Masquer tous les champs d'origine
+        if (specialiteRow) specialiteRow.style.display = 'none';
+        if (centreInteretRow) centreInteretRow.style.display = 'none';
+        
+        // Afficher selon le rôle sélectionné
+        if (selectedRole.includes('artiste')) {
+            if (specialiteRow) specialiteRow.style.display = 'block';
+        } else if (selectedRole.includes('amateur')) {
+            if (centreInteretRow) centreInteretRow.style.display = 'block';
+        }
+    }
+
+    // Exécuter au chargement
+    if (roleSelect) {
+        toggleFields();
+        roleSelect.addEventListener('change', toggleFields);
+    }
+
+
+});
+</script>

@@ -1,0 +1,963 @@
+{% extends 'base_amateur.html.twig' %}
+
+{% block title %}{{ 'Fil d’actualités'|trans }}{% endblock %}
+
+{% block amateur_content %}
+    {% set initialDisplayCount = initialDisplayCount|default(3) %}
+    <div id="feed-container">
+    {% for oeuvre in oeuvres|slice(0, initialDisplayCount) %}
+    {% set oeuvreComments = commentsByOeuvre[oeuvre.id]|default([]) %}
+    <!-- Card feed item START -->
+    <div class="card mb-4" id="oeuvre-{{ oeuvre.id }}">
+        <!-- Card header START -->
+        <div class="card-header border-0 pb-0" >
+            <div class="d-flex align-items-center justify-content-between">
+                <div class="d-flex align-items-center">
+                    <!-- Avatar -->
+                    <div class="avatar avatar-story me-2">
+                        <a href="#!">
+                            {% if oeuvre.collection and oeuvre.collection.artiste and oeuvre.collection.artiste.photoProfilUrl %}
+                                <img class="avatar-img rounded-circle" 
+                                     src="{{ oeuvre.collection.artiste.photoProfilUrl }}" 
+                                     alt="">
+                            {% else %}
+                                <span class="avatar-img rounded-circle d-inline-flex align-items-center justify-content-center bg-light text-secondary-emphasis" style="width:40px;height:40px;">
+                                    <i class="bi bi-person fs-5" style="opacity:0.5;"></i>
+                                </span>
+                            {% endif %}
+                        </a>
+                    </div>
+                    <!-- Info -->
+                    <div>
+                        <div class="nav nav-divider">
+                            <h6 class="nav-item card-title mb-0">
+                                <a href="#!">
+                                    {{ (oeuvre.collection and oeuvre.collection.artiste) ? (oeuvre.collection.artiste.nom ~ ' ' ~ oeuvre.collection.artiste.prenom) : 'Artiste Inconnu' }}
+                                </a>
+                            </h6>
+                            <span class="nav-item small">{{ oeuvre.dateCreation|date('d F Y') }}</span>
+                        </div>
+                        <p class="mb-0 small">{{ (oeuvre.collection and oeuvre.collection.artiste and oeuvre.collection.artiste.specialite) ? oeuvre.collection.artiste.specialite.value : 'Spécialité non renseignée' }}</p>
+                    </div>
+                </div>
+                <!-- Card feed action dropdown START -->
+                <div class="dropdown">
+                          <a href="#" class="text-secondary btn btn-secondary-soft-hover py-1 px-2"
+                              id="cardFeedAction{{ oeuvre.id }}" data-bs-toggle="dropdown" aria-expanded="false" data-turbo="false">
+                        <i class="bi bi-three-dots"></i>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="cardFeedAction{{ oeuvre.id }}">
+                        <li>
+                            <a class="dropdown-item favorite-toggle"
+                               href="#" 
+                               data-oeuvre-id="{{ oeuvre.id }}"
+                               data-favorited="{{ app.user.favUser.contains(oeuvre) ? 'true' : 'false' }}"
+                               id="favoriteDropdownBtn{{ oeuvre.id }}">
+                                <i class="bi favorite-icon {% if app.user.favUser.contains(oeuvre) %}bi-star-fill text-warning{% else %}bi-star text-secondary{% endif %} pe-2"></i>
+                                <span class="favorite-text">{% if app.user.favUser.contains(oeuvre) %}Retirer des favoris{% else %}Ajouter aux Favoris{% endif %}</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                <!-- Card feed action dropdown END -->
+            </div>
+        </div>
+        <!-- Card header END -->
+        
+        <!-- Card body START -->
+        <div class="card-body pb-0">
+            <h5 class="mb-2">{{ oeuvre.titre }}</h5>
+            <p>{{ oeuvre.description|raw }}
+                {% if oeuvre.type %}
+                    <a href="#!" class="ms-2">#{{ oeuvre.type.value }}</a>
+                {% endif %}
+                {% if oeuvre.collection %}
+                    <a href="#!" class="ms-1">#{{ oeuvre.collection.titre }}</a>
+                {% endif %}
+            </p>
+        </div>
+        
+        <!-- Card img -->
+        {% if oeuvre.image %}
+        <div class="overflow-hidden mx-3 mb-2 rounded-3 border">
+            <img src="{{ path('oeuvre_image', {'id': oeuvre.id}) }}" 
+                 class="img-fluid" 
+                 alt="{{ oeuvre.titre }}"
+                 style="width: 100%; max-height: 600px; object-fit: contain;">
+        </div>
+        {% endif %}
+        
+        <!-- Feed react START -->
+        <div class="card-body pt-0">
+            <ul class="nav nav-stack py-3 small">
+                <li class="nav-item">
+                    {% set userLiked = false %}
+                    {% for like in oeuvre.likes %}
+                        {% if like.user.id == app.user.id %}
+                            {% set userLiked = true %}
+                        {% endif %}
+                    {% endfor %}
+                    <a class="nav-link like-toggle" data-turbo="false" href="#" data-oeuvre-id="{{ oeuvre.id }}" data-liked="{{ userLiked ? 'true' : 'false' }}">
+                        <i class="bi bi-heart{{ userLiked ? '-fill text-danger' : '' }} pe-1"></i>
+                        <span class="like-count">{{ oeuvre.likes ? oeuvre.likes|length : 0 }}</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#!">
+                        <i class="bi bi-chat-fill pe-1"></i>Commentaires (<span class="comment-count" data-oeuvre-id="{{ oeuvre.id }}">{{ oeuvreComments|length }}</span>)</a>
+                </li>
+				<!-- Card share action START -->
+                <li class="nav-item ms-sm-auto d-flex align-items-center">
+                    <i class="bi bi-star-fill text-warning fa-fw pe-1"></i>
+                    <span class="favorite-count" data-oeuvre-id="{{ oeuvre.id }}">{{ oeuvre.userFav|length }}</span>
+                    <span class="ms-1">favoris</span>
+                </li>
+                
+            </ul>
+            <!-- Feed react END -->
+
+            <!-- Add comment -->
+            <div class="d-flex mb-3">
+                <!-- Avatar -->
+                <div class="avatar avatar-xs me-2">
+                    <a href="#!">
+                        {% if app.user and app.user.photoProfilUrl %}
+                            <img class="avatar-img rounded-circle" src="{{ app.user.photoProfilUrl }}" alt="">
+                        {% else %}
+                            <span class="avatar-img rounded-circle d-inline-flex align-items-center justify-content-center bg-light text-secondary-emphasis" style="width:32px;height:32px;">
+                                <i class="bi bi-person" style="font-size:1rem;opacity:0.5;"></i>
+                            </span>
+                        {% endif %}
+                    </a>
+                </div>
+
+                <!-- Comment box  -->
+                <form class="w-100" action="{{ path('oeuvre_commentaire', {'id': oeuvre.id}) }}#oeuvre-{{ oeuvre.id }}" method="post" data-turbo-frame="comments-{{ oeuvre.id }}">
+                    <div class="position-relative">
+                        <textarea name="contenu" data-autoresize class="form-control bg-light rounded pe-5" rows="1"
+                                  placeholder="Ajouter un commentaire..."></textarea>
+                        <input type="hidden" name="redirect_path" value="{{ app.request.pathInfo }}">
+                        <button class="btn btn-link text-primary position-absolute top-50 end-0 translate-middle-y me-2 p-0 comment-submit-button" type="submit" aria-label="Publier le commentaire">
+                            <i class="bi bi-send-fill fs-5"></i>
+                        </button>
+                    </div>
+                </form>
+
+            </div>
+            
+            <!-- Comment wrap START -->
+            <turbo-frame id="comments-{{ oeuvre.id }}">
+                {% if oeuvreComments|length > 0 %}
+                <ul class="comment-wrap list-unstyled mb-0">
+                {% for commentaire in oeuvreComments %}
+                <!-- Comment item START -->
+                <li class="comment-item{% if loop.index > 3 %} hidden-comment d-none{% endif %}">
+                    <div class="d-flex">
+                        <!-- Avatar -->
+                        <div class="avatar avatar-xs">
+                            <a href="#!">
+                                {% if commentaire.user and commentaire.user.photoProfilUrl %}
+                                    <img class="avatar-img rounded-circle" src="{{ commentaire.user.photoProfilUrl }}" alt="">
+                                {% else %}
+                                    <span class="avatar-img rounded-circle d-inline-flex align-items-center justify-content-center bg-light text-secondary-emphasis" style="width:32px;height:32px;">
+                                        <i class="bi bi-person" style="font-size:1rem;opacity:0.5;"></i>
+                                    </span>
+                                {% endif %}
+                            </a>
+                        </div>
+                        <div class="ms-2 w-100">
+                            <!-- Comment by -->
+                            <div class="bg-light rounded-start-top-0 p-3 rounded w-100">
+                                <div class="d-flex justify-content-between">
+                                    <h6 class="mb-1">
+                                        <a href="#!">
+                                            {{ commentaire.user ? (commentaire.user.nom ~ ' ' ~ commentaire.user.prenom) : 'Utilisateur' }}
+                                        </a>
+                                    </h6>
+                                    <div class="d-flex align-items-center">
+                                        <small class="ms-2">{{ commentaire.dateCommentaire|date('d F Y') }}</small>
+                                        {% if commentaire.user and app.user and commentaire.user.id == app.user.id %}
+                                            <div class="dropdown ms-2">
+                                                <a href="#" class="text-secondary btn btn-sm btn-link p-0" id="commentAction{{ commentaire.id }}" data-bs-toggle="dropdown" aria-expanded="false" data-turbo="false">
+                                                    <i class="bi bi-three-dots"></i>
+                                                </a>
+                                                <ul class="dropdown-menu dropdown-menu-end shadow-sm" aria-labelledby="commentAction{{ commentaire.id }}">
+                                                    <li>
+                                                        <button type="button" class="dropdown-item comment-edit-toggle" data-edit-id="editComment{{ commentaire.id }}" data-view-id="commentText{{ commentaire.id }}">
+                                                            <i class="bi bi-pencil-square text-primary pe-2"></i>Modifier
+                                                        </button>
+                                                    </li>
+                                                    <li><hr class="dropdown-divider"></li>
+                                                    <li>
+                                                        <form method="post" action="{{ path('commentaire_delete', {'id': commentaire.id}) }}" class="m-0" data-turbo-frame="comments-{{ oeuvre.id }}">
+                                                            <input type="hidden" name="_token" value="{{ csrf_token('delete_comment_' ~ commentaire.id) }}">
+                                                            <input type="hidden" name="redirect_path" value="{{ app.request.pathInfo }}">
+                                                            <button type="submit" class="dropdown-item text-danger">
+                                                                <i class="bi bi-trash3 pe-2"></i>Supprimer
+                                                            </button>
+                                                        </form>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div id="commentText{{ commentaire.id }}" class="small mb-0 comment-text">{{ commentaire.texte }}</div>
+                                {% if commentaire.user and app.user and commentaire.user.id == app.user.id %}
+                                    <form method="post" action="{{ path('commentaire_edit', {'id': commentaire.id}) }}" class="d-none w-100" id="editComment{{ commentaire.id }}" data-turbo-frame="comments-{{ oeuvre.id }}">
+                                        <div class="position-relative w-100">
+                                            <textarea name="contenu" class="form-control bg-white w-100 comment-edit-textarea" rows="3">{{ commentaire.texte }}</textarea>
+                                            <input type="hidden" name="_token" value="{{ csrf_token('edit_comment_' ~ commentaire.id) }}">
+                                            <input type="hidden" name="redirect_path" value="{{ app.request.pathInfo }}">
+                                            <input type="hidden" name="oeuvre_id" value="{{ oeuvre.id }}">
+                                            <div class="d-flex gap-2 mt-2">
+                                                <button type="submit" class="btn btn-sm btn-primary">
+                                                    <i class="bi bi-check2"></i>Enregistrer
+                                                </button>
+                                                <button type="button" class="btn btn-sm btn-outline-secondary comment-edit-cancel" data-edit-id="editComment{{ commentaire.id }}" data-view-id="commentText{{ commentaire.id }}">
+                                                    <i class="bi bi-x-lg"></i>Annuler
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                {% endif %}
+                            </div>
+                            <!-- Comment react -->
+                            <ul class="nav nav-divider py-2 small">
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#!">Répondre</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </li>
+                <!-- Comment item END -->
+                {% endfor %}
+                </ul>
+                {% else %}
+                <ul class="comment-wrap list-unstyled mb-0"></ul>
+                {% endif %}
+            </turbo-frame>
+            <!-- Comment wrap END -->
+        </div>
+        <!-- Card body END -->
+        
+        <!-- Card footer START -->
+        <div class="card-footer border-0 pt-0" style="display: {{ oeuvreComments|length > 3 ? '' : 'none' }};">
+            <!-- Load more comments -->
+                <a href="#" role="button" data-turbo="false"
+                    class="btn btn-link btn-link-loader btn-sm text-secondary d-flex align-items-center comments-load-more">
+                <div class="spinner-dots me-2 comments-loader" style="display: none;">
+                    <span class="spinner-dot"></span>
+                    <span class="spinner-dot"></span>
+                    <span class="spinner-dot"></span>
+                </div>
+                <span class="comments-load-text">Voir plus de commentaires</span>
+            </a>
+        </div>
+        <!-- Card footer END -->
+    </div>
+    <!-- Card feed item END -->
+    {% else %}
+        <div class="card">
+            <div class="card-body text-center py-5">
+                <h5>Aucune œuvre pour le moment</h5>
+                <p class="text-muted">Revenez plus tard pour découvrir de nouvelles créations !</p>
+            </div>
+        </div>
+    {% endfor %}
+    </div>
+
+    <!-- Hidden oeuvres for load more -->
+    <div id="hidden-oeuvres" style="display: none;">
+    {% for oeuvre in oeuvres|slice(initialDisplayCount) %}
+    {% set oeuvreComments = commentsByOeuvre[oeuvre.id]|default([]) %}
+    <!-- Card feed item START -->
+    <div class="card mb-4 hidden-oeuvre" id="oeuvre-{{ oeuvre.id }}">
+        <!-- Card header START -->
+        <div class="card-header border-0 pb-0">
+            <div class="d-flex align-items-center justify-content-between">
+                <div class="d-flex align-items-center">
+                    <!-- Avatar -->
+                    <div class="avatar avatar-story me-2">
+                        <a href="#!">
+                            {% if oeuvre.collection and oeuvre.collection.artiste and oeuvre.collection.artiste.photoProfilUrl %}
+                                <img class="avatar-img rounded-circle" 
+                                     src="{{ oeuvre.collection.artiste.photoProfilUrl }}" 
+                                     alt="">
+                            {% else %}
+                                <span class="avatar-img rounded-circle d-inline-flex align-items-center justify-content-center bg-light text-secondary-emphasis" style="width:40px;height:40px;">
+                                    <i class="bi bi-person fs-5" style="opacity:0.5;"></i>
+                                </span>
+                            {% endif %}
+                        </a>
+                    </div>
+                    <!-- Info -->
+                    <div>
+                        <div class="nav nav-divider">
+                            <h6 class="nav-item card-title mb-0">
+                                <a href="#!">
+                                    {{ (oeuvre.collection and oeuvre.collection.artiste) ? (oeuvre.collection.artiste.nom ~ ' ' ~ oeuvre.collection.artiste.prenom) : 'Artiste Inconnu' }}
+                                </a>
+                            </h6>
+                            <span class="nav-item small">{{ oeuvre.dateCreation|date('d F Y') }}</span>
+                        </div>
+                        <p class="mb-0 small">{{ (oeuvre.collection and oeuvre.collection.artiste and oeuvre.collection.artiste.specialite) ? oeuvre.collection.artiste.specialite.value : 'Spécialité non renseignée' }}</p>
+                    </div>
+					
+                </div>
+				<!-- Card feed action dropdown START -->
+                <div class="dropdown">
+                          <a href="#" class="text-secondary btn btn-secondary-soft-hover py-1 px-2"
+                              id="cardFeedAction{{ oeuvre.id }}" data-bs-toggle="dropdown" aria-expanded="false" data-turbo="false">
+                        <i class="bi bi-three-dots"></i>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="cardFeedAction{{ oeuvre.id }}">
+                        <li>
+                            <a class="dropdown-item favorite-toggle"
+                               href="#" 
+                               data-oeuvre-id="{{ oeuvre.id }}"
+                               data-favorited="{{ app.user.favUser.contains(oeuvre) ? 'true' : 'false' }}"
+                               id="favoriteDropdownBtn{{ oeuvre.id }}">
+                                <i class="bi favorite-icon {% if app.user.favUser.contains(oeuvre) %}bi-star-fill text-warning{% else %}bi-star text-secondary{% endif %} pe-2"></i>
+                                <span class="favorite-text">{% if app.user.favUser.contains(oeuvre) %}Retirer des favoris{% else %}Ajouter aux Favoris{% endif %}</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                <!-- Card feed action dropdown END -->
+                
+            </div>
+        </div>
+        <!-- Card header END -->
+        
+        <!-- Card body START -->
+        <div class="card-body pb-0">
+            <h5 class="mb-2">{{ oeuvre.titre }}</h5>
+            <p>{{ oeuvre.description|raw }}
+                {% if oeuvre.type %}
+                    <a href="#!" class="ms-2">#{{ oeuvre.type.value }}</a>
+                {% endif %}
+                {% if oeuvre.collection %}
+                    <a href="#!" class="ms-1">#{{ oeuvre.collection.titre }}</a>
+                {% endif %}
+            </p>
+        </div>
+        
+        <!-- Card img -->
+        {% if oeuvre.image %}
+        <div class="overflow-hidden mx-3 mb-2 rounded-3 border">
+            <img src="{{ path('oeuvre_image', {'id': oeuvre.id}) }}" 
+                 class="img-fluid" 
+                 alt="{{ oeuvre.titre }}"
+                 style="width: 100%; max-height: 600px; object-fit: contain;">
+        </div>
+        {% endif %}
+        
+        <!-- Feed react START -->
+        <div class="card-body pt-0">
+            <ul class="nav nav-stack py-3 small">
+                <li class="nav-item">
+                    {% set userLiked = false %}
+                    {% for like in oeuvre.likes %}
+                        {% if like.user.id == app.user.id %}
+                            {% set userLiked = true %}
+                        {% endif %}
+                    {% endfor %}
+                    <a class="nav-link like-toggle" data-turbo="false" href="#" data-oeuvre-id="{{ oeuvre.id }}" data-liked="{{ userLiked ? 'true' : 'false' }}">
+                        <i class="bi bi-heart{{ userLiked ? '-fill text-danger' : '' }} pe-1"></i>
+                        <span class="like-count">{{ oeuvre.likes ? oeuvre.likes|length : 0 }}</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#!">
+                        <i class="bi bi-chat-fill pe-1"></i>Commentaires (<span class="comment-count" data-oeuvre-id="{{ oeuvre.id }}">{{ oeuvreComments|length }}</span>)</a>
+                </li>
+                <!-- Card share action START -->
+                <li class="nav-item ms-sm-auto d-flex align-items-center">
+                    <i class="bi bi-star-fill text-warning fa-fw pe-1"></i>
+                    <span class="favorite-count" data-oeuvre-id="{{ oeuvre.id }}">{{ oeuvre.userFav|length }}</span>
+                    <span class="ms-1">favoris</span>
+                </li>
+                <!-- Card share action END -->
+            </ul>
+            <!-- Feed react END -->
+
+            <!-- Add comment -->
+            <div class="d-flex mb-3">
+                <!-- Avatar -->
+                <div class="avatar avatar-xs me-2">
+                    <a href="#!">
+                        <img class="avatar-img rounded-circle" src="{{ asset('assetsfront/images/avatar/default.jpg') }}" alt="">
+                    </a>
+                </div>
+
+                <!-- Comment box  -->
+                <form class="w-100" action="{{ path('oeuvre_commentaire', {'id': oeuvre.id}) }}#oeuvre-{{ oeuvre.id }}" method="post" data-turbo-frame="comments-{{ oeuvre.id }}">
+                    <div class="position-relative">
+                        <textarea name="contenu" data-autoresize class="form-control bg-light rounded pe-5" rows="1"
+                                  placeholder="Ajouter un commentaire..."></textarea>
+                        <input type="hidden" name="redirect_path" value="{{ app.request.pathInfo }}">
+                        <button class="btn btn-link text-primary position-absolute top-50 end-0 translate-middle-y me-2 p-0" type="submit" aria-label="Publier le commentaire">
+                            <i class="bi bi-send-fill fs-5"></i>
+                        </button>
+                    </div>
+                </form>
+
+            </div>
+            
+            <!-- Comment wrap START -->
+            <turbo-frame id="comments-{{ oeuvre.id }}">
+            {% if oeuvreComments|length > 0 %}
+            <ul class="comment-wrap list-unstyled mb-0">
+                {% for commentaire in oeuvreComments %}
+                <!-- Comment item START -->
+                <li class="comment-item{% if loop.index > 3 %} hidden-comment d-none{% endif %}">
+                    <div class="d-flex">
+                        <!-- Avatar -->
+                        <div class="avatar avatar-xs">
+                            <a href="#!">
+                                {% if commentaire.user and commentaire.user.photoProfilUrl %}
+                                    <img class="avatar-img rounded-circle" src="{{ commentaire.user.photoProfilUrl }}" alt="">
+                                {% else %}
+                                    <span class="avatar-img rounded-circle d-inline-flex align-items-center justify-content-center bg-light text-secondary-emphasis" style="width:32px;height:32px;">
+                                        <i class="bi bi-person" style="font-size:1rem;opacity:0.5;"></i>
+                                    </span>
+                                {% endif %}
+                            </a>
+                        </div>
+                        <div class="ms-2">
+                            <!-- Comment by -->
+                            <div class="bg-light rounded-start-top-0 p-3 rounded">
+                                <div class="d-flex justify-content-between">
+                                    <h6 class="mb-1">
+                                        <a href="#!">
+                                            {{ commentaire.user ? (commentaire.user.nom ~ ' ' ~ commentaire.user.prenom) : 'Utilisateur' }}
+                                        </a>
+                                    </h6>
+                                    <div class="d-flex align-items-center">
+                                        <small class="ms-2">{{ commentaire.dateCommentaire|date('d F Y') }}</small>
+                                        {% if commentaire.user and app.user and commentaire.user.id == app.user.id %}
+                                            <div class="dropdown ms-2">
+                                                <a href="#" class="text-secondary btn btn-sm btn-link p-0" id="commentAction{{ commentaire.id }}" data-bs-toggle="dropdown" aria-expanded="false" data-turbo="false">
+                                                    <i class="bi bi-three-dots"></i>
+                                                </a>
+                                                <ul class="dropdown-menu dropdown-menu-end shadow-sm" aria-labelledby="commentAction{{ commentaire.id }}">
+                                                    <li>
+                                                        <button type="button" class="dropdown-item comment-edit-toggle" data-edit-id="editComment{{ commentaire.id }}" data-view-id="commentText{{ commentaire.id }}">
+                                                            <i class="bi bi-pencil-square text-primary pe-2"></i>Modifier
+                                                        </button>
+                                                    </li>
+                                                    <li><hr class="dropdown-divider"></li>
+                                                    <li>
+                                                        <form method="post" action="{{ path('commentaire_delete', {'id': commentaire.id}) }}" class="m-0" data-turbo-frame="comments-{{ oeuvre.id }}">
+                                                            <input type="hidden" name="_token" value="{{ csrf_token('delete_comment_' ~ commentaire.id) }}">
+                                                            <input type="hidden" name="redirect_path" value="{{ app.request.pathInfo }}">
+                                                            <button type="submit" class="dropdown-item text-danger">
+                                                                <i class="bi bi-trash3 pe-2"></i>Supprimer
+                                                            </button>
+                                                        </form>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div id="commentText{{ commentaire.id }}" class="small mb-0">{{ commentaire.texte }}</div>
+                                {% if commentaire.user and app.user and commentaire.user.id == app.user.id %}
+                                    <form method="post" action="{{ path('commentaire_edit', {'id': commentaire.id}) }}" class="d-none" id="editComment{{ commentaire.id }}" data-turbo-frame="comments-{{ oeuvre.id }}">
+                                        <div class="position-relative">
+                                            <textarea name="contenu" class="form-control bg-white" rows="2">{{ commentaire.texte }}</textarea>
+                                            <input type="hidden" name="_token" value="{{ csrf_token('edit_comment_' ~ commentaire.id) }}">
+                                            <input type="hidden" name="redirect_path" value="{{ app.request.pathInfo }}">
+                                            <input type="hidden" name="oeuvre_id" value="{{ oeuvre.id }}">
+                                            <div class="d-flex gap-2 mt-2">
+                                                <button type="submit" class="btn btn-sm btn-primary">
+                                                    <i class="bi bi-check2"></i>Enregistrer
+                                                </button>
+                                                <button type="button" class="btn btn-sm btn-outline-secondary comment-edit-cancel" data-edit-id="editComment{{ commentaire.id }}" data-view-id="commentText{{ commentaire.id }}">
+                                                    <i class="bi bi-x-lg"></i>Annuler
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                {% endif %}
+                            </div>
+                            <!-- Comment react -->
+                            <ul class="nav nav-divider py-2 small">
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#!">Répondre</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </li>
+                <!-- Comment item END -->
+                {% endfor %}
+            </ul>
+            {% else %}
+            <ul class="comment-wrap list-unstyled mb-0"></ul>
+            {% endif %}
+            </turbo-frame>
+            <!-- Comment wrap END -->
+        </div>
+        <!-- Card body END -->
+        
+        <!-- Card footer START -->
+        <div class="card-footer border-0 pt-0" style="display: {{ oeuvreComments|length > 3 ? '' : 'none' }};">
+            <!-- Load more comments -->
+            <a href="#" role="button"
+               class="btn btn-link btn-link-loader btn-sm text-secondary d-flex align-items-center comments-load-more">
+                <div class="spinner-dots me-2 comments-loader" style="display: none;">
+                    <span class="spinner-dot"></span>
+                    <span class="spinner-dot"></span>
+                    <span class="spinner-dot"></span>
+                </div>
+                <span class="comments-load-text">Voir plus de commentaires</span>
+            </a>
+        </div>
+        <!-- Card footer END -->
+    </div>
+    <!-- Card feed item END -->
+    {% endfor %}
+    </div>
+
+    <!-- Load more button START -->
+    {% if oeuvres|length > initialDisplayCount %}
+    <button id="load-more-btn" class="btn btn-loader btn-primary-soft" type="button">
+        <span class="load-text">Afficher Plus</span>
+        <div class="load-icon" style="display: none;">
+            <div class="spinner-grow spinner-grow-sm" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+    </button>
+    {% endif %}
+    <!-- Load more button END -->
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Handle Turbo form submissions
+        function handleTurboFormSubmit(e) {
+            const form = e.target;
+            if (!form || form.tagName !== 'FORM' || !form.dataset.turboFrame) {
+                return;
+            }
+            
+            const frameName = form.dataset.turboFrame;
+            const frameEl = document.getElementById(frameName);
+            
+            if (!frameEl) {
+                return;
+            }
+            
+            e.preventDefault();
+            
+            const formData = new FormData(form);
+            const fetchInit = {
+                method: form.method || 'GET',
+                headers: {
+                    'Turbo-Frame': frameName,
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            };
+            
+            if (form.method.toUpperCase() === 'POST') {
+                fetchInit.body = formData;
+            }
+            
+            fetch(form.action, fetchInit)
+                .then(response => response.text())
+                .then(html => {
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(html, 'text/html');
+                    const newFrame = doc.querySelector(`turbo-frame[id="${frameName}"]`);
+                    
+                    // Check if this is an add comment form (not edit)
+                    const isAddCommentForm = form.action.includes('/oeuvre/') && form.action.includes('/commentaire') && !form.id;
+                    
+                    if (newFrame && frameEl) {
+                        const card = frameEl.closest('.card');
+                        const oeuvreId = card?.id?.replace('oeuvre-', '');
+                        frameEl.replaceWith(newFrame);
+                        
+                        // Sync footer on the NEW frame
+                        syncCommentsFooter(newFrame);
+                        
+                        // Update comment count
+                        const commentCount = newFrame.querySelectorAll('.comment-item').length;
+                        if (oeuvreId) {
+                            const countElement = document.querySelector(`.comment-count[data-oeuvre-id="${oeuvreId}"]`);
+                            if (countElement) {
+                                countElement.textContent = commentCount;
+                            }
+                        }
+                        
+                        // Clear textarea on the ORIGINAL add comment form (not inside frame)
+                        if (isAddCommentForm && card) {
+                            const addCommentForm = card.querySelector('form[action*="/commentaire"]');
+                            if (addCommentForm) {
+                                const textarea = addCommentForm.querySelector('textarea[name="contenu"]');
+                                if (textarea) {
+                                    textarea.value = '';
+                                }
+                            }
+                        }
+                        
+                        // Dispatch event on document so global listener catches it
+                        const event = new CustomEvent('turbo:submit-end', {
+                            detail: { success: true }
+                        });
+                        document.dispatchEvent(event);
+                    }
+                })
+                .catch(error => {
+                    console.error('Turbo frame update error:', error);
+                });
+        }
+        
+        const loadMoreBtn = document.getElementById('load-more-btn');
+        const feedContainer = document.getElementById('feed-container');
+        const itemsPerLoad = 3;
+
+        const initialHiddenOeuvres = document.querySelectorAll('.hidden-oeuvre');
+        if (loadMoreBtn && initialHiddenOeuvres.length > 0) {
+            loadMoreBtn.addEventListener('click', function() {
+                // Show spinner
+                this.querySelector('.load-text').style.display = 'none';
+                this.querySelector('.load-icon').style.display = 'inline-block';
+
+                // Simulate loading delay
+                setTimeout(() => {
+                    // Re-query fresh list of currently hidden oeuvres
+                    const hiddenOeuvres = document.querySelectorAll('.hidden-oeuvre');
+                    const stillHidden = Array.from(hiddenOeuvres).filter(el => el.style.display !== 'block');
+                    
+                    // Show next batch
+                    const endIndex = Math.min(itemsPerLoad, stillHidden.length);
+                    
+                    // Move items from hidden to visible
+                    for (let i = 0; i < endIndex; i++) {
+                        feedContainer.appendChild(stillHidden[i]);
+                        stillHidden[i].style.display = 'block';
+                        
+                        // Sync comment footers
+                        stillHidden[i].querySelectorAll('turbo-frame[id^="comments-"]')
+                            .forEach(syncCommentsFooter);
+                        
+                        // Bind Turbo form submissions for appended cards
+                        stillHidden[i].querySelectorAll('form[data-turbo-frame]').forEach(form => {
+                            form.removeEventListener('submit', handleTurboFormSubmit);
+                            form.addEventListener('submit', handleTurboFormSubmit);
+                        });
+                    }
+
+                    // Hide button if no more items
+                    const remainingHidden = document.querySelectorAll('.hidden-oeuvre');
+                    const stillMoreHidden = Array.from(remainingHidden).filter(el => el.style.display !== 'block');
+                    if (stillMoreHidden.length === 0) {
+                        this.style.display = 'none';
+                    }
+
+                    // Reset button state
+                    this.querySelector('.load-text').style.display = 'inline';
+                    this.querySelector('.load-icon').style.display = 'none';
+                }, 500);
+            });
+        }
+
+        function syncCommentsFooter(frame) {
+            if (!frame) {
+                return;
+            }
+
+            const card = frame.closest('.card');
+            if (!card) {
+                return;
+            }
+
+            const footer = card.querySelector('.card-footer');
+            if (!footer) {
+                return;
+            }
+
+            if (card.dataset.commentsExpanded === 'true') {
+                frame.querySelectorAll('.comment-item.hidden-comment.d-none').forEach((item) => {
+                    item.classList.remove('d-none');
+                });
+            }
+
+            const totalComments = frame.querySelectorAll('.comment-item').length;
+            if (totalComments <= 3) {
+                delete card.dataset.commentsExpanded;
+                footer.style.display = 'none';
+                return;
+            }
+
+            const remainingHidden = frame.querySelectorAll('.comment-item.hidden-comment.d-none').length;
+            footer.style.display = remainingHidden > 0 ? '' : 'none';
+        }
+
+        document.querySelectorAll('turbo-frame[id^="comments-"]').forEach(syncCommentsFooter);
+
+        document.addEventListener('turbo:frame-load', function(e) {
+            const frame = e.target;
+            if (frame && frame.id && frame.id.startsWith('comments-')) {
+                syncCommentsFooter(frame);
+                
+                // Update comment count
+                const card = frame.closest('.card');
+                const oeuvreId = card?.id?.replace('oeuvre-', '');
+                const commentCount = frame.querySelectorAll('.comment-item').length;
+                if (oeuvreId) {
+                    const countElement = document.querySelector(`.comment-count[data-oeuvre-id="${oeuvreId}"]`);
+                    if (countElement) {
+                        countElement.textContent = commentCount;
+                    }
+                }
+            }
+        });
+
+        document.addEventListener('turbo:submit-end', function(e) {
+            const form = e.target;
+            if (!form || form.tagName !== 'FORM') {
+                return;
+            }
+
+            if (form.dataset.turboFrame && form.action.includes('/commentaire') && e.detail.success) {
+                const textarea = form.querySelector('textarea[name="contenu"]');
+                if (textarea) {
+                    textarea.value = '';
+                }
+            }
+        });
+
+        document.addEventListener('keydown', function(e) {
+            if (e.defaultPrevented) {
+                return;
+            }
+            const textarea = e.target;
+            if (!textarea || textarea.tagName !== 'TEXTAREA') {
+                return;
+            }
+
+            if (textarea.name !== 'contenu') {
+                return;
+            }
+
+            if (e.key === 'Enter' && !e.shiftKey) {
+                const form = textarea.closest('form');
+                if (form) {
+                    e.preventDefault();
+                    form.requestSubmit();
+                }
+            }
+        });
+
+        // Load more comments per post
+        document.addEventListener('click', function(e) {
+            const commentsBtn = e.target.closest('.comments-load-more');
+            if (!commentsBtn) {
+                return;
+            }
+
+            e.preventDefault();
+
+            const card = commentsBtn.closest('.card');
+            if (!card) {
+                return;
+            }
+
+            const loadText = commentsBtn.querySelector('.comments-load-text');
+            const loader = commentsBtn.querySelector('.comments-loader');
+
+            if (loadText) {
+                loadText.style.display = 'none';
+            }
+            if (loader) {
+                loader.style.display = 'inline-flex';
+            }
+
+            setTimeout(() => {
+                const hiddenComments = card.querySelectorAll('.comment-item.hidden-comment.d-none');
+                const revealCount = Math.min(3, hiddenComments.length);
+
+                for (let i = 0; i < revealCount; i++) {
+                    hiddenComments[i].classList.remove('d-none');
+                }
+
+                if (loadText) {
+                    loadText.style.display = 'inline';
+                }
+                if (loader) {
+                    loader.style.display = 'none';
+                }
+
+                const remaining = card.querySelectorAll('.comment-item.hidden-comment.d-none').length;
+                if (remaining === 0) {
+                    const footer = commentsBtn.closest('.card-footer');
+                    if (footer) {
+                        footer.style.display = 'none';
+                    }
+                }
+
+                if (!card.dataset.commentsExpanded) {
+                    card.dataset.commentsExpanded = 'true';
+                }
+            }, 400);
+        });
+
+        // Inline comment edit toggle
+        document.addEventListener('click', function(e) {
+            const editToggle = e.target.closest('.comment-edit-toggle');
+            if (editToggle) {
+                const editId = editToggle.dataset.editId;
+                const viewId = editToggle.dataset.viewId;
+                const editForm = document.getElementById(editId);
+                const textView = document.getElementById(viewId);
+
+                if (editForm && textView) {
+                    textView.classList.add('d-none');
+                    editForm.classList.remove('d-none');
+                    const textarea = editForm.querySelector('textarea[name="contenu"]');
+                    if (textarea) {
+                        textarea.focus();
+                        textarea.selectionStart = textarea.value.length;
+                    }
+                }
+            }
+
+            const cancelToggle = e.target.closest('.comment-edit-cancel');
+            if (cancelToggle) {
+                const editId = cancelToggle.dataset.editId;
+                const viewId = cancelToggle.dataset.viewId;
+                const editForm = document.getElementById(editId);
+                const textView = document.getElementById(viewId);
+
+                if (editForm && textView) {
+                    editForm.classList.add('d-none');
+                    textView.classList.remove('d-none');
+                }
+            }
+        });
+
+        // Favorite toggle functionality
+        function updateFavoriteVisualState(link, favorited) {
+            const icon = link.querySelector('.favorite-icon') || link.querySelector('i');
+            const text = link.querySelector('.favorite-text');
+
+            if (!icon) {
+                return;
+            }
+
+            if (favorited) {
+                icon.classList.remove('bi-star', 'text-secondary');
+                icon.classList.add('bi-star-fill', 'text-warning');
+                if (text) {
+                    text.textContent = 'Retirer des favoris';
+                }
+                link.dataset.favorited = 'true';
+            } else {
+                icon.classList.remove('bi-star-fill', 'text-warning');
+                icon.classList.add('bi-star', 'text-secondary');
+                if (text) {
+                    text.textContent = 'Ajouter aux Favoris';
+                }
+                link.dataset.favorited = 'false';
+            }
+        }
+
+        function syncFavoriteState(oeuvreId, favorited, favoriteCount = null) {
+            const favoriteLinks = document.querySelectorAll(`.favorite-toggle[data-oeuvre-id="${oeuvreId}"]`);
+            favoriteLinks.forEach((favoriteLink) => updateFavoriteVisualState(favoriteLink, favorited));
+
+            if (favoriteCount !== null) {
+                const favoriteCounts = document.querySelectorAll(`.favorite-count[data-oeuvre-id="${oeuvreId}"]`);
+                favoriteCounts.forEach((favoriteCountElement) => {
+                    favoriteCountElement.textContent = favoriteCount;
+                });
+            }
+        }
+
+        document.addEventListener('click', function(e) {
+            if (e.target.closest('.favorite-toggle')) {
+                e.preventDefault();
+                const link = e.target.closest('.favorite-toggle');
+                // Prevent duplicate clicks
+                if (link.dataset.processing === 'true') return;
+                link.dataset.processing = 'true';
+                const oeuvreId = link.dataset.oeuvreId;
+
+                // Send AJAX request
+                fetch(`/oeuvre/${oeuvreId}/favorite-ajax`, {
+                    method: 'POST',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        syncFavoriteState(oeuvreId, data.favorited, data.favoriteCount ?? null);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error toggling favorite:', error);
+                })
+                .finally(() => {
+                    link.dataset.processing = 'false';
+                });
+            }
+        });
+
+        // Like toggle functionality
+        document.addEventListener('click', function(e) {
+            if (e.target.closest('.like-toggle')) {
+                    e.preventDefault();
+                    const link = e.target.closest('.like-toggle');
+                    // Prevent duplicate processing (double click / multiple handlers)
+                    if (link.dataset.processing === 'true') return;
+                    link.dataset.processing = 'true';
+                    const oeuvreId = link.dataset.oeuvreId;
+                    const isLiked = link.dataset.liked === 'true';
+                    const icon = link.querySelector('i');
+                    const countSpan = link.querySelector('.like-count');
+
+                    // Send AJAX request
+                    fetch(`/oeuvre/${oeuvreId}/like-ajax`, {
+                        method: 'POST',
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            // Toggle visual state
+                            if (data.liked) {
+                                icon.classList.add('bi-heart-fill', 'text-danger');
+                                icon.classList.remove('bi-heart');
+                                link.dataset.liked = 'true';
+                            } else {
+                                icon.classList.remove('bi-heart-fill', 'text-danger');
+                                icon.classList.add('bi-heart');
+                                link.dataset.liked = 'false';
+                            }
+                            // Update count
+                            countSpan.textContent = data.likeCount;
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error toggling like:', error);
+                    })
+                    .finally(() => {
+                        link.dataset.processing = 'false';
+                    });
+                }
+        });
+    });
+    </script>
+
+{% endblock %}
+
+

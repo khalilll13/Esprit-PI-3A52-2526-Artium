@@ -1,0 +1,24 @@
+meilisearch:
+  url: "%env(MEILISEARCH_URL)%"
+  api_key: "%env(MEILISEARCH_API_KEY)%"
+  prefix: "%env(MEILISEARCH_PREFIX)%"
+
+  indices:
+    - name: oeuvre
+      class: App\Entity\Oeuvre
+      index_if: indexableInSearch
+      settings:
+        searchableAttributes:
+          - titre
+          - description
+          - "collection.titre"
+          - "collection.artiste.nom"
+          - "collection.artiste.prenom"
+
+        rankingRules:
+          - attribute
+          - words
+          - typo
+          - proximity
+          - sort
+          - exactness

@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>{% block title %}{% endblock %}</title>
+        <!-- Required meta tags back -->
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="author" content="Codescandy" />
+
+        <!-- Favicon icon back-->
+        <link rel="icon" href="{{asset('assetsback/images/iconn.ico')}}" />
+
+        <!-- Dark mode JS back -->
+        <script src="{{ asset('assetsback/js/vendors/darkMode.js') }}"></script>
+
+        {% block stylesheets %}
+            <!-- Backoffice Template Css -->
+            <link href="{{ asset('assetsback/fonts/feather/feather.css') }}" rel="stylesheet" />
+            <link href="{{ asset('assetsback/libs/bootstrap-icons/font/bootstrap-icons.min.css') }}" rel="stylesheet" />
+            <link href="{{ asset('assetsback/libs/simplebar/dist/simplebar.min.css') }}" rel="stylesheet" />
+
+            <link rel="stylesheet" href="{{ asset('assetsback/libs/flatpickr/dist/flatpickr.min.css') }}" />
+            <link rel="stylesheet" href="{{ asset('assetsback/css/theme.min.css') }}">
+            <link href="{{ asset('assetsback/libs/tiny-slider/dist/tiny-slider.css') }}" rel="stylesheet">
+
+            <!-- Custom Styles for Flash Messages -->
+            <style>
+                .flash-messages {
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    z-index: 9999;
+                    max-width: 400px;
+                }
+                .flash-messages .alert {
+                    animation: slideInRight 0.3s ease-out;
+                    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                }
+                @keyframes slideInRight {
+                    from {
+                        transform: translateX(100%);
+                        opacity: 0;
+                    }
+                    to {
+                        transform: translateX(0);
+                        opacity: 1;
+                    }
+                }
+            </style>
+        {% endblock %}
+    </head>
+
+    <body>
+        <!-- Flash Messages -->
+        <div class="flash-messages">
+            {% for label, messages in app.flashes %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ label == 'error' ? 'danger' : label }} alert-dismissible fade show" role="alert">
+                        {% if label == 'success' %}
+                            <i class="fe fe-check-circle me-2"></i>
+                        {% elseif label == 'error' or label == 'danger' %}
+                            <i class="fe fe-x-circle me-2"></i>
+                        {% elseif label == 'warning' %}
+                            <i class="fe fe-alert-triangle me-2"></i>
+                        {% elseif label == 'info' %}
+                            <i class="fe fe-info me-2"></i>
+                        {% endif %}
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            {% endfor %}
+        </div>
+
+        <div id="db-wrapper">
+            <!-- Sidebar -->
+            {% include 'admin/Partials/sidebar.html.twig' %}
+            
+            <!-- Page Content -->
+            <main id="page-content">
+                <div class="header">
+                    <!-- navbar -->
+                    {% include 'admin/Partials/navbar.html.twig' %}
+                </div>
+
+                <!-- Modifiable Content -->
+                <section class="container-fluid p-4">
+                    {% block admin_content %}{% endblock %}
+                </section>
+            </main>
+        </div>
+
+        <!-- Backoffice Template Scripts -->
+        <script src="{{ asset('assetsback/libs/@popperjs/core/dist/umd/popper.min.js') }}"></script>
+        <script src="{{ asset('assetsback/libs/bootstrap/dist/js/bootstrap.min.js') }}"></script>
+        <script src="{{ asset('assetsback/libs/simplebar/dist/simplebar.min.js') }}"></script>
+
+        <script src="{{ asset('assetsback/libs/tiny-slider/dist/min/tiny-slider.js') }}"></script>
+        <script src="{{ asset('assetsback/libs/jsvectormap/dist/jsvectormap.min.js') }}"></script>
+        <script src="{{ asset('assetsback/libs/jsvectormap/dist/maps/world.js') }}"></script>
+        <script src="{{ asset('assetsback/libs/apexcharts/dist/apexcharts.min.js') }}"></script>
+        <script src="{{ asset('assetsback/js/vendors/chart.js') }}"></script>
+        <script src="{{ asset('assetsback/js/vendors/tnsSlider.js') }}"></script>
+        <script src="{{ asset('assetsback/js/vendors/tooltip.js') }}"></script>
+        <script src="{{ asset('assetsback/libs/flatpickr/dist/flatpickr.min.js') }}"></script>
+        <script src="{{ asset('assetsback/js/vendors/flatpickr.js') }}"></script>
+        <script src="{{ asset('assetsback/libs/typed.js/dist/typed.umd.js') }}"></script>
+        <script src="{{ asset('assetsback/js/vendors/typed.js') }}"></script>
+
+        <script src="{{ asset('assetsback/js/theme.min.js') }}"></script>
+        <script src="{{ asset('assetsback/js/vendors/validation.js') }}"></script>
+
+        <!-- Auto-dismiss flash messages after 5 seconds -->
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const alerts = document.querySelectorAll('.flash-messages .alert');
+                alerts.forEach(function(alert) {
+                    setTimeout(function() {
+                        const bsAlert = new bootstrap.Alert(alert);
+                        bsAlert.close();
+                    }, 5000); // 5 seconds
+                });
+            });
+        </script>
+
+        {% block javascripts %}{% endblock %}
+            <script src="{{ asset('assetsback/js/theme.min.js') }}"></script>
+            <script src="{{ asset('assetsback/js/vendors/validation.js') }}"></script>
+    </body>
+</html>

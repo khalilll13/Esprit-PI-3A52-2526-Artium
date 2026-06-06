@@ -1,0 +1,1321 @@
+{% extends 'base_artiste.html.twig' %}
+
+{% block title %}{{ 'Musiques'|trans }}{% endblock %}
+
+{% block artiste_content %}
+<!-- Flash messages -->
+{% for message in app.flashes('success') %}
+  <div class="alert alert-success alert-dismissible fade show" role="alert">
+    {{ message }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+{% endfor %}
+
+{% for message in app.flashes('error') %}
+  <div class="alert alert-danger alert-dismissible fade show" role="alert">
+    {{ message }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+{% endfor %}
+
+<!-- Header with title and upload button START -->
+<div class="card">
+  <div class="card-header d-sm-flex align-items-center text-center justify-content-sm-between border-0 pb-0">
+    <h1 class="h4 card-title">Mes pièces musicales</h1>
+    <button type="button" class="btn btn-primary-soft" data-bs-toggle="offcanvas" data-bs-target="#offcanvasAddMusic">
+      <i class="bi bi-plus-circle pe-2"></i>Ajouter une musique
+    </button>
+  </div>
+  <!-- Card body START -->
+  <div class="card-body">
+    <!-- Search and Filter Bar START -->
+    <div class="row mb-4 g-2 align-items-end">
+      <div class="col-md-6">
+        <div class="d-flex gap-2">
+          <div class="flex-grow-1">
+            <label for="searchInput" class="form-label small mb-2">Rechercher par titre, description ou artiste</label>
+            <input type="text" class="form-control" id="searchInput" placeholder="Rechercher des chansons..." value="{{ searchTerm }}">
+          </div>
+          <button type="button" class="btn btn-outline-primary align-self-end" id="searchBtn">
+            <i class="bi bi-search"></i> Rechercher
+          </button>
+          {% if searchTerm %}
+            <button type="button" class="btn btn-outline-secondary align-self-end" id="clearSearchBtn">
+              <i class="bi bi-x-circle"></i> Effacer
+            </button>
+          {% endif %}
+        </div>
+      </div>
+      
+      <div class="col-md-6">
+        <div class="d-flex gap-2">
+          <div class="flex-grow-1">
+            <label for="sortBy" class="form-label small mb-2">Trier par</label>
+            <select class="form-select" id="sortBy">
+              <option value="date" {% if sortBy == 'date' %}selected{% endif %}>Date d'ajout</option>
+              <option value="titre" {% if sortBy == 'titre' %}selected{% endif %}>Titre (A-Z)</option>
+              <option value="genre" {% if sortBy == 'genre' %}selected{% endif %}>Genre</option>
+            </select>
+          </div>
+          
+          <div>
+            <label class="form-label small mb-2">&nbsp;</label>
+            <button type="button" class="btn btn-outline-primary w-100" id="toggleSortBtn">
+              <i class="bi {% if sortOrder == 'DESC' %}bi-sort-down{% else %}bi-sort-up{% endif %}"></i>
+              <span id="sortOrderText">{{ sortOrder == 'DESC' ? 'Descendant' : 'Ascendant' }}</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Search and Filter Bar END -->
+    
+    <!-- Results info START -->
+    <div class="mb-3" id="resultsInfo">
+      {% if searchTerm %}
+        <p class="text-muted small">
+          <i class="bi bi-info-circle"></i> 
+          Trouvé <strong>{{ musiques|length }}</strong> chanson(s) correspondant à "{{ searchTerm }}"
+          <a href="#" onclick="clearSearch(); return false;" class="ms-2">Afficher toutes les chansons</a>
+        </p>
+      {% endif %}
+    </div>
+    <!-- Results info END -->
+    {% if musiques is empty %}
+      <!-- No music message START -->
+      <div class="text-center py-5" id="emptyMessage">
+        <i class="bi bi-music-note-beamed display-1 text-muted"></i>
+        <h5 class="mt-3">Aucune musique trouvée</h5>
+        <p class="text-muted">{% if searchTerm %}Aucune chanson ne correspond à votre recherche. Essayez un mot-clé différent.{% else %}Commencez par télécharger votre première pièce musicale !{% endif %}</p>
+      </div>
+      <!-- No music message END -->
+    {% else %}
+      <!-- Music grid START -->
+      <div class="row g-4" id="musicGrid">
+        {% for musique in musiques %}
+          <!-- Music item START -->
+          <div class="col-sm-6 col-xl-4">
+            <div class="card h-100 music-card" 
+                 data-music-id="{{ musique.id }}" 
+                 data-audio-src="{{ path('app_musiqueartiste_audio', {'id': musique.id}) }}">
+              <!-- Image with genre badge -->
+              <div class="position-relative">
+                <img class="img-fluid rounded-top" 
+                     src="{{ path('app_musiqueartiste_image', {'id': musique.id}) }}" 
+                     alt="{{ musique.titre }}"
+                     style="background-color: #f0f0f0; min-height: 200px; object-fit: cover;">
+                <div class="badge bg-primary text-white mt-2 me-2 position-absolute top-0 end-0">
+                  {{ musique.genre }}
+                </div>
+              </div>
+              
+              <!-- Card body START -->
+              <div class="card-body position-relative pt-0">
+                <!-- Genre tag -->
+                <a class="btn btn-xs btn-primary mt-n3" href="#">{{ musique.genre }}</a>
+                
+                <!-- Music title -->
+                <h6 class="mt-3"> 
+                  <a href="#!"> {{ musique.titre }} </a> 
+                </h6>
+                {% set artistFullName = ((musique.artiste_prenom|default('')) ~ ' ' ~ (musique.artiste_nom|default('')))|trim %}
+                <p class="mb-2 small text-muted">
+                  <i class="bi bi-person-fill pe-1"></i>{{ artistFullName != '' ? artistFullName : 'Artiste inconnu' }}
+                </p>
+                
+                <!-- Description -->
+                <p class="mb-2 small text-muted">
+                  {{ musique.description|length > 50 ? musique.description|slice(0, 50) ~ '...' : musique.description }}
+                </p>
+                
+                <!-- Date -->
+                <p class="small"> 
+                  <i class="bi bi-calendar pe-1"></i> 
+                  {{ musique.date_creation|date('Y-m-d') }} 
+                </p>
+                
+                <!-- Like and action buttons -->
+                <div class="d-flex mt-3 gap-2">
+                  <button class="btn btn-sm btn-primary flex-grow-1 play-btn">
+                    <i class="bi bi-play-fill pe-1"></i> Lecture
+                  </button>
+                  <button class="btn btn-sm btn-outline-primary" title="Ajouter aux favoris">
+                    <i class="bi bi-heart"></i>
+                  </button>
+                  <!-- More options dropdown -->
+                  <div class="dropdown">
+                    <button class="btn btn-sm btn-outline-primary" type="button" id="dropdownMenu{{ musique.id }}" data-bs-toggle="dropdown" aria-expanded="false">
+                      <i class="bi bi-three-dots"></i>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenu{{ musique.id }}">
+                      <li>
+                        <a class="dropdown-item edit-music-btn" href="#" 
+                           data-music-id="{{ musique.id }}"
+                           data-music-title="{{ musique.titre }}"
+                           data-music-description="{{ musique.description }}"
+                           data-music-genre="{{ musique.genre }}"
+                           data-bs-toggle="offcanvas" 
+                           data-bs-target="#offcanvasEditMusic">
+                          <i class="bi bi-pencil pe-2"></i>Modifier
+                        </a>
+                      </li>
+                      <li>
+                        <a class="dropdown-item view-lyrics-btn" href="#"
+                           data-music-id="{{ musique.id }}"
+                           data-music-title="{{ musique.titre }}">
+                          <i class="bi bi-mic pe-2"></i>Voir paroles
+                        </a>
+                      </li>
+                      <li>
+                        <form method="post" action="{{ path('app_musiqueartiste_delete', {'id': musique.id}) }}" 
+                              class="delete-music-form" 
+                              data-music-title="{{ musique.titre }}"
+                              style="display: inline;">
+                          <input type="hidden" name="confirm_delete" value="1">
+                          <button type="submit" class="dropdown-item text-danger delete-music-submit" style="border: none; background: none; cursor: pointer; width: 100%; text-align: left;">
+                            <i class="bi bi-trash pe-2"></i>Supprimer
+                          </button>
+                        </form>
+                      </li>
+                      <li><a class="dropdown-item" href="#"> <i class="bi bi-share pe-2"></i>Partager</a></li>
+                    </ul>
+                  </div>
+                </div>
+                
+                <!-- Progress bar -->
+                <div class="mt-3">
+                  <div class="progress music-progress-container" style="height: 5px; cursor: pointer;" role="button" tabindex="0">
+                    <div class="progress-bar bg-primary music-progress" role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                  </div>
+                  <div class="d-flex justify-content-between align-items-center mt-2 small text-muted">
+                    <span class="current-time">0:00</span>
+                    <span class="total-time">0:00</span>
+                  </div>
+                </div>
+                
+                <!-- Stats -->
+                <div class="d-flex justify-content-between align-items-center mt-3 small text-muted">
+                  <span><i class="bi bi-hand-thumbs-up pe-1"></i>0</span>
+                  <span><i class="bi bi-chat-dots pe-1"></i>0</span>
+                  <span><i class="bi bi-collection-play pe-1"></i>0</span>
+                </div>
+              </div>
+              <!-- Card body END -->
+            </div>
+          </div>
+          <!-- Music item END -->
+        {% endfor %}
+      </div>
+      <!-- Music grid END -->
+    {% endif %}
+  </div>
+  <!-- Card body END -->
+</div>
+<!-- Header and music grid END -->
+
+<!-- Offcanvas Add Music Form START -->
+<div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasAddMusic" style="width: 600px">
+  <div class="offcanvas-body" data-simplebar>
+    <div class="offcanvas-header px-2 pt-0">
+      <h3 class="offcanvas-title" id="offcanvasAddMusicLabel">Ajouter une nouvelle musique</h3>
+      <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <!-- Form body -->
+    <div class="container">
+      {{ form_start(form, {'attr': {'class': 'row needs-validation', 'novalidate': 'novalidate', 'enctype': 'multipart/form-data', 'id': 'addMusicForm', 'data-turbo': 'false'}}) }}
+        
+        <!-- Display form errors at the top -->
+        {% for label, messages in app.flashes %}
+          {% if label == 'error' %}
+            {% for message in messages %}
+              <div class="col-12 mb-3">
+                <div class="alert alert-danger alert-dismissible fade show">
+                  <strong><i class="bi bi-exclamation-circle pe-2"></i>Erreur:</strong>
+                  {{ message }}
+                  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+              </div>
+            {% endfor %}
+          {% endif %}
+        {% endfor %}
+
+        <!-- Title -->
+        <div class="mb-3 col-12">
+          {{ form_label(form.titre, null, {'label_attr': {'class': 'form-label'}}) }}
+          <span class="text-danger">*</span>
+          {{ form_widget(form.titre) }}
+          {% if form.titre.vars.errors|length > 0 %}
+            <div class="invalid-feedback d-block">
+              {% for error in form.titre.vars.errors %}
+                {{ error.message }}
+              {% endfor %}
+            </div>
+          {% endif %}
+          <small class="form-text text-muted d-block mt-1">3-255 caractères</small>
+        </div>
+
+        <!-- Description -->
+        <div class="mb-3 col-12">
+          {{ form_label(form.description, null, {'label_attr': {'class': 'form-label'}}) }}
+          <span class="text-danger">*</span>
+          {{ form_widget(form.description, {'attr': {'data-counter': 'descriptionCounter'}}) }}
+          {% if form.description.vars.errors|length > 0 %}
+            <div class="invalid-feedback d-block">
+              {% for error in form.description.vars.errors %}
+                {{ error.message }}
+              {% endfor %}
+            </div>
+          {% endif %}
+          <small class="form-text text-muted d-block mt-1">10-5000 caractères <span id="descriptionCounter">(0/5000)</span></small>
+        </div>
+
+        <!-- Genre -->
+        <div class="mb-3 col-12">
+          {{ form_label(form.genre, null, {'label_attr': {'class': 'form-label'}}) }}
+          <span class="text-danger">*</span>
+          {{ form_widget(form.genre) }}
+          {% if form.genre.vars.errors|length > 0 %}
+            <div class="invalid-feedback d-block">
+              {% for error in form.genre.vars.errors %}
+                {{ error.message }}
+              {% endfor %}
+            </div>
+          {% endif %}
+        </div>
+
+        <!-- Collection -->
+        <div class="mb-3 col-12">
+          {{ form_label(form.collection, null, {'label_attr': {'class': 'form-label'}}) }}
+          <span class="text-danger">*</span>
+          {{ form_widget(form.collection) }}
+          {% if form.collection.vars.errors|length > 0 %}
+            <div class="invalid-feedback d-block">
+              {% for error in form.collection.vars.errors %}
+                {{ error.message }}
+              {% endfor %}
+            </div>
+          {% endif %}
+        </div>
+
+        <!-- Cover Image -->
+        <div class="mb-3 col-12">
+          {{ form_label(form.imageFile, null, {'label_attr': {'class': 'form-label'}}) }}
+          {{ form_widget(form.imageFile) }}
+          {{ form_help(form.imageFile) }}
+          {% if form.imageFile.vars.errors|length > 0 %}
+            <div class="invalid-feedback d-block">
+              {% for error in form.imageFile.vars.errors %}
+                {{ error.message }}
+              {% endfor %}
+            </div>
+          {% endif %}
+        </div>
+
+        <!-- Audio File -->
+        <div class="mb-3 col-12">
+          {{ form_label(form.audioFile, null, {'label_attr': {'class': 'form-label'}}) }}
+          <span class="text-danger">*</span>
+          {{ form_widget(form.audioFile) }}
+          {{ form_help(form.audioFile) }}
+          {% if form.audioFile.vars.errors|length > 0 %}
+            <div class="invalid-feedback d-block">
+              {% for error in form.audioFile.vars.errors %}
+                {{ error.message }}
+              {% endfor %}
+            </div>
+          {% endif %}
+        </div>
+
+        <!-- Buttons -->
+        <div class="col-12">
+          <button class="btn btn-primary" type="submit" id="submitBtn">
+            <i class="bi bi-upload pe-2"></i><span id="submitBtnText">Ajouter Musique</span>
+          </button>
+          <button type="button" class="btn btn-outline-primary ms-2" data-bs-dismiss="offcanvas" aria-label="Close">Annuler</button>
+        </div>
+
+      {{ form_end(form) }}
+    </div>
+  </div>
+</div>
+<!-- Offcanvas Add Music Form END -->
+
+<!-- Offcanvas Edit Music Form START -->
+<div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasEditMusic" style="width: 600px">
+  <div class="offcanvas-body" data-simplebar>
+    <div class="offcanvas-header px-2 pt-0">
+      <h3 class="offcanvas-title">Modifier la musique</h3>
+      <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <!-- Form body -->
+    <div class="container">
+      <form method="post" id="editMusicForm" enctype="multipart/form-data" class="row needs-validation" novalidate data-turbo="false">
+        <input type="hidden" id="editMusicId" name="musicId">
+        
+        <!-- Title -->
+        <div class="mb-3 col-12">
+          <label for="editTitre" class="form-label">Titre</label>
+          <span class="text-danger">*</span>
+          <input type="text" class="form-control" id="editTitre" name="titre" 
+                 required minlength="3" maxlength="255">
+          <div class="invalid-feedback">Le titre doit contenir entre 3 et 255 caractères.</div>
+          <small class="form-text text-muted d-block mt-1">3-255 caractères</small>
+        </div>
+
+        <!-- Description -->
+        <div class="mb-3 col-12">
+          <label for="editDescription" class="form-label">Description</label>
+          <span class="text-danger">*</span>
+          <textarea class="form-control" id="editDescription" name="description" rows="3" 
+                    required minlength="10" maxlength="5000" data-counter="editDescriptionCounter"></textarea>
+          <div class="invalid-feedback">La description doit contenir entre 10 et 5000 caractères.</div>
+          <small class="form-text text-muted d-block mt-1">10-5000 caractères <span id="editDescriptionCounter">(0/5000)</span></small>
+        </div>
+
+        <!-- Genre -->
+        <div class="mb-3 col-12">
+          <label for="editGenre" class="form-label">Genre</label>
+          <span class="text-danger">*</span>
+          <select class="form-select" id="editGenre" name="genre" required>
+            <option value="">Sélectionner un genre</option>
+            <option value="Rock">Rock</option>
+            <option value="Jazz">Jazz</option>
+            <option value="Classique">Classique</option>
+            <option value="Pop">Pop</option>
+          </select>
+          <div class="invalid-feedback">Veuillez sélectionner un genre.</div>
+        </div>
+
+        <!-- Cover Image -->
+        <div class="mb-3 col-12">
+          <label for="editImageFileInput" class="form-label">Modifier l'image de couverture</label>
+          <div data-controller="dropzone" class="dropzone-container">
+            <input type="file" 
+                   class="form-control" 
+                   id="editImageFileInput" 
+                   name="imageFile" 
+                   accept="image/jpeg,image/png,image/jpg"
+                   data-dropzone-target="input">
+          </div>
+          <small class="text-muted d-block mt-2">Optionnel • Laissez vide pour conserver l'image actuelle • Max 5MB • Formats: JPEG, PNG • Recommandé: min 300x300px</small>
+        </div>
+
+        <!-- Buttons -->
+        <div class="col-12">
+          <button class="btn btn-primary" type="submit">
+            <i class="bi bi-check-circle pe-2"></i>Modifier la musique
+          </button>
+          <button type="button" class="btn btn-outline-primary ms-2" data-bs-dismiss="offcanvas" aria-label="Close">Annuler</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<!-- Offcanvas Edit Music Form END -->
+
+<!-- Lyrics Modal START -->
+<div class="modal fade" id="lyricsModal" tabindex="-1" aria-labelledby="lyricsModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="lyricsModalLabel">Paroles</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div id="lyricsLoading" class="text-center py-4" style="display:none;">
+          <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Chargement...</span>
+          </div>
+          <p class="mt-2 mb-0 text-muted">Chargement des paroles...</p>
+        </div>
+        <div id="lyricsMessage" class="alert alert-warning" style="display:none;"></div>
+        <pre id="lyricsContent" class="mb-0" style="white-space: pre-wrap; font-family: inherit;"></pre>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Lyrics Modal END -->
+
+<!-- Audio element for playback -->
+<audio id="audioPlayer" style="display: none;"></audio>
+
+<script>
+// Dynamic Music Player System - Works for any number of songs
+(function() {
+  'use strict';
+  
+  // State management
+  const MusicPlayer = {
+    audio: document.getElementById('audioPlayer'),
+    currentCard: null,
+    
+    // Utility: Format time in MM:SS
+    formatTime(seconds) {
+      if (!seconds || isNaN(seconds) || !isFinite(seconds)) return '0:00';
+      const mins = Math.floor(seconds / 60);
+      const secs = Math.floor(seconds % 60);
+      return `${mins}:${secs.toString().padStart(2, '0')}`;
+    },
+    
+    // Get card elements
+    getCardElements(card) {
+      return {
+        playBtn: card.querySelector('.play-btn'),
+        progressBar: card.querySelector('.music-progress'),
+        progressContainer: card.querySelector('.music-progress-container'),
+        currentTime: card.querySelector('.current-time'),
+        totalTime: card.querySelector('.total-time')
+      };
+    },
+    
+    // Update button state
+    updateButton(button, isPlaying) {
+      const icon = button.querySelector('i');
+      if (isPlaying) {
+        icon.className = 'bi bi-pause-fill pe-1';
+        button.innerHTML = '';
+        button.appendChild(icon);
+        button.appendChild(document.createTextNode(' Pause'));
+      } else {
+        icon.className = 'bi bi-play-fill pe-1';
+        button.innerHTML = '';
+        button.appendChild(icon);
+        button.appendChild(document.createTextNode(' Play'));
+      }
+    },
+    
+    // Reset card display
+    resetCard(card) {
+      const elements = this.getCardElements(card);
+      this.updateButton(elements.playBtn, false);
+      elements.progressBar.style.width = '0%';
+      elements.progressBar.setAttribute('aria-valuenow', '0');
+      elements.currentTime.textContent = '0:00';
+    },
+    
+    // Load and play a song
+    loadAndPlay(card, seekPercent = 0) {
+      const audioSrc = card.dataset.audioSrc;
+      const musicId = card.dataset.musicId;
+      const elements = this.getCardElements(card);
+      
+      // If switching songs, reset the previous one
+      if (this.currentCard && this.currentCard !== card) {
+        this.resetCard(this.currentCard);
+      }
+      
+      // Set current card BEFORE loading (so events can reference it)
+      this.currentCard = card;
+      
+      // Load new audio if different source
+      if (this.audio.src !== audioSrc && audioSrc) {
+        this.audio.src = audioSrc;
+        this.audio.load();
+        
+        // Seek once metadata is loaded
+        if (seekPercent > 0) {
+          this.audio.addEventListener('loadedmetadata', function seekHandler() {
+            MusicPlayer.audio.currentTime = seekPercent * MusicPlayer.audio.duration;
+            MusicPlayer.audio.removeEventListener('loadedmetadata', seekHandler);
+          });
+        }
+      } else if (seekPercent > 0) {
+        // Same audio, just seek
+        this.audio.currentTime = seekPercent * this.audio.duration;
+      }
+      
+      // Play audio
+      this.audio.play().catch(err => console.warn('Playback failed:', err));
+      this.updateButton(elements.playBtn, true);
+    },
+    
+    // Toggle play/pause for a card
+    togglePlayPause(card) {
+      const elements = this.getCardElements(card);
+      
+      // If this is a different song or no song is loaded
+      if (this.currentCard !== card) {
+        this.loadAndPlay(card);
+        return;
+      }
+      
+      // Same song - toggle play/pause
+      if (this.audio.paused) {
+        this.audio.play();
+        this.updateButton(elements.playBtn, true);
+      } else {
+        this.audio.pause();
+        this.updateButton(elements.playBtn, false);
+      }
+    },
+    
+    // Seek to position in song
+    seekTo(card, percent) {
+      // If clicking on a different song's progress bar, load and play from that position
+      if (this.currentCard !== card) {
+        this.loadAndPlay(card, percent);
+      } else if (this.audio.duration && isFinite(this.audio.duration)) {
+        // Same song - just seek
+        this.audio.currentTime = percent * this.audio.duration;
+      }
+    },
+    
+    // Initialize audio event listeners
+    initAudioEvents() {
+      // Update display when metadata loads
+      this.audio.addEventListener('loadedmetadata', () => {
+        if (this.currentCard && this.audio.duration && isFinite(this.audio.duration)) {
+          const elements = this.getCardElements(this.currentCard);
+          elements.totalTime.textContent = this.formatTime(this.audio.duration);
+        }
+      });
+      
+      // Update progress bar as song plays
+      this.audio.addEventListener('timeupdate', () => {
+        if (this.currentCard && this.audio.duration && isFinite(this.audio.duration)) {
+          const elements = this.getCardElements(this.currentCard);
+          const percentage = (this.audio.currentTime / this.audio.duration) * 100;
+          elements.progressBar.style.width = percentage + '%';
+          elements.progressBar.setAttribute('aria-valuenow', Math.round(percentage));
+          elements.currentTime.textContent = this.formatTime(this.audio.currentTime);
+        }
+      });
+      
+      // Reset when song ends
+      this.audio.addEventListener('ended', () => {
+        if (this.currentCard) {
+          this.resetCard(this.currentCard);
+          this.currentCard = null;
+        }
+      });
+    },
+    
+    // Initialize event delegation for all music cards
+    initCardEvents() {
+      document.addEventListener('click', (e) => {
+        // Handle play button clicks
+        const playBtn = e.target.closest('.play-btn');
+        if (playBtn) {
+          const card = playBtn.closest('.music-card');
+          if (card) {
+            e.preventDefault();
+            this.togglePlayPause(card);
+          }
+          return;
+        }
+        
+        // Handle progress bar clicks for seeking
+        const progressContainer = e.target.closest('.music-progress-container');
+        if (progressContainer) {
+          const card = progressContainer.closest('.music-card');
+          if (card) {
+            const rect = progressContainer.getBoundingClientRect();
+            const percent = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+            this.seekTo(card, percent);
+          }
+        }
+      });
+      
+      // Keyboard accessibility for progress bars
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          const progressContainer = e.target.closest('.music-progress-container');
+          if (progressContainer) {
+            e.preventDefault();
+            const card = progressContainer.closest('.music-card');
+            if (card) {
+              this.seekTo(card, 0.5); // Seek to middle
+            }
+          }
+        }
+      });
+    },
+    
+    // Images load eagerly now, no lazy loading needed
+    initLazyLoading() {
+      // Placeholder for future use
+    },
+    
+    // Initialize everything
+    init() {
+      this.initAudioEvents();
+      this.initCardEvents();
+      this.initLazyLoading();
+    }
+  };
+  
+  // Start the music player when DOM is ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+      MusicPlayer.init();
+      updateSortButton();
+    });
+  } else {
+    MusicPlayer.init();
+    updateSortButton();
+  }
+})();
+
+// Edit Music Form Handler
+document.addEventListener('click', function(e) {
+  const editBtn = e.target.closest('.edit-music-btn');
+  if (editBtn) {
+    e.preventDefault();
+    
+    // Get music data from button attributes
+    const musicId = editBtn.dataset.musicId;
+    const title = editBtn.dataset.musicTitle;
+    const description = editBtn.dataset.musicDescription;
+    const genre = editBtn.dataset.musicGenre;
+    
+    // Populate form fields
+    document.getElementById('editMusicId').value = musicId;
+    document.getElementById('editTitre').value = title;
+    document.getElementById('editDescription').value = description;
+    document.getElementById('editGenre').value = genre;
+    
+    // Update form action
+    const form = document.getElementById('editMusicForm');
+    form.action = '{{ path('app_musiqueartiste_edit', {'id': '__ID__'}) }}'.replace('__ID__', musicId);
+  }
+});
+
+// Lyrics Modal Handler
+document.addEventListener('click', async function(e) {
+  const lyricsBtn = e.target.closest('.view-lyrics-btn');
+  if (!lyricsBtn) {
+    return;
+  }
+
+  e.preventDefault();
+
+  const musicId = lyricsBtn.dataset.musicId;
+  const musicTitle = lyricsBtn.dataset.musicTitle || 'Paroles';
+
+  const modalElement = document.getElementById('lyricsModal');
+  const modalTitle = document.getElementById('lyricsModalLabel');
+  const loading = document.getElementById('lyricsLoading');
+  const message = document.getElementById('lyricsMessage');
+  const content = document.getElementById('lyricsContent');
+
+  if (!modalElement || !loading || !message || !content || !modalTitle) {
+    return;
+  }
+
+  modalTitle.textContent = `Paroles - ${musicTitle}`;
+  message.style.display = 'none';
+  content.textContent = '';
+  loading.style.display = 'block';
+
+  const modal = bootstrap.Modal.getOrCreateInstance(modalElement);
+  modal.show();
+
+  try {
+    const url = '{{ path('app_musiqueartiste_lyrics', {'id': '__ID__'}) }}'.replace('__ID__', musicId);
+    const response = await fetch(url, {
+      headers: {
+        'X-Requested-With': 'XMLHttpRequest'
+      }
+    });
+
+    const data = await response.json();
+    loading.style.display = 'none';
+
+    if (!response.ok || !data.success || !data.lyrics) {
+      message.textContent = data.message || 'Impossible de récupérer les paroles pour cette musique.';
+      message.style.display = 'block';
+      return;
+    }
+
+    content.textContent = data.lyrics;
+  } catch (error) {
+    loading.style.display = 'none';
+    message.textContent = 'Erreur réseau lors de la récupération des paroles.';
+    message.style.display = 'block';
+  }
+});
+
+// AJAX Search and Sort System
+let currentSortOrder = '{{ sortOrder }}';
+
+function loadMusicResults() {
+  const searchInput = document.getElementById('searchInput');
+  const sortBySelect = document.getElementById('sortBy');
+  const grid = document.getElementById('musicGrid');
+  const emptyMsg = document.getElementById('emptyMessage');
+  
+  if (!searchInput || !sortBySelect) {
+    console.error('Search or sort elements not found');
+    return;
+  }
+  
+  const search = searchInput.value;
+  const sort = sortBySelect.value;
+  
+  const params = new URLSearchParams();
+  if (search) params.append('search', search);
+  params.append('sort', sort);
+  params.append('order', currentSortOrder);
+  
+  // Show loading spinner
+  if (grid) grid.innerHTML = '<div class="col-12 text-center"><div class="spinner-border" role="status"><span class="visually-hidden">Loading...</span></div></div>';
+  if (emptyMsg) emptyMsg.style.display = 'none';
+  
+  // Fetch results
+  fetch(`{{ path('app_musiqueartiste') }}?${params.toString()}`, {
+    headers: {
+      'X-Requested-With': 'XMLHttpRequest'
+    }
+  })
+  .then(response => response.text())
+  .then(html => {
+    // Parse the HTML and extract just the music grid
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(html, 'text/html');
+    
+    // Try to get the grid
+    const newGrid = doc.querySelector('#musicGrid');
+    const newEmpty = doc.querySelector('#emptyMessage');
+    const newResults = doc.querySelector('#resultsInfo');
+    
+    // Update grid
+    if (grid && newGrid) {
+      grid.innerHTML = newGrid.innerHTML;
+      emptyMsg.style.display = 'none';
+    } else if (emptyMsg && newEmpty) {
+      grid.style.display = 'none';
+      emptyMsg.innerHTML = newEmpty.innerHTML;
+      emptyMsg.style.display = 'block';
+    }
+    
+    // Update results info
+    if (newResults) {
+      document.getElementById('resultsInfo').innerHTML = newResults.innerHTML;
+    }
+    
+    // Reinitialize Bootstrap dropdowns after AJAX update
+    const dropdownElementList = document.querySelectorAll('[data-bs-toggle="dropdown"]');
+    dropdownElementList.forEach(function(dropdownToggle) {
+      new bootstrap.Dropdown(dropdownToggle);
+    });
+    
+    // Update sort order button icon
+    updateSortButton();
+  })
+  .catch(error => console.error('Error loading results:', error));
+}
+
+function updateSortButton() {
+  const btn = document.getElementById('toggleSortBtn');
+  if (!btn) return;
+  
+  const icon = btn.querySelector('i');
+  const text = document.getElementById('sortOrderText');
+  
+  if (icon && currentSortOrder === 'DESC') {
+    icon.className = 'bi bi-sort-down';
+    if (text) text.textContent = 'Descendant';
+  } else if (icon) {
+    icon.className = 'bi bi-sort-up';
+    if (text) text.textContent = 'Ascendant';
+  }
+}
+
+function clearSearch() {
+  const searchInput = document.getElementById('searchInput');
+  const sortBySelect = document.getElementById('sortBy');
+  
+  if (searchInput) searchInput.value = '';
+  currentSortOrder = 'DESC';
+  if (sortBySelect) sortBySelect.value = 'date';
+  loadMusicResults();
+}
+
+// Toggle sort order
+function toggleSortOrder(form) {
+  const currentOrder = document.getElementById('sortOrderInput').value;
+  const newOrder = currentOrder === 'DESC' ? 'ASC' : 'DESC';
+  document.getElementById('sortOrderInput').value = newOrder;
+  form.submit();
+}
+
+// ===== INITIALIZE EVERYTHING ON DOM READY =====
+document.addEventListener('DOMContentLoaded', function() {
+  // Search/Sort Event listeners
+  const searchBtn = document.getElementById('searchBtn');
+  const searchInput = document.getElementById('searchInput');
+  const sortBySelect = document.getElementById('sortBy');
+  const toggleSortBtn = document.getElementById('toggleSortBtn');
+  const clearBtn = document.getElementById('clearSearchBtn');
+  
+  if (searchBtn) {
+    searchBtn.addEventListener('click', () => {
+      currentSortOrder = 'DESC';
+      if (sortBySelect) sortBySelect.value = 'date';
+      loadMusicResults();
+    });
+  }
+  
+  if (searchInput) {
+    searchInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        currentSortOrder = 'DESC';
+        if (sortBySelect) sortBySelect.value = 'date';
+        loadMusicResults();
+      }
+    });
+  }
+  
+  if (sortBySelect) {
+    sortBySelect.addEventListener('change', () => {
+      currentSortOrder = 'DESC';
+      loadMusicResults();
+    });
+  }
+  
+  if (toggleSortBtn) {
+    toggleSortBtn.addEventListener('click', () => {
+      currentSortOrder = currentSortOrder === 'DESC' ? 'ASC' : 'DESC';
+      updateSortButton();
+      loadMusicResults();
+    });
+  }
+  
+  if (clearBtn) {
+    clearBtn.addEventListener('click', clearSearch);
+  }
+  
+  // ===== STIMULUS CONTROLLER INITIALIZATION FOR OFFCANVAS =====
+  // Reinitialize Stimulus controllers when offcanvas opens
+  const offcanvasAddMusic = document.getElementById('offcanvasAddMusic');
+  const offcanvasEditMusic = document.getElementById('offcanvasEditMusic');
+  
+  if (offcanvasAddMusic) {
+    offcanvasAddMusic.addEventListener('shown.bs.offcanvas', function() {
+      // Force Stimulus to connect controllers in the offcanvas
+      if (window.Stimulus && window.Stimulus.application) {
+        window.Stimulus.application.load();
+      }
+    });
+  }
+  
+  if (offcanvasEditMusic) {
+    offcanvasEditMusic.addEventListener('shown.bs.offcanvas', function() {
+      // Force Stimulus to connect controllers in the offcanvas
+      if (window.Stimulus && window.Stimulus.application) {
+        window.Stimulus.application.load();
+      }
+    });
+  }
+  
+  // ===== FORM VALIDATION (Contrôle de Saisie) =====
+  const form = document.getElementById('addMusicForm');
+  if (!form) return;
+  
+  // File input elements
+  const imageFileInput = document.getElementById('music_imageFile') || document.querySelector('input[name*="imageFile"]');
+  const audioFileInput = document.getElementById('music_audioFile') || document.querySelector('input[name*="audioFile"]');
+  const titleInput = document.querySelector('input[name*="titre"]');
+  const descriptionInput = document.querySelector('textarea[name*="description"]');
+  const genreSelect = document.querySelector('select[name*="genre"]');
+  
+  // Character counter for description
+  if (descriptionInput) {
+    const updateCounter = () => {
+      const counter = document.getElementById('descriptionCounter');
+      if (counter) {
+        counter.textContent = `(${descriptionInput.value.length}/5000)`;
+      }
+    };
+    descriptionInput.addEventListener('input', updateCounter);
+    descriptionInput.addEventListener('change', updateCounter);
+  }
+  
+  // File input change handlers with preview
+  if (imageFileInput) {
+    imageFileInput.addEventListener('change', function(e) {
+      const fileName = document.getElementById('imageFileName');
+      const preview = document.getElementById('imagePreview');
+      const previewImg = document.getElementById('imagePreviewImg');
+      const validation = document.getElementById('imageValidation');
+      const file = this.files[0];
+      
+      if (file) {
+        // File size validation (5MB = 5242880 bytes)
+        if (file.size > 5242880) {
+          fileName.textContent = `❌ File too large (${(file.size / 1024 / 1024).toFixed(2)}MB > 5MB)`;
+          fileName.classList.remove('text-success');
+          fileName.classList.add('text-danger');
+          validation.innerHTML = '';
+          preview.style.display = 'none';
+          this.value = '';
+          return;
+        }
+        
+        // MIME type validation
+        const validMimes = ['image/jpeg', 'image/png', 'image/jpg'];
+        if (!validMimes.includes(file.type)) {
+          fileName.textContent = `❌ Invalid format (${file.type}). Use JPEG or PNG.`;
+          fileName.classList.remove('text-success');
+          fileName.classList.add('text-danger');
+          validation.innerHTML = '';
+          preview.style.display = 'none';
+          this.value = '';
+          return;
+        }
+        
+        // Read file and check dimensions
+        const reader = new FileReader();
+        reader.onload = function(event) {
+          const img = new Image();
+          img.onload = function() {
+            const width = img.width;
+            const height = img.height;
+            let validationMsg = '';
+            let validationClass = 'text-success';
+            
+            fileName.textContent = `✓ ${file.name} (${(file.size / 1024).toFixed(2)}KB) • ${width}x${height}px`;
+            
+            // Check minimum dimensions (recommended 300x300px)
+            if (width < 300 || height < 300) {
+              validationMsg = `⚠️ Image dimensions (${width}x${height}px) are smaller than recommended (300x300px minimum)`;
+              validationClass = 'text-warning';
+            } else {
+              validationMsg = `✓ Image dimensions: ${width}x${height}px`;
+            }
+            
+            validation.textContent = validationMsg;
+            validation.className = `small mt-2 ${validationClass}`;
+            
+            fileName.classList.remove('text-danger');
+            fileName.classList.add('text-success');
+            
+            // Show preview
+            previewImg.src = event.target.result;
+            preview.style.display = 'block';
+          };
+          img.onerror = function() {
+            fileName.textContent = `❌ Invalid image file or corrupted.`;
+            fileName.classList.remove('text-success');
+            fileName.classList.add('text-danger');
+            validation.innerHTML = '';
+            preview.style.display = 'none';
+            imageFileInput.value = '';
+          };
+          img.src = event.target.result;
+        };
+        reader.readAsDataURL(file);
+      } else {
+        fileName.textContent = '';
+        validation.innerHTML = '';
+        preview.style.display = 'none';
+      }
+    });
+  }
+  
+  if (audioFileInput) {
+    audioFileInput.addEventListener('change', function(e) {
+      const fileName = document.getElementById('audioFileName');
+      const file = this.files[0];
+      
+      if (file) {
+        // MIME type validation
+        const validMimes = [
+          'audio/mpeg', 'audio/mp3', 'audio/wav', 'audio/x-wav',
+          'audio/aac', 'audio/aacp', 'audio/opus', 'audio/ogg',
+          'audio/webm', 'audio/flac', 'audio/x-m4a', 'audio/mp4'
+        ];
+        
+        if (!validMimes.includes(file.type)) {
+          // Allow if file extension looks reasonable
+          const ext = file.name.split('.').pop().toLowerCase();
+          const validExts = ['mp3', 'wav', 'aac', 'opus', 'ogg', 'webm', 'flac', 'm4a', 'mp4'];
+          
+          if (!validExts.includes(ext)) {
+            fileName.textContent = `⚠️ Unusual format (.${ext}). Please verify it's a valid audio file.`;
+            fileName.classList.remove('text-success');
+            fileName.classList.add('text-warning');
+            return;
+          }
+        }
+        
+        fileName.textContent = `✓ ${file.name} (${(file.size / 1024 / 1024).toFixed(2)}MB)`;
+        fileName.classList.remove('text-danger', 'text-warning');
+        fileName.classList.add('text-success');
+      } else {
+        fileName.textContent = '';
+      }
+    });
+  }
+  
+  // Form submission validation
+  form.addEventListener('submit', function(e) {
+    // Reset validation classes
+    form.classList.remove('was-validated');
+    
+    let isValid = true;
+    const errors = [];
+    
+    // Title validation
+    if (titleInput) {
+      const value = titleInput.value.trim();
+      if (!value) {
+        errors.push('Title is required');
+        titleInput.classList.add('is-invalid');
+        isValid = false;
+      } else if (value.length < 3) {
+        errors.push('Title must be at least 3 characters');
+        titleInput.classList.add('is-invalid');
+        isValid = false;
+      } else if (value.length > 255) {
+        errors.push('Title cannot exceed 255 characters');
+        titleInput.classList.add('is-invalid');
+        isValid = false;
+      } else {
+        titleInput.classList.remove('is-invalid');
+        titleInput.classList.add('is-valid');
+      }
+    }
+    
+    // Description validation
+    if (descriptionInput) {
+      const value = descriptionInput.value.trim();
+      if (!value) {
+        errors.push('Description is required');
+        descriptionInput.classList.add('is-invalid');
+        isValid = false;
+      } else if (value.length < 10) {
+        errors.push('Description must be at least 10 characters');
+        descriptionInput.classList.add('is-invalid');
+        isValid = false;
+      } else if (value.length > 5000) {
+        errors.push('Description cannot exceed 5000 characters');
+        descriptionInput.classList.add('is-invalid');
+        isValid = false;
+      } else {
+        descriptionInput.classList.remove('is-invalid');
+        descriptionInput.classList.add('is-valid');
+      }
+    }
+    
+    // Genre validation
+    if (genreSelect) {
+      const value = genreSelect.value;
+      if (!value) {
+        errors.push('Genre is required');
+        genreSelect.classList.add('is-invalid');
+        isValid = false;
+      } else {
+        genreSelect.classList.remove('is-invalid');
+        genreSelect.classList.add('is-valid');
+      }
+    }
+    
+    // Audio file validation
+    if (audioFileInput) {
+      const file = audioFileInput.files[0];
+      if (!file) {
+        errors.push('Audio file is required');
+        audioFileInput.classList.add('is-invalid');
+        isValid = false;
+      } else {
+        audioFileInput.classList.remove('is-invalid');
+      }
+    }
+    
+    // Image file validation (optional but if provided, must be valid)
+    if (imageFileInput && imageFileInput.files.length > 0) {
+      const file = imageFileInput.files[0];
+      if (file.size > 5242880) {
+        errors.push(`Image file is too large (${(file.size / 1024 / 1024).toFixed(2)}MB > 5MB)`);
+        imageFileInput.classList.add('is-invalid');
+        isValid = false;
+      } else {
+        imageFileInput.classList.remove('is-invalid');
+      }
+    }
+    
+    // If validation failed, prevent submission and show errors
+    if (!isValid) {
+      e.preventDefault();
+      form.classList.add('was-validated');
+      
+      // Show error alert
+      const alertDiv = document.createElement('div');
+      alertDiv.className = 'alert alert-danger alert-dismissible fade show mt-3';
+      alertDiv.innerHTML = `
+        <strong><i class="bi bi-exclamation-triangle pe-2"></i>Validation Failed:</strong>
+        <ul class="mb-0 mt-2">
+          ${errors.map(err => `<li>${err}</li>`).join('')}
+        </ul>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      `;
+      
+      // Insert at the top of the form
+      form.insertBefore(alertDiv, form.firstChild);
+      
+      // Scroll to error
+      setTimeout(() => {
+        alertDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 100);
+    }
+  });
+  
+  // ===== EDIT FORM VALIDATION =====
+  const editForm = document.getElementById('editMusicForm');
+  if (editForm) {
+    const editTitleInput = document.getElementById('editTitre');
+    const editDescriptionInput = document.getElementById('editDescription');
+    const editGenreSelect = document.getElementById('editGenre');
+    const editImageFileInput = document.getElementById('editImageFileInput');
+    
+    // Character counter for edit description
+    if (editDescriptionInput) {
+      const updateEditCounter = () => {
+        const counter = document.getElementById('editDescriptionCounter');
+        if (counter) {
+          counter.textContent = `(${editDescriptionInput.value.length}/5000)`;
+        }
+      };
+      editDescriptionInput.addEventListener('input', updateEditCounter);
+      editDescriptionInput.addEventListener('change', updateEditCounter);
+    }
+    
+    // Note: Image file validation is now handled by Dropzone component
+    
+    // Edit form submission validation
+    editForm.addEventListener('submit', function(e) {
+      editForm.classList.remove('was-validated');
+      
+      let isValid = true;
+      const errors = [];
+      
+      // Title validation
+      if (editTitleInput) {
+        const value = editTitleInput.value.trim();
+        if (!value) {
+          errors.push('Title is required');
+          editTitleInput.classList.add('is-invalid');
+          isValid = false;
+        } else if (value.length < 3) {
+          errors.push('Title must be at least 3 characters');
+          editTitleInput.classList.add('is-invalid');
+          isValid = false;
+        } else if (value.length > 255) {
+          errors.push('Title cannot exceed 255 characters');
+          editTitleInput.classList.add('is-invalid');
+          isValid = false;
+        } else {
+          editTitleInput.classList.remove('is-invalid');
+          editTitleInput.classList.add('is-valid');
+        }
+      }
+      
+      // Description validation
+      if (editDescriptionInput) {
+        const value = editDescriptionInput.value.trim();
+        if (!value) {
+          errors.push('Description is required');
+          editDescriptionInput.classList.add('is-invalid');
+          isValid = false;
+        } else if (value.length < 10) {
+          errors.push('Description must be at least 10 characters');
+          editDescriptionInput.classList.add('is-invalid');
+          isValid = false;
+        } else if (value.length > 5000) {
+          errors.push('Description cannot exceed 5000 characters');
+          editDescriptionInput.classList.add('is-invalid');
+          isValid = false;
+        } else {
+          editDescriptionInput.classList.remove('is-invalid');
+          editDescriptionInput.classList.add('is-valid');
+        }
+      }
+      
+      // Genre validation
+      if (editGenreSelect) {
+        const value = editGenreSelect.value;
+        if (!value) {
+          errors.push('Genre is required');
+          editGenreSelect.classList.add('is-invalid');
+          isValid = false;
+        } else {
+          editGenreSelect.classList.remove('is-invalid');
+          editGenreSelect.classList.add('is-valid');
+        }
+      }
+      
+      // Note: Image file validation is handled by Dropzone component
+      
+      // If validation failed, prevent submission and show errors
+      if (!isValid) {
+        e.preventDefault();
+        editForm.classList.add('was-validated');
+        
+        // Show error alert
+        const alertDiv = document.createElement('div');
+        alertDiv.className = 'alert alert-danger alert-dismissible fade show mt-3';
+        alertDiv.innerHTML = `
+          <strong><i class="bi bi-exclamation-triangle pe-2"></i>Validation Failed:</strong>
+          <ul class="mb-0 mt-2">
+            ${errors.map(err => `<li>${err}</li>`).join('')}
+          </ul>
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        `;
+        
+        // Insert at the top of the form
+        editForm.insertBefore(alertDiv, editForm.firstChild);
+        
+        // Scroll to error
+        setTimeout(() => {
+          alertDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 100);
+      }
+    });
+  }
+  
+  // ===== BOOTSTRAP DROPDOWN INITIALIZATION =====
+  // Ensure all dropdowns are initialized
+  function initializeDropdowns() {
+    const dropdownElementList = document.querySelectorAll('[data-bs-toggle="dropdown"]');
+    dropdownElementList.forEach(function(dropdownToggle) {
+      if (!bootstrap.Dropdown.getInstance(dropdownToggle)) {
+        new bootstrap.Dropdown(dropdownToggle);
+      }
+    });
+  }
+  
+  // Initialize on page load
+  initializeDropdowns();
+  
+  // Re-initialize after AJAX updates (for dynamically loaded content)
+  const musicGrid = document.getElementById('musicGrid');
+  if (musicGrid) {
+    const observer = new MutationObserver(function(mutations) {
+      initializeDropdowns();
+    });
+    observer.observe(musicGrid, { childList: true, subtree: true });
+  }
+  
+  // ===== DELETE CONFIRMATION =====
+  document.addEventListener('submit', function(e) {
+    const form = e.target;
+    
+    // Check if this is a delete form
+    if (form.classList.contains('delete-music-form')) {
+      e.preventDefault();
+      
+      const musicTitle = form.dataset.musicTitle || 'this music';
+      
+      // Show confirmation dialog
+      if (confirm(`⚠️ Are you sure you want to delete "${musicTitle}"?\n\nThis action cannot be undone!`)) {
+        // User confirmed, submit the form
+        form.submit();
+      }
+      // Else: User cancelled, do nothing
+    }
+  });
+});
+
+</script>
+{% endblock %}

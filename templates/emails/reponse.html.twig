@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Réponse à votre réclamation - ARTIUM</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f8f9fa;">
+    <!-- Wrapper principal -->
+    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="width: 100%; background: #f8f9fa;">
+        <tr>
+            <td style="padding: 20px;">
+                <!-- Container email -->
+                <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 40px rgba(102, 126, 234, 0.15);">
+                    
+                    <!-- HEADER avec logo -->
+                    <tr>
+                        <td style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 40px 20px; text-align: center;">
+                            <img src="cid:artium-logo" alt="ARTIUM" style="max-width: 140px; height: auto; display: block; margin: 0 auto 15px;">
+                            <p style="margin: 0; color: rgba(255, 255, 255, 0.9); font-size: 14px; letter-spacing: 1px;">Plateforme Artistique & Événementielle</p>
+                        </td>
+                    </tr>
+
+                    <!-- CONTENU PRINCIPAL -->
+                    <tr>
+                        <td style="padding: 40px 30px;">
+                            
+                            <!-- Salutation -->
+                            <h1 style="margin: 0 0 10px 0; font-size: 28px; color: #1a202c; font-weight: 600; text-align: center;">
+                                Vous avez une réponse! 📬
+                            </h1>
+                            <p style="margin: 0 0 30px 0; text-align: center; color: #718096; font-size: 16px; line-height: 1.6;">
+                                Bonjour <strong>{{ reclamation.user.prenom }}</strong>, une réponse a été ajoutée à votre réclamation.
+                            </p>
+
+                            <!-- TYPE DE RÉCLAMATION -->
+                            <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin: 0 0 30px 0;">
+                                <tr>
+                                    <td style="padding: 20px; background: #f7fafc; border-left: 4px solid #667eea; border-radius: 6px;">
+                                        <p style="margin: 0 0 8px 0; font-size: 12px; font-weight: 600; color: #667eea; text-transform: uppercase; letter-spacing: 1px;">Votre Réclamation</p>
+                                        <p style="margin: 0; font-size: 15px; color: #1a202c; font-weight: 500;">
+                                            <strong>Type:</strong> {{ reclamation.type ? reclamation.type.value : '-' }}
+                                        </p>
+                                        <p style="margin: 8px 0 0 0; font-size: 13px; color: #718096;">
+                                            Créée le: <strong>{{ reclamation.dateCreation ? reclamation.dateCreation|date('d/m/Y') : '-' }}</strong>
+                                        </p>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <!-- CONTENU DE LA RÉCLAMATION ORIGINALE -->
+                            <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin: 0 0 30px 0; background: #f9fafb; border-radius: 10px;">
+                                <tr>
+                                    <td style="padding: 20px;">
+                                        <p style="margin: 0 0 10px 0; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; opacity: 0.7; font-weight: 600; color: #718096;">Votre demande</p>
+                                        <p style="margin: 0; font-size: 14px; color: #2d3748; line-height: 1.6;">{{ reclamation.texte }}</p>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <!-- RÉPONSE EN SURBRILLANCE -->
+                            <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin: 0 0 30px 0; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 10px; overflow: hidden;">
+                                <tr>
+                                    <td style="padding: 24px; color: #ffffff;">
+                                        <p style="margin: 0 0 16px 0; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; opacity: 0.85; font-weight: 600;">
+                                            📝 Réponse de l'équipe ARTIUM
+                                        </p>
+                                        <p style="margin: 0; font-size: 15px; color: #ffffff; line-height: 1.8;">
+                                            {{ reponse.contenu }}
+                                        </p>
+                                        <p style="margin: 16px 0 0 0; font-size: 11px; opacity: 0.8;">
+                                            Réponse du: <strong>{{ reponse.dateReponse ? reponse.dateReponse|date('d/m/Y') : '-' }}</strong>
+                                        </p>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <!-- APPEL À L'ACTION -->
+                            <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin: 0 0 30px 0; text-align: center;">
+                                <tr>
+                                    <td>
+                                        {% if user.role.value == 'Artiste' %}
+                                            <a href="{{ url('app_reclamationsartiste') }}" style="display: inline-block; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: #ffffff; padding: 14px 40px; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 14px;">
+                                                Voir ma réclamation
+                                            </a>
+                                        {% else %}
+                                            <a href="{{ url('app_reclamationfront') }}" style="display: inline-block; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: #ffffff; padding: 14px 40px; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 14px;">
+                                                Voir ma réclamation
+                                            </a>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <!-- INFORMATION SUPPLÉMENTAIRE -->
+                            <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin: 0 0 30px 0;">
+                                <tr>
+                                    <td style="background: #edf2f7; border-left: 4px solid #ec4899; padding: 16px; border-radius: 6px;">
+                                        <p style="margin: 0; font-size: 13px; color: #2d3748;">
+                                            <strong>💡 Besoin d'aide?</strong><br>
+                                            Si vous avez d'autres questions, n'hésitez pas à répondre à cette réclamation ou à nous contacter.
+                                        </p>
+                                    </td>
+                                </tr>
+                            </table>
+
+                        </td>
+                    </tr>
+
+                    <!-- FOOTER -->
+                    <tr>
+                        <td style="background: #f7fafc; padding: 30px 20px; text-align: center; border-top: 1px solid #e2e8f0;">
+                            <p style="margin: 0 0 12px 0; color: #2d3748; font-size: 14px; font-weight: 600;">
+                                Des questions?
+                            </p>
+                            <p style="margin: 0 0 16px 0; color: #718096; font-size: 13px;">
+                                Contactez notre équipe:<br>
+                                <a href="mailto:support@artium.tn" style="color: #667eea; text-decoration: none; font-weight: 600;">support@artium.tn</a>
+                            </p>
+                            <p style="margin: 0; color: #a0aec0; font-size: 11px; line-height: 1.6;">
+                                © 2026 <strong>ARTIUM</strong> - Tous droits réservés<br>
+                                Plateforme de découverte artistique
+                            </p>
+                        </td>
+                    </tr>
+
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>

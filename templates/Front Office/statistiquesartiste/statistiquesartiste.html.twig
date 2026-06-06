@@ -1,0 +1,622 @@
+{% extends 'base_artiste.html.twig' %}
+
+{% block title %}Statistiques{% endblock %}
+
+{% block artiste_content %}
+<div class="card">
+	<div class="card-header border-0 pb-0">
+		<h5 class="card-title mb-0">Statistiques de mes oeuvres</h5>
+	</div>
+	<div class="card-body">
+		{% if stats_by_collection is empty %}
+			<div class="alert alert-secondary mb-0">
+				Aucune donnée disponible pour le moment.
+			</div>
+		{% else %}
+			<div class="row g-4">
+				<div class="col-12">
+					<div class="card border-0 shadow-sm bg-white">
+						<div class="card-body">
+							<div class="d-flex justify-content-between align-items-center border-bottom border-secondary-subtle pb-2 mb-3 flex-wrap gap-2">
+								<h5 class="mb-0 text-primary-emphasis"><i class="bi bi-pie-chart-fill me-2 text-primary-emphasis"></i>Répartition des <span id="metricTitleLabel">{{ metric_label|lower }}</span> par collection</h5>
+								<div class="d-flex align-items-center gap-3 flex-wrap ms-lg-auto">
+									<label class="small text-muted mb-0">Attribut</label>
+									<div class="d-inline-flex align-items-center gap-2 metric-switch-clean">
+										<button type="button" id="metricPrevBtn" class="btn btn-sm p-0 border-0 bg-transparent text-secondary" aria-label="Métrique précédente">
+											<i class="bi bi-chevron-left"></i>
+										</button>
+										<span id="metricCurrentLabel" class="fw-semibold px-2 metric-slide-text metric-current-fixed">{{ metric_label }}</span>
+										<button type="button" id="metricNextBtn" class="btn btn-sm p-0 border-0 bg-transparent text-secondary" aria-label="Métrique suivante">
+											<i class="bi bi-chevron-right"></i>
+										</button>
+									</div>
+								</div>
+							</div>
+							<div class="row g-2" id="statsChartSection" style="visibility: hidden;">
+								<div class="col-12 col-lg-9" style="min-width: 0;">
+									<div id="statsCollectionsPie" style="height: 420px; overflow: hidden;"></div>
+								</div>
+								<div class="col-12 col-lg-3" style="min-width: 0;">
+									<div id="statsCollectionsLegend" class="rounded p-2" style="height: 420px; overflow-y: auto; overflow-x: hidden;"></div>
+								</div>
+							</div>
+							
+						</div>
+					</div>
+				</div>
+				<div class="col-12">
+					<div class="card border-0 shadow-sm bg-white">
+						<div class="card-body">
+							<div class="d-flex justify-content-between align-items-center border-bottom border-secondary-subtle pb-2 mb-3 flex-wrap gap-2">
+								<h5 class="mb-0 text-primary-emphasis"><i class="bi bi-graph-up-arrow me-2 text-primary-emphasis"></i>Commentaires reçus par jour (mois)</h5>
+								<div class="d-flex align-items-center gap-3 flex-wrap">
+									<label class="small text-muted mb-0">Mois</label>
+									<div class="d-inline-flex align-items-center gap-2 metric-switch-clean">
+										<button type="button" id="monthPrevBtn" class="btn btn-sm p-0 border-0 bg-transparent text-secondary" aria-label="Mois précédent">
+											<i class="bi bi-chevron-left"></i>
+										</button>
+										<span id="monthCurrentLabel" class="fw-semibold px-2 metric-slide-text metric-current-fixed">{{ available_months[selected_month] ?? selected_month }}</span>
+										<button type="button" id="monthNextBtn" class="btn btn-sm p-0 border-0 bg-transparent text-secondary" aria-label="Mois suivant">
+											<i class="bi bi-chevron-right"></i>
+										</button>
+									</div>
+								</div>
+							</div>
+							<div class="mx-auto" style="max-width: 700px;">
+								<div id="commentsLineChart" style="height: 260px;"></div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="col-12">
+					<div class="card border-0 shadow-sm bg-white h-100">
+						<div class="card-body">
+							<div class="d-flex justify-content-between align-items-center border-bottom border-secondary-subtle pb-2 mb-3 flex-wrap gap-2">
+								<h5 class="mb-0 text-primary-emphasis"><i class="bi bi-bar-chart-fill me-2 text-primary-emphasis"></i>Top 3 œuvres</h5>
+								<div class="d-flex align-items-center gap-3 flex-wrap ms-lg-auto">
+									<label class="small text-muted mb-0">Attribut</label>
+									<div class="d-inline-flex align-items-center gap-2 metric-switch-clean">
+										<button type="button" id="oeuvreMetricPrevBtn" class="btn btn-sm p-0 border-0 bg-transparent text-secondary" aria-label="Attribut précédent">
+											<i class="bi bi-chevron-left"></i>
+										</button>
+										<span id="oeuvreMetricCurrentLabel" class="fw-semibold px-2 metric-slide-text metric-current-fixed">{{ oeuvre_metric_options[selected_oeuvre_metric] ?? "J'aime" }}</span>
+										<button type="button" id="oeuvreMetricNextBtn" class="btn btn-sm p-0 border-0 bg-transparent text-secondary" aria-label="Attribut suivant">
+											<i class="bi bi-chevron-right"></i>
+										</button>
+									</div>
+								</div>
+							</div>
+							<div id="topLikedBarChart" style="height: 300px; overflow: hidden;"></div>
+						</div>
+					</div>
+				</div>
+				<div class="col-12">
+					<div class="card border-0 shadow-sm bg-white h-100">
+						<div class="card-body">
+							<div class="border-bottom border-secondary-subtle pb-2 mb-3">
+								<h5 class="mb-0 text-primary-emphasis"><i class="bi bi-people-fill me-2 text-primary-emphasis"></i>Top 3 amateurs actifs</h5>
+							</div>
+							<div class="d-flex flex-column" style="min-height: 160px;">
+								{% if top_amateur_interactors is empty %}
+									<div class="small text-body">Aucune interaction amateur pour le moment.</div>
+								{% else %}
+									<div class="vstack gap-3">
+										{% for item in top_amateur_interactors %}
+											{% set firstName = (item.prenom|default(''))|trim %}
+											{% set lastName = (item.nom|default(''))|trim %}
+											{% set initials = (firstName|slice(0, 1) ~ lastName|slice(0, 1))|upper %}
+											<div class="rounded-3 border border-secondary-subtle p-2 bg-body-tertiary">
+												<div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+													<div class="d-flex align-items-center gap-2">
+														<span class="rounded-circle bg-primary-subtle text-primary-emphasis d-inline-flex align-items-center justify-content-center fw-semibold" style="width: 34px; height: 34px; font-size: 12px;">{{ initials is not empty ? initials : 'U' }}</span>
+														<span class="fw-semibold text-body-emphasis">{{ item.prenom }} {{ item.nom }}</span>
+													</div>
+													<div class="d-flex flex-wrap gap-3 small text-body">
+														<span><i class="bi bi-heart-fill pe-1 text-danger"></i>{{ item.likesCount|default(0) }} likes</span>
+														<span><i class="bi bi-chat-fill pe-1"></i>{{ item.commentsCount|default(0) }} commentaires</span>
+														<span><i class="bi bi-star-fill text-warning pe-1"></i>{{ item.favorisCount|default(0) }} favoris</span>
+													</div>
+												</div>
+											</div>
+										{% endfor %}
+									</div>
+								{% endif %}
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		{% endif %}
+	</div>
+</div>
+
+{% if stats_by_collection is not empty %}
+	<style>
+		.metric-switch-clean button:hover {
+			color: var(--bs-primary) !important;
+		}
+
+		.metric-current-fixed {
+			display: inline-block;
+			min-width: 140px;
+			text-align: center;
+			white-space: nowrap;
+		}
+
+		.metric-slide-text.slide-next {
+			animation: metricSlideNext 220ms ease;
+		}
+
+		.metric-slide-text.slide-prev {
+			animation: metricSlidePrev 220ms ease;
+		}
+
+		@keyframes metricSlideNext {
+			0% { opacity: 0; transform: translateX(10px); }
+			100% { opacity: 1; transform: translateX(0); }
+		}
+
+		@keyframes metricSlidePrev {
+			0% { opacity: 0; transform: translateX(-10px); }
+			100% { opacity: 1; transform: translateX(0); }
+		}
+	</style>
+	<script src="{{ asset('assetsback/libs/apexcharts/dist/apexcharts.min.js') }}"></script>
+	<script>
+		(function () {
+			const labels = {{ chart_labels|json_encode|raw }};
+			const metricOptions = {{ metric_options|json_encode|raw }};
+			const seriesByMetric = {{ chart_data_by_metric|json_encode|raw }};
+			const colors = {{ chart_colors|json_encode|raw }};
+			const topCollectionByMetric = {{ top_collection_by_metric|json_encode|raw }};
+			const selectedMetric = {{ selected_metric|json_encode|raw }};
+			const lineDataByMonth = {{ line_data_by_month|json_encode|raw }};
+			const monthLabels = {{ available_months|json_encode|raw }};
+			const selectedMonth = {{ selected_month|json_encode|raw }};
+			const topOeuvresByMetric = {{ top_oeuvres_by_metric|json_encode|raw }};
+			const oeuvreMetricOptions = {{ oeuvre_metric_options|json_encode|raw }};
+			const selectedOeuvreMetric = {{ selected_oeuvre_metric|json_encode|raw }};
+
+			const chartEl = document.querySelector('#statsCollectionsPie');
+			if (!chartEl) {
+				return;
+			}
+			chartEl.innerHTML = '';
+
+			const chart = new ApexCharts(chartEl, {
+				chart: {
+					type: 'pie',
+					height: 420,
+					width: '100%',
+					parentHeightOffset: 0,
+					redrawOnParentResize: true,
+					redrawOnWindowResize: true,
+					animations: {
+						enabled: false
+					}
+				},
+				series: seriesByMetric[selectedMetric] || [],
+				labels: labels,
+				colors: colors,
+				legend: {
+					show: false
+				},
+				dataLabels: {
+					enabled: true
+				}
+			});
+			const statsChartSection = document.getElementById('statsChartSection');
+
+			const metricTitleLabel = document.getElementById('metricTitleLabel');
+			const topMetricLabel = document.getElementById('topMetricLabel');
+			const topCollectionName = document.getElementById('topCollectionName');
+			const topCollectionValue = document.getElementById('topCollectionValue');
+			const topCollectionMetricLabel = document.getElementById('topCollectionMetricLabel');
+			const topCollectionBox = document.getElementById('topCollectionBox');
+			const legendBox = document.getElementById('statsCollectionsLegend');
+			const metricCurrentLabel = document.getElementById('metricCurrentLabel');
+			const metricPrevBtn = document.getElementById('metricPrevBtn');
+			const metricNextBtn = document.getElementById('metricNextBtn');
+			const metricKeys = Object.keys(metricOptions);
+			let currentMetricIndex = Math.max(metricKeys.indexOf(selectedMetric), 0);
+			let metricAnimationsEnabled = false;
+
+			const updateLegend = function (metric) {
+				if (!legendBox) {
+					return;
+				}
+
+				const values = seriesByMetric[metric] || [];
+				legendBox.innerHTML = '';
+
+				labels.forEach(function (label, index) {
+					const row = document.createElement('div');
+					row.className = 'd-flex align-items-start mb-2';
+
+					const dot = document.createElement('span');
+					dot.style.width = '10px';
+					dot.style.height = '10px';
+					dot.style.minWidth = '10px';
+					dot.style.borderRadius = '50%';
+					dot.style.marginTop = '5px';
+					dot.style.backgroundColor = colors[index] || '#999';
+
+					const text = document.createElement('span');
+					text.className = 'small ms-2';
+					text.style.whiteSpace = 'normal';
+					text.style.wordBreak = 'break-word';
+					text.style.overflowWrap = 'anywhere';
+					text.textContent = label + ' (' + (values[index] ?? 0) + ')';
+
+					row.appendChild(dot);
+					row.appendChild(text);
+					legendBox.appendChild(row);
+				});
+			};
+
+			const updateTopCollection = function (metric) {
+				if (!topCollectionBox) {
+					return;
+				}
+
+				const top = topCollectionByMetric[metric];
+				if (!top) {
+					topCollectionBox.style.display = 'none';
+					return;
+				}
+
+				topCollectionBox.style.display = '';
+				if (topMetricLabel) topMetricLabel.textContent = (metricOptions[metric] || '').toLowerCase();
+				if (topCollectionName) topCollectionName.textContent = top.collectionTitle || '';
+				if (topCollectionValue) topCollectionValue.textContent = top.value ?? 0;
+				if (topCollectionMetricLabel) topCollectionMetricLabel.textContent = (metricOptions[metric] || '').toLowerCase();
+			};
+
+			const showMetric = function (metric, direction = 0) {
+				chart.updateSeries(seriesByMetric[metric] || [], metricAnimationsEnabled);
+				if (metricCurrentLabel) {
+					metricCurrentLabel.classList.remove('slide-next', 'slide-prev');
+					void metricCurrentLabel.offsetWidth;
+					if (direction > 0) {
+						metricCurrentLabel.classList.add('slide-next');
+					} else if (direction < 0) {
+						metricCurrentLabel.classList.add('slide-prev');
+					}
+					metricCurrentLabel.textContent = metricOptions[metric] || '';
+				}
+				if (metricTitleLabel) {
+					metricTitleLabel.textContent = (metricOptions[metric] || '').toLowerCase();
+				}
+				updateLegend(metric);
+				updateTopCollection(metric);
+			};
+
+			const shiftMetric = function (delta) {
+				if (!metricKeys.length) {
+					return;
+				}
+				currentMetricIndex = (currentMetricIndex + delta + metricKeys.length) % metricKeys.length;
+				metricAnimationsEnabled = true;
+				showMetric(metricKeys[currentMetricIndex], delta);
+			};
+
+			if (metricPrevBtn) {
+				metricPrevBtn.addEventListener('click', function () {
+					shiftMetric(-1);
+				});
+			}
+
+			if (metricNextBtn) {
+				metricNextBtn.addEventListener('click', function () {
+					shiftMetric(1);
+				});
+			}
+
+			const lineEl = document.querySelector('#commentsLineChart');
+			if (lineEl) {
+				const safeMonthData = function (monthKey) {
+					return lineDataByMonth[monthKey] || [];
+				};
+
+				const monthKeys = Object.keys(monthLabels);
+				let currentMonthIndex = Math.max(monthKeys.indexOf(selectedMonth), 0);
+
+				const lineChart = new ApexCharts(lineEl, {
+					chart: {
+						type: 'line',
+						height: 260,
+						width: '100%',
+						parentHeightOffset: 0,
+						toolbar: {
+							show: false
+						}
+					},
+					series: [{
+						name: 'Commentaires',
+						data: safeMonthData(selectedMonth)
+					}],
+					xaxis: {
+						type: 'datetime',
+						tickAmount: 5,
+						labels: {
+							show: false
+						}
+					},
+					tooltip: {
+						x: {
+							show: true
+						}
+					},
+					yaxis: {
+						min: 0,
+						forceNiceScale: true
+					},
+					stroke: {
+						curve: 'smooth',
+						width: 2
+					},
+					markers: {
+						size: 1
+					},
+					colors: ['#06b6d4'],
+					grid: {
+						borderColor: '#e9ecef',
+						padding: {
+							left: 0,
+							right: 0
+						}
+					}
+				});
+				lineChart.render();
+
+				const monthCurrentLabel = document.getElementById('monthCurrentLabel');
+				const monthPrevBtn = document.getElementById('monthPrevBtn');
+				const monthNextBtn = document.getElementById('monthNextBtn');
+
+				const showMonth = function (monthKey, direction = 0) {
+					lineChart.updateSeries([
+						{
+							name: 'Commentaires',
+							data: safeMonthData(monthKey)
+						}
+					], true);
+
+					if (monthCurrentLabel) {
+						monthCurrentLabel.classList.remove('slide-next', 'slide-prev');
+						void monthCurrentLabel.offsetWidth;
+						if (direction > 0) {
+							monthCurrentLabel.classList.add('slide-next');
+						} else if (direction < 0) {
+							monthCurrentLabel.classList.add('slide-prev');
+						}
+						monthCurrentLabel.textContent = monthLabels[monthKey] || monthKey;
+					}
+				};
+
+				const shiftMonth = function (delta) {
+					if (!monthKeys.length) {
+						return;
+					}
+					currentMonthIndex = (currentMonthIndex + delta + monthKeys.length) % monthKeys.length;
+					showMonth(monthKeys[currentMonthIndex], delta);
+				};
+
+				if (monthPrevBtn) {
+					monthPrevBtn.addEventListener('click', function () {
+						shiftMonth(-1);
+					});
+				}
+
+				if (monthNextBtn) {
+					monthNextBtn.addEventListener('click', function () {
+						shiftMonth(1);
+					});
+				}
+
+				showMonth(monthKeys[currentMonthIndex] || selectedMonth, 0);
+			}
+
+			const barEl = document.querySelector('#topLikedBarChart');
+			if (barEl) {
+				const oeuvreMetricKeys = Object.keys(oeuvreMetricOptions);
+				let currentOeuvreMetricIndex = Math.max(oeuvreMetricKeys.indexOf(selectedOeuvreMetric), 0);
+
+				const getOeuvreDataset = function (metricKey) {
+					return topOeuvresByMetric[metricKey] || { labels: [], values: [] };
+				};
+
+				const buildOeuvreChartData = function (metricKey) {
+					const dataset = getOeuvreDataset(metricKey);
+					return (dataset.labels || []).map(function (label, index) {
+						return {
+							x: label,
+							y: Number((dataset.values || [])[index] ?? 0)
+						};
+					});
+				};
+
+				const getMaxMetricValue = function (metricKey) {
+					const dataset = getOeuvreDataset(metricKey);
+					const values = (dataset.values || []).map(function (value) {
+						return Number(value || 0);
+					});
+					return Math.max(1, ...(values.length ? values : [0]));
+				};
+
+				const initialMetricKey = oeuvreMetricKeys[currentOeuvreMetricIndex] || selectedOeuvreMetric;
+
+				const barChart = new ApexCharts(barEl, {
+					chart: {
+						type: 'bar',
+						height: 300,
+						animations: {
+							enabled: false
+						},
+						toolbar: {
+							show: false
+						}
+					},
+					series: [{
+						name: oeuvreMetricOptions[initialMetricKey] || 'Attribut',
+						data: buildOeuvreChartData(initialMetricKey)
+					}],
+					plotOptions: {
+						bar: {
+							horizontal: true,
+							borderRadius: 6,
+							barHeight: '52%'
+						}
+					},
+					xaxis: {
+						min: 0,
+						max: getMaxMetricValue(initialMetricKey),
+						forceNiceScale: false,
+						tickAmount: 4,
+						labels: {
+							show: true,
+							formatter: function (value) {
+								const numericValue = Number(value);
+								if (!Number.isFinite(numericValue)) {
+									return '';
+								}
+								return Number.isInteger(numericValue) ? String(numericValue) : '';
+							}
+						},
+						axisBorder: {
+							show: false
+						},
+						axisTicks: {
+							show: false
+						}
+					},
+					yaxis: {
+						labels: {
+							show: true,
+							maxWidth: 140,
+							style: {
+								fontSize: '12px'
+							},
+							formatter: function (value) {
+								const text = String(value ?? '');
+								return text.length > 24 ? text.slice(0, 24) + '…' : text;
+							}
+						}
+					},
+					dataLabels: {
+						enabled: false
+					},
+					tooltip: {
+						x: {
+							formatter: function (_value, opts) {
+								const point = opts.w.config.series[opts.seriesIndex].data[opts.dataPointIndex];
+								return point && point.x ? point.x : '';
+							}
+						},
+						y: {
+							formatter: function (value) {
+								return String(Math.round(value));
+							}
+						}
+					},
+					colors: ['#4f46e5'],
+					grid: {
+						borderColor: '#e9ecef',
+						padding: {
+							left: 6,
+							right: 12
+						}
+					},
+					legend: {
+						show: false
+					}
+				});
+				barChart.render();
+
+				const oeuvreMetricCurrentLabel = document.getElementById('oeuvreMetricCurrentLabel');
+				const oeuvreMetricPrevBtn = document.getElementById('oeuvreMetricPrevBtn');
+				const oeuvreMetricNextBtn = document.getElementById('oeuvreMetricNextBtn');
+
+				const showOeuvreMetric = function (metricKey, direction = 0) {
+					barChart.updateSeries([
+						{
+							name: oeuvreMetricOptions[metricKey] || 'Attribut',
+							data: buildOeuvreChartData(metricKey)
+						}
+					], false);
+
+					barChart.updateOptions({
+						xaxis: {
+							min: 0,
+							max: getMaxMetricValue(metricKey),
+							forceNiceScale: false,
+							tickAmount: 4,
+							labels: {
+								show: true,
+								formatter: function (value) {
+									const numericValue = Number(value);
+									if (!Number.isFinite(numericValue)) {
+										return '';
+									}
+									return Number.isInteger(numericValue) ? String(numericValue) : '';
+								}
+							},
+							axisBorder: {
+								show: false
+							},
+							axisTicks: {
+								show: false
+							}
+						}
+					}, false, false, false);
+
+					if (oeuvreMetricCurrentLabel) {
+						oeuvreMetricCurrentLabel.classList.remove('slide-next', 'slide-prev');
+						void oeuvreMetricCurrentLabel.offsetWidth;
+						if (direction > 0) {
+							oeuvreMetricCurrentLabel.classList.add('slide-next');
+						} else if (direction < 0) {
+							oeuvreMetricCurrentLabel.classList.add('slide-prev');
+						}
+						oeuvreMetricCurrentLabel.textContent = oeuvreMetricOptions[metricKey] || '';
+					}
+				};
+
+				const shiftOeuvreMetric = function (delta) {
+					if (!oeuvreMetricKeys.length) {
+						return;
+					}
+					currentOeuvreMetricIndex = (currentOeuvreMetricIndex + delta + oeuvreMetricKeys.length) % oeuvreMetricKeys.length;
+					showOeuvreMetric(oeuvreMetricKeys[currentOeuvreMetricIndex], delta);
+				};
+
+				if (oeuvreMetricPrevBtn) {
+					oeuvreMetricPrevBtn.addEventListener('click', function () {
+						shiftOeuvreMetric(-1);
+					});
+				}
+
+				if (oeuvreMetricNextBtn) {
+					oeuvreMetricNextBtn.addEventListener('click', function () {
+						shiftOeuvreMetric(1);
+					});
+				}
+
+				showOeuvreMetric(initialMetricKey, 0);
+			}
+
+			chart.render().then(function () {
+				showMetric(metricKeys[currentMetricIndex] || selectedMetric, 0);
+				if (statsChartSection) {
+					statsChartSection.style.visibility = 'visible';
+				}
+				requestAnimationFrame(function () {
+					chart.resize();
+					setTimeout(function () {
+						chart.resize();
+					}, 120);
+				});
+			});
+		})();
+	</script>
+{% endif %}
+{% endblock %}

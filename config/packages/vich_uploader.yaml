@@ -1,0 +1,13 @@
+vich_uploader:
+  db_driver: orm
+
+  mappings:
+    reclamation_file:
+      uri_prefix: http://127.0.0.1/img
+      upload_destination: 'C:\xampp\htdocs\img'
+      namer: Vich\UploaderBundle\Naming\SmartUniqueNamer
+
+    music_audio:
+      uri_prefix: /uploads/music
+      upload_destination: "%kernel.project_dir%/public/uploads/music"
+      namer: Vich\UploaderBundle\Naming\SmartUniqueNamer

@@ -1,0 +1,202 @@
+{% extends 'base_admin.html.twig' %}
+
+{% block title %}{{ evenement.titre }} - Détails de l'événement{% endblock %}
+
+{% block admin_content %}
+<div class="container-fluid p-6">
+    <!-- Header avec navigation -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ path('app_admin') }}">Tableau de bord</a></li>
+                    <li class="breadcrumb-item"><a href="{{ path('evenements') }}">Événements</a></li>
+                    <li class="breadcrumb-item active">{{ evenement.titre }}</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Image de couverture -->
+    {% if image %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card overflow-hidden">
+                <img src="{{ image }}" alt="{{ evenement.titre }}" class="w-100" style="max-height: 400px; object-fit: cover;">
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Informations principales -->
+    <div class="row mb-4">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-4">
+                        <div>
+                            <h1 class="h2 mb-2">{{ evenement.titre }}</h1>
+                            <div class="d-flex gap-2">
+                                <span class="badge bg-{{ evenement.statut.value == 'A_VENIR' ? 'success' : 'secondary' }} fs-6">
+                                    {{ evenement.statut.value == 'A_VENIR' ? 'À venir' : 'Terminé' }}
+                                </span>
+                                <span class="badge bg-primary fs-6">{{ evenement.type.value }}</span>
+                            </div>
+                        </div>
+                        <div class="text-end">
+                            <a href="{{ path('app_evenement_edit', {id: evenement.id}) }}" class="btn btn-outline-primary btn-sm mb-2">
+                                <i class="fe fe-edit"></i> Modifier
+                            </a>
+                            <form method="post" action="{{ path('app_evenement_delete', {id: evenement.id}) }}" onsubmit="return confirm('Supprimer cet événement ?');" class="d-inline">
+                                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ evenement.id) }}">
+                                <button class="btn btn-outline-danger btn-sm" type="submit">
+                                    <i class="fe fe-trash"></i> Supprimer
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <h5 class="fw-bold text-muted mb-3"><i class="fe fe-file-text me-2"></i>Description</h5>
+                        <p class="text-muted">{{ evenement.description }}</p>
+                    </div>
+
+                    <hr class="my-4">
+
+                    <div class="row g-4">
+                        <div class="col-md-6">
+                            <h6 class="fw-bold text-muted mb-3"><i class="fe fe-calendar me-2"></i>Dates</h6>
+                            <dl class="row mb-0">
+                                <dt class="col-sm-5 text-muted">Début:</dt>
+                                <dd class="col-sm-7">
+                                    <i class="fe fe-clock me-1"></i>
+                                    {{ evenement.dateDebut ? evenement.dateDebut|date('d/m/Y H:i') : '-' }}
+                                </dd>
+                                <dt class="col-sm-5 text-muted">Fin:</dt>
+                                <dd class="col-sm-7">
+                                    <i class="fe fe-clock me-1"></i>
+                                    {{ evenement.dateFin ? evenement.dateFin|date('d/m/Y H:i') : '-' }}
+                                </dd>
+                                <dt class="col-sm-5 text-muted">Créé le:</dt>
+                                <dd class="col-sm-7 mb-0">
+                                    {{ evenement.dateCreation ? evenement.dateCreation|date('d/m/Y') : '-' }}
+                                </dd>
+                            </dl>
+                        </div>
+
+                        <div class="col-md-6">
+                            <h6 class="fw-bold text-muted mb-3"><i class="fe fe-info me-2"></i>Informations</h6>
+                            <dl class="row mb-0">
+                                <dt class="col-sm-5 text-muted">Capacité:</dt>
+                                <dd class="col-sm-7">
+                                    <i class="fe fe-users me-1"></i>
+                                    {{ evenement.capaciteMax }} personnes
+                                </dd>
+                                <dt class="col-sm-5 text-muted">Prix ticket:</dt>
+                                <dd class="col-sm-7">
+                                    <i class="fe fe-dollar-sign me-1"></i>
+                                    {{ evenement.prixTicket }}€
+                                </dd>
+                                <dt class="col-sm-5 text-muted">ID:</dt>
+                                <dd class="col-sm-7 mb-0">
+                                    #{{ evenement.id }}
+                                </dd>
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <!-- Galerie -->
+            {% if evenement.galerie %}
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title fw-bold mb-3">
+                        <i class="fe fe-map-pin me-2"></i>Galerie
+                    </h5>
+                    <div class="mb-3">
+                        <h6 class="mb-1">{{ evenement.galerie.nom }}</h6>
+                        <p class="text-muted small mb-2">
+                            <i class="fe fe-map me-1"></i>{{ evenement.galerie.adresse }}
+                        </p>
+                        <p class="text-muted small mb-2">
+                            <i class="fe fe-navigation me-1"></i>{{ evenement.galerie.localisation }}
+                        </p>
+                        {% if evenement.galerie.description %}
+                        <p class="text-muted small mb-0">{{ evenement.galerie.description }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Artiste -->
+            {% if evenement.artiste %}
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title fw-bold mb-3">
+                        <i class="fe fe-user me-2"></i>Artiste
+                    </h5>
+                    <div class="d-flex align-items-center">
+                        <div class="avatar avatar-lg bg-light rounded-circle me-3">
+                            <span class="avatar-initials">{{ evenement.artiste.nom|slice(0, 1)|upper }}</span>
+                        </div>
+                        <div>
+                            <h6 class="mb-0">{{ evenement.artiste.nom }} {{ evenement.artiste.prenom }}</h6>
+                            <p class="text-muted small mb-0">{{ evenement.artiste.email }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Localisation (pleine largeur en bas) -->
+    {% if evenement.galerie %}
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title fw-bold mb-4">
+                        <i class="fe fe-map me-2"></i>Localisation
+                    </h5>
+                    <div class="row">
+                        <div class="col-md-4 mb-3 mb-md-0">
+                            <dl class="mb-0">
+                                <dt class="text-muted mb-2">Adresse complète</dt>
+                                <dd class="mb-3">
+                                    <i class="fe fe-map-pin me-1 text-primary"></i>
+                                    {{ evenement.galerie.adresse }}
+                                </dd>
+                                <dt class="text-muted mb-2">Ville</dt>
+                                <dd class="mb-3">
+                                    <i class="fe fe-navigation me-1 text-primary"></i>
+                                    {{ evenement.galerie.localisation }}
+                                </dd>
+                                <dt class="text-muted mb-2">Capacité de la galerie</dt>
+                                <dd class="mb-0">
+                                    <i class="fe fe-users me-1 text-primary"></i>
+                                    {{ evenement.galerie.capaciteMax }} personnes
+                                </dd>
+                            </dl>
+                        </div>
+                        <div class="col-md-8">
+                            <div class="bg-light rounded d-flex align-items-center justify-content-center" style="height: 300px;">
+                                <div class="text-center">
+                                    <i class="fe fe-map display-4 text-muted mb-3"></i>
+                                    <p class="text-muted">Carte interactive à venir</p>
+                                    <p class="text-muted small">{{ evenement.galerie.adresse }}, {{ evenement.galerie.localisation }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

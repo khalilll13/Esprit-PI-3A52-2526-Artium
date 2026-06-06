@@ -1,0 +1,396 @@
+{% extends 'base_admin.html.twig' %}
+
+{%block title %}{{ 'Tableau de bord'|trans }}{% endblock %}
+
+{% block admin_content %}
+<div class="container-fluid py-4">
+    <h1 class="mb-4">Tableau de bord</h1>
+    <style>
+    .dashboard-cards {
+        display: flex;
+        flex-wrap: nowrap;
+        justify-content: center;
+        gap: 1.2rem;
+        margin-bottom: 2.5rem;
+        overflow-x: auto;
+        scrollbar-width: thin;
+        scrollbar-color: #e0e0e0 #fafafa;
+    }
+    .dashboard-card {
+        background: #fff;
+        border-radius: 1.1rem;
+        box-shadow: 0 2px 12px 0 rgba(60,60,60,0.07);
+        border: 1.5px solid #f0f1f3;
+        width: 200px;
+        min-width: 170px;
+        max-width: 220px;
+        padding: 1.3rem 1.1rem 1.1rem 1.1rem;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        transition: box-shadow 0.18s, transform 0.18s;
+        flex-shrink: 0;
+    }
+    .dashboard-card:hover {
+        box-shadow: 0 6px 24px 0 rgba(60,60,60,0.13);
+        transform: translateY(-2px) scale(1.02);
+    }
+    .dashboard-icon {
+        width: 38px;
+        height: 38px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        font-size: 1.25rem;
+        margin-bottom: 0.7rem;
+        margin-top: 0.1rem;
+    }
+    .icon-users { color: #2196f3; background: #e3f2fd; }
+    .icon-artistes { color: #8e24aa; background: #f3e5f5; }
+    .icon-oeuvres { color: #43cea2; background: #e0f7fa; }
+    .icon-amateurs { color: #ff9800; background: #fff3e0; }
+    .icon-reclam { color: #e53935; background: #ffebee; }
+    .icon-events { color: #3949ab; background: #e8eaf6; }
+    .dashboard-number {
+        font-size: 2.1rem;
+        font-weight: 700;
+        color: #222;
+        margin-bottom: 0.2rem;
+        margin-top: 0.1rem;
+        text-align: center;
+    }
+    .dashboard-label {
+        font-size: 1.08rem;
+        color: #666;
+        font-weight: 500;
+        letter-spacing: 0.2px;
+        text-align: center;
+        margin-top: 0.1rem;
+    }
+    .dashboard-arrow {
+        position: absolute;
+        bottom: 14px;
+        right: 16px;
+        font-size: 1.4rem;
+        color: #2196f3;
+        opacity: 0.85;
+        transition: color 0.18s;
+    }
+    .dashboard-card:hover .dashboard-arrow {
+        color: #1565c0;
+        opacity: 1;
+    }
+    @media (prefers-color-scheme: dark) {
+        .dashboard-arrow {
+            color: #90caf9;
+        }
+        .dashboard-card:hover .dashboard-arrow {
+            color: #1976d2;
+        }
+    }
+    @media (max-width: 991px) {
+        .dashboard-cards { gap: 0.7rem; }
+        .dashboard-card { width: 44vw; min-width: 120px; }
+    }
+    @media (max-width: 767px) {
+        .dashboard-cards { gap: 0.5rem; }
+        .dashboard-card { width: 80vw; min-width: 110px; }
+    }
+    </style>
+    <div class="dashboard-cards">
+        <div class="dashboard-card position-relative" style="cursor:pointer;" onclick="window.location.href='{{ path('app_user_index') }}'">
+            <div class="dashboard-icon icon-users"><i class="bi bi-people"></i></div>
+            <div class="dashboard-number">{{ users_count|default('...') }}</div>
+            <div class="dashboard-label">Utilisateurs</div>
+            <span class="dashboard-arrow"><i class="bi bi-arrow-right-circle-fill"></i></span>
+        </div>
+        <div class="dashboard-card position-relative" style="cursor:pointer;" onclick="window.location.href='{{ path('app_user_artistes') }}'">
+            <div class="dashboard-icon icon-artistes"><i class="bi bi-person-badge"></i></div>
+            <div class="dashboard-number">{{ artistes_count|default('...') }}</div>
+            <div class="dashboard-label">Artistes</div>
+            <span class="dashboard-arrow"><i class="bi bi-arrow-right-circle-fill"></i></span>
+        </div>
+        <div class="dashboard-card position-relative" style="cursor:pointer;" onclick="window.location.href='{{ path('app_user_amateurs') }}'">
+            <div class="dashboard-icon icon-amateurs"><i class="bi bi-emoji-smile"></i></div>
+            <div class="dashboard-number">{{ amateurs_count|default('...') }}</div>
+            <div class="dashboard-label">Amateurs</div>
+            <span class="dashboard-arrow"><i class="bi bi-arrow-right-circle-fill"></i></span>
+        </div>
+        <div class="dashboard-card position-relative" style="cursor:pointer;" onclick="window.location.href='{{ path('oeuvres') }}'">
+            <div class="dashboard-icon icon-oeuvres"><i class="bi bi-images"></i></div>
+            <div class="dashboard-number">{{ oeuvres_count|default('...') }}</div>
+            <div class="dashboard-label">Œuvres</div>
+            <span class="dashboard-arrow"><i class="bi bi-arrow-right-circle-fill"></i></span>
+        </div>
+        <div class="dashboard-card position-relative" style="cursor:pointer;" onclick="window.location.href='{{ path('app_reclamation_admin_index') }}'">
+            <div class="dashboard-icon icon-reclam"><i class="bi bi-exclamation-circle"></i></div>
+            <div class="dashboard-number">{{ reclamations_count|default('...') }}</div>
+            <div class="dashboard-label">Réclamations</div>
+            <span class="dashboard-arrow"><i class="bi bi-arrow-right-circle-fill"></i></span>
+        </div>
+            <div class="dashboard-card position-relative" style="cursor:pointer;" onclick="window.location.href='{{ path('evenements') }}'">
+            <div class="dashboard-icon icon-events"><i class="bi bi-calendar3"></i></div>
+            <div class="dashboard-number">{{ events_count|default('...') }}</div>
+            <div class="dashboard-label">Événements</div>
+            <span class="dashboard-arrow"><i class="bi bi-arrow-right-circle-fill"></i></span>
+        </div>
+    </div>
+
+    <div class="row g-4 mb-4">
+        <!-- Graphique inscriptions -->
+        <div class="col-lg-8">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-header bg-white border-bottom-0 d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Inscriptions (6 derniers mois)</h5>
+                    <span class="badge bg-light text-dark">Mois courant</span>
+                </div>
+                <div class="card-body">
+                    <canvas id="activityChart" height="120"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-header bg-white border-bottom-0">
+                    <h5 class="mb-0">Répartition des rôles</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="rolesChart" height="180"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4 mb-4">
+        <!-- Activité récente & réclamations urgentes -->
+        <div class="col-lg-6">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-header bg-white border-bottom-0">
+                    <h5 class="mb-0">Inscriptions récentes (24h)</h5>
+                </div>
+                <div class="card-body p-0">
+                    <ul class="list-group list-group-flush">
+                        {% for u in recent_signups|default([]) %}
+                        <li class="list-group-item d-flex align-items-center gap-3">
+                            <i class="bi bi-person-plus text-success fs-5"></i>
+                            <span class="fw-bold">{{ u.nom }} {{ u.prenom }}</span>
+                            <span class="ms-auto text-muted small">{{ u.dateInscription ? u.dateInscription|date('d/m/Y') : '' }}</span>
+                        </li>
+                        {% else %}
+                        <li class="list-group-item text-center text-muted">Aucune inscription récente</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-header bg-white border-bottom-0 d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Réclamations récentes (24h)</h5>
+                    <a href="{{ path('app_reclamation_admin_index') }}" class="btn btn-sm btn-outline-primary">Voir tout</a>
+                </div>
+                <div class="card-body p-0">
+                    <ul class="list-group list-group-flush">
+                        {% for r in recent_reclamations|default([]) %}
+                        <li class="list-group-item d-flex align-items-center gap-3">
+                            <i class="bi bi-clock-history text-primary fs-5"></i>
+                            <span class="fw-bold">{{ r.texte|slice(0, 40) ~ (r.texte|length > 40 ? '...' : '') }}</span>
+                            <span class="ms-auto text-muted small">{{ r.dateCreation ? r.dateCreation|date('d/m/Y') : '' }}</span>
+                        </li>
+                        {% else %}
+                        <li class="list-group-item text-center text-muted">Aucune réclamation récente</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4 mb-4">
+        <!-- Top artistes & calendrier -->
+        <div class="col-lg-6">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-header bg-white border-bottom-0">
+                    <h5 class="mb-0">Top artistes</h5>
+                </div>
+                <div class="card-body p-0">
+                    <ul class="list-group list-group-flush">
+                        {% for t in top_artistes|default([]) %}
+                        <li class="list-group-item d-flex align-items-center gap-3">
+                            <span class="avatar-img rounded-circle d-flex align-items-center justify-content-center bg-light text-secondary-emphasis position-relative" style="width:32px;height:32px;">
+                                    <i class="bi bi-person fs-6 position-absolute top-50 start-50 translate-middle" style="opacity:0.5;"></i>
+                                </span>
+                            <div>
+                                <div class="fw-bold">{{ t.nom }} {{ t.prenom }}</div>
+                                <div class="text-muted small">Œuvres : {{ t.nbOeuvres }}</div>
+                            </div>
+                        </li>
+                        {% else %}
+                        <li class="list-group-item text-center text-muted">Aucun artiste à afficher</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-header bg-white border-bottom-0">
+                    <h5 class="mb-0">Calendrier des événements</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3 d-flex gap-2 align-items-center">
+                        <label for="eventFilter" class="fw-bold">Filtrer :</label>
+                        <select id="eventFilter" class="form-select form-select-sm w-auto">
+                            <option value="all">Tous les événements</option>
+                            <option value="upcoming">Événements à venir</option>
+                            <option value="today">Aujourd'hui</option>
+                        </select>
+                    </div>
+                    <div id="calendar" style="min-height:200px;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row mb-4">
+        <div class="col-12 text-end">
+            <button id="show-connection-history" class="btn btn-outline-primary" data-user-id="{{ app.user.id }}">
+                <i class="bi bi-clock-history"></i> Historique de mes connexions
+            </button>
+        </div>
+    </div>
+
+    <!-- Modal Bootstrap -->
+    <div class="modal fade" id="connectionHistoryModal" tabindex="-1" aria-labelledby="connectionHistoryModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content" id="connection-history-modal-content">
+          <!-- Contenu chargé dynamiquement -->
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/locales/fr.global.min.js"></script>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Chart inscriptions
+        if (window.Chart) {
+            var ctx = document.getElementById('activityChart').getContext('2d');
+            var activityLabels = {{ activity_labels|default(['Jan','Fév','Mar','Avr','Mai','Juin'])|json_encode|raw }};
+            var activityData = {{ activity_data|default([5,8,6,10,7,12])|json_encode|raw }};
+            // Fallback: if no data, show zeros
+            if (!activityLabels || activityLabels.length === 0) {
+                activityLabels = ['Jan','Fév','Mar','Avr','Mai','Juin'];
+            }
+            if (!activityData || activityData.length === 0) {
+                activityData = [0,0,0,0,0,0];
+            }
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: activityLabels,
+                    datasets: [{
+                        label: 'Inscriptions',
+                        data: activityData,
+                        borderColor: '#007bff',
+                        backgroundColor: 'rgba(0,123,255,0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: { legend: { display: false } },
+                    scales: { y: { beginAtZero: true } }
+                }
+            });
+            // Chart rôles
+            var ctx2 = document.getElementById('rolesChart').getContext('2d');
+            var rolesData = {{ roles_data|default([2,10,20])|json_encode|raw }};
+            if (!rolesData || rolesData.length === 0) {
+                rolesData = [0,0,0];
+            }
+            new Chart(ctx2, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Admin', 'Artistes', 'Amateurs'],
+                    datasets: [{
+                        data: rolesData,
+                        backgroundColor: ['#2196f3','#8e24aa','#ff9800'],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    plugins: { legend: { position: 'bottom' } }
+                }
+            });
+        }
+        // Calendar
+        if (window.FullCalendar) {
+            var calendarEl = document.getElementById('calendar');
+            var eventFilterEl = document.getElementById('eventFilter');
+            var allEvents = {{ events_data|default([])|json_encode|raw }};
+            if (calendarEl) {
+                var calendar = new FullCalendar.Calendar(calendarEl, {
+                    initialView: 'dayGridMonth',
+                    height: 250,
+                    locale: 'fr',
+                    events: allEvents,
+                    eventDidMount: function(info) {
+                        // Highlight today's events
+                        var today = new Date();
+                        var eventDate = new Date(info.event.start);
+                        if (
+                            eventDate.getDate() === today.getDate() &&
+                            eventDate.getMonth() === today.getMonth() &&
+                            eventDate.getFullYear() === today.getFullYear()
+                        ) {
+                            info.el.style.backgroundColor = '#ff9800';
+                            info.el.style.color = '#fff';
+                        }
+                    }
+                });
+                calendar.render();
+
+                eventFilterEl.addEventListener('change', function() {
+                    var filter = eventFilterEl.value;
+                    var filteredEvents = allEvents;
+                    var today = new Date();
+                    if (filter === 'upcoming') {
+                        filteredEvents = allEvents.filter(function(e) {
+                            var start = new Date(e.start);
+                            return start >= today;
+                        });
+                    } else if (filter === 'today') {
+                        filteredEvents = allEvents.filter(function(e) {
+                            var start = new Date(e.start);
+                            return (
+                                start.getDate() === today.getDate() &&
+                                start.getMonth() === today.getMonth() &&
+                                start.getFullYear() === today.getFullYear()
+                            );
+                        });
+                    }
+                    calendar.removeAllEvents();
+                    calendar.addEventSource(filteredEvents);
+                });
+            }
+        }
+        // Connection history
+        const btn = document.getElementById('show-connection-history');
+        if (btn) {
+            btn.addEventListener('click', function() {
+                const userId = btn.getAttribute('data-user-id');
+                fetch(`/admin/user/${userId}/connections/popup`)
+                    .then(response => response.text())
+                    .then(html => {
+                        document.getElementById('connection-history-modal-content').innerHTML = html;
+                        const modal = new bootstrap.Modal(document.getElementById('connectionHistoryModal'));
+                        modal.show();
+                    });
+            });
+        }
+    });
+    </script>
+{% endblock %}

@@ -1,0 +1,126 @@
+{% extends 'base_artiste.html.twig' %}
+
+{% block title %}{{ 'Evènements'|trans }}{% endblock %}
+
+{% block artiste_content %}
+{% form_theme new_form 'bootstrap_5_layout.html.twig' %}
+  <div class="card">
+    <div class="card-header border-0 pb-0 d-flex align-items-center justify-content-between">
+      <div>
+        <h5 class="card-title mb-1">Mes evenements</h5>
+        <p class="small mb-0 text-muted">Gerez vos evenements et leur statut.</p>
+      </div>
+      <button class="btn btn-primary" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasCreateEvent" aria-controls="offcanvasCreateEvent">
+        <i class="bi bi-calendar2-event me-1"></i>Ajouter
+      </button>
+    </div>
+    <div class="card-body">
+      {% if evenement_rows is empty %}
+        <div class="text-center text-muted py-5">
+          <i class="bi bi-calendar2-event fs-1 d-block mb-2"></i>
+          <p class="mb-0">Aucun evenement pour le moment.</p>
+        </div>
+      {% else %}
+        <div class="row g-3">
+          {% for row in evenement_rows %}
+            {% set evenement = row.evenement %}
+            <div class="col-12">
+              <div class="d-md-flex align-items-center border rounded p-3">
+                <div class="me-3">
+                  {% if row.image %}
+                    <img src="{{ row.image }}" alt="{{ evenement.titre }}" class="rounded" style="width: 96px; height: 72px; object-fit: cover;">
+                  {% else %}
+                    <div class="bg-light rounded d-flex align-items-center justify-content-center" style="width: 96px; height: 72px;">
+                      <i class="bi bi-image text-muted"></i>
+                    </div>
+                  {% endif %}
+                </div>
+                <div class="flex-grow-1">
+                  <h6 class="mb-1">{{ evenement.titre }}</h6>
+                  <div class="small text-muted">
+                    <span><i class="bi bi-calendar-check pe-1"></i>{{ evenement.dateDebut ? evenement.dateDebut|date('d/m/Y H:i') : '' }}</span>
+                    <span class="ms-3"><i class="bi bi-tag pe-1"></i>{{ evenement.type ? evenement.type.value : '' }}</span>
+                    <span class="ms-3"><i class="bi bi-circle-fill pe-1"></i>{{ evenement.statut ? evenement.statut.value : '' }}</span>
+                    <span class="ms-3"><i class="bi bi-ticket-perforated pe-1"></i>{{ row.tickets_sold }} vendu(s)</span>
+                  </div>
+                  <p class="small mb-0 text-truncate event-description">{{ evenement.description|striptags|slice(0, 140) }}</p>
+                </div>
+                <div class="d-flex gap-2 mt-3 mt-md-0">
+                  {% if evenement.statut and evenement.statut.value == 'À venir' %}
+                    <form method="post" action="{{ path('app_eventsartiste_cancel', { id: evenement.id }) }}" onsubmit="return confirm('Annuler cet evenement ?');">
+                      <input type="hidden" name="_token" value="{{ csrf_token('cancel_event_' ~ evenement.id) }}">
+                      <button class="btn btn-sm btn-outline-warning" type="submit" title="Annuler">
+                        <i class="bi bi-x-circle"></i>
+                      </button>
+                    </form>
+                  {% endif %}
+                  <button class="btn btn-sm btn-outline-primary" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasEditEvent{{ evenement.id }}">
+                    Editer
+                  </button>
+                  <form method="post" action="{{ path('app_eventsartiste_delete', { id: evenement.id }) }}" onsubmit="return confirm('Supprimer cet evenement ?');">
+                    <input type="hidden" name="_token" value="{{ csrf_token('delete_event_' ~ evenement.id) }}">
+                    <button class="btn btn-sm btn-outline-danger" type="submit">Supprimer</button>
+                  </form>
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="offcanvas offcanvas-end {% if show_add_form %}show{% endif %}" tabindex="-1" id="offcanvasCreateEvent" style="width: 720px; visibility: visible;" {% if show_add_form %}aria-modal="true" role="dialog"{% endif %}>
+    <div class="offcanvas-body" data-simplebar>
+      <div class="offcanvas-header px-2 pt-0">
+        <div>
+          <h3 class="offcanvas-title mb-0">Ajouter un evenement</h3>
+          <small class="text-muted">Renseignez les details</small>
+        </div>
+        <div class="ms-auto me-2">
+          <span class="badge bg-info text-dark" id="ai-ticket-estimate" data-default-text="Estimation IA: --">Estimation IA: --</span>
+        </div>
+        <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+      </div>
+      <div class="container">
+        <div class="card border-0 shadow-sm">
+          <div class="card-body">
+            {% include 'Front Office/Partials/event_form_fields.html.twig' with {
+              form: new_form,
+              submit_label: 'Creer'
+            } %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {% for row in evenement_rows %}
+    {% set evenement = row.evenement %}
+    {% set edit_form = edit_forms[evenement.id] %}
+    {% if edit_form is defined %}
+      {% form_theme edit_form 'bootstrap_5_layout.html.twig' %}
+      <div class="offcanvas offcanvas-end {% if show_edit_forms[evenement.id] is defined %}show{% endif %}" tabindex="-1" id="offcanvasEditEvent{{ evenement.id }}" style="width: 720px; visibility: visible;" {% if show_edit_forms[evenement.id] is defined %}aria-modal="true" role="dialog"{% endif %}>
+        <div class="offcanvas-body" data-simplebar>
+          <div class="offcanvas-header px-2 pt-0">
+            <div>
+              <h3 class="offcanvas-title mb-0">Modifier evenement</h3>
+              <small class="text-muted">Mettez a jour les details</small>
+            </div>
+            <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+          </div>
+          <div class="container">
+            <div class="card border-0 shadow-sm">
+              <div class="card-body">
+                {% include 'Front Office/Partials/event_form_fields.html.twig' with {
+                  form: edit_form,
+                  submit_label: 'Mettre a jour'
+                } %}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    {% endif %}
+  {% endfor %}
+{% endblock %}

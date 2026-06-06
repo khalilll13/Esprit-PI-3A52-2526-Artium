@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>{% block title %}{% endblock %}</title>
+	<!-- Required meta tags front -->
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<meta name="author" content="Webestica.com">
+	<meta name="description" content="Bootstrap 5 based Social Media Network and Community Theme">
+
+	<!-- Favicon icon front-->
+	<link rel="shortcut icon" href="{{asset('assetsback/images/iconn.ico')}}">
+
+	<!-- Dark mode JS front-->
+	<script>
+		const storedTheme = localStorage.getItem('theme')
+
+		const getPreferredTheme = () => {
+			if (storedTheme) {
+				return storedTheme
+			}
+			return window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'light'
+		}
+
+		const setTheme = function (theme) {
+			if (theme === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+				document.documentElement.setAttribute('data-bs-theme', 'dark')
+			} else {
+				document.documentElement.setAttribute('data-bs-theme', theme)
+			}
+		}
+
+		setTheme(getPreferredTheme())
+
+		window.addEventListener('DOMContentLoaded', () => {
+			var el = document.querySelector('.theme-icon-active');
+			if (el != 'undefined' && el != null) {
+				const showActiveTheme = theme => {
+					const activeThemeIcon = document.querySelector('.theme-icon-active use')
+					const btnToActive = document.querySelector(`[data-bs-theme-value="${theme}"]`)
+					const svgOfActiveBtn = btnToActive.querySelector('.mode-switch use').getAttribute('href')
+
+					document.querySelectorAll('[data-bs-theme-value]').forEach(element => {
+						element.classList.remove('active')
+					})
+
+					btnToActive.classList.add('active')
+					activeThemeIcon.setAttribute('href', svgOfActiveBtn)
+				}
+
+				window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+					if (storedTheme !== 'light' || storedTheme !== 'dark') {
+						setTheme(getPreferredTheme())
+					}
+				})
+
+				showActiveTheme(getPreferredTheme())
+
+				document.querySelectorAll('[data-bs-theme-value]')
+					.forEach(toggle => {
+						toggle.addEventListener('click', () => {
+							const theme = toggle.getAttribute('data-bs-theme-value')
+							localStorage.setItem('theme', theme)
+							setTheme(theme)
+							showActiveTheme(theme)
+						})
+					})
+
+			}
+		})
+
+	</script>
+
+	<!-- Google Font front -->
+	<link rel="preconnect" href="https://fonts.googleapis.com/">
+	<link rel="stylesheet"
+		href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap">
+
+	{% block stylesheets %}
+	<!-- Frontoffice Template Css -->
+	<link rel="stylesheet" type="text/css" href="{{ asset('assetsfront/vendor/font-awesome/css/all.min.css') }}">
+	<link rel="stylesheet" type="text/css" href="{{ asset('assetsfront/vendor/bootstrap-icons/bootstrap-icons.css') }}">
+	<link rel="stylesheet" type="text/css"
+		href="{{ asset('assetsfront/vendor/OverlayScrollbars-master/css/OverlayScrollbars.min.css') }}">
+	<link rel="stylesheet" type="text/css" href="{{ asset('assetsfront/vendor/tiny-slider/dist/tiny-slider.css') }}">
+	<link rel="stylesheet" type="text/css"href="{{ asset('assetsfront/vendor/choices.js/public/assets/styles/choices.min.css') }}">
+	<link rel="stylesheet" type="text/css"href="{{ asset('assetsfront/vendor/glightbox-master/dist/css/glightbox.min.css') }}">
+	<link rel="stylesheet" type="text/css" href="{{ asset('assetsfront/vendor/dropzone/dist/dropzone.css') }}">
+	<link rel="stylesheet" type="text/css" href="{{ asset('assetsfront/vendor/flatpickr/dist/flatpickr.css') }}">
+	<link rel="stylesheet" type="text/css" href="{{ asset('assetsfront/vendor/plyr/plyr.css') }}">
+	<link rel="stylesheet" type="text/css" href="{{ asset('assetsfront/vendor/zuck.js/dist/zuck.min.css') }}">
+
+	<link rel="stylesheet" type="text/css" href="{{ asset('assetsfront/css/style.css') }}">
+
+	{% block importmap %}{{ importmap('app') }}{% endblock %}
+
+	<!-- Disable old Dropzone auto-discovery BEFORE any Dropzone library loads -->
+	<script>
+		window.Dropzone = { autoDiscover: false };
+	</script>
+
+	<!-- Global site tag (gtag.js) - Google Analytics -->
+	<script async src="https://www.googletagmanager.com/gtag/js?id=G-GMKQ4P9YMZ"></script>
+	<script>
+		window.dataLayer = window.dataLayer || [];
+		function gtag() { dataLayer.push(arguments); }
+		gtag('js', new Date());
+
+		gtag('config', 'G-GMKQ4P9YMZ');
+	</script>
+
+	{% endblock %}
+
+</head>
+
+<body>
+	<header class="navbar-light fixed-top header-static bg-mode">
+		{% include 'Front Office/feed/Partials/navbarartiste.html.twig' %}
+	</header>
+	
+	<main>
+		<div class="container">
+			<div class="row g-4">
+				
+				<!-- Main content START -->
+				<div class="col-lg-8 vstack gap-4">
+				{% include 'oeuvre_front/Partials/profile_artiste.html.twig' %}
+				{% for label, messages in app.flashes %}
+    			{% for message in messages %}
+        		<div class="alert alert-{{ label == 'error' ? 'danger' : label }} alert-dismissible fade show" role="alert">
+            	{{ message }}
+           		 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        		</div>
+    			{% endfor %}
+				{% endfor %}
+
+				
+				{% block artiste_content %}{% endblock %}
+				</div>
+				<!-- Right sidebar START -->
+				<div class="col-lg-4">
+                {% include 'oeuvre_front/Partials/sidebar_artiste.html.twig' %}
+				</div>
+				
+			  
+			</div>
+		</div>
+	</main>
+
+
+	<!-- Frontoffice Template Scripts -->
+	<script src="{{ asset('assetsfront/vendor/bootstrap/dist/js/bootstrap.bundle.min.js') }}"></script>
+
+	<script src="{{ asset('assetsfront/vendor/tiny-slider/dist/tiny-slider.js') }}"></script>
+	<script src="{{ asset('assetsfront/vendor/OverlayScrollbars-master/js/OverlayScrollbars.min.js') }}"></script>
+	<script src="{{ asset('assetsfront/vendor/choices.js/public/assets/scripts/choices.min.js') }}"></script>
+	<script src="{{ asset('assetsfront/vendor/glightbox-master/dist/js/glightbox.min.js') }}"></script>
+	<script src="{{ asset('assetsfront/vendor/flatpickr/dist/flatpickr.min.js') }}"></script>
+	<script src="{{ asset('assetsfront/vendor/plyr/plyr.js') }}"></script>
+	<script src="{{ asset('assetsfront/vendor/dropzone/dist/min/dropzone.min.js') }}"></script>
+	<script src="{{ asset('assetsfront/vendor/zuck.js/dist/zuck.min.js') }}"></script>
+	<script src="{{ asset('assetsfront/js/zuck-stories.js') }}"></script>
+
+	<script src="{{ asset('assetsfront/js/functions.js') }}"></script>
+	{{ importmap() }}
+</body>
+
+</html>

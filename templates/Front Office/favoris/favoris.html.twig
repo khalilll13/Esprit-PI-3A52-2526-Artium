@@ -1,0 +1,664 @@
+{% extends 'base_amateur.html.twig' %}
+
+{% block title %}{{ 'Favoris'|trans }}{% endblock %}
+
+{% block amateur_content %}
+<!-- Card START -->
+				<div class="card">
+					<!-- Card header START -->
+					<div class="card-header d-sm-flex text-center align-items-center justify-content-between border-0 pb-0">
+						<h1 class="card-title h4">Favoris</h1>
+						
+					</div>
+					<!-- Card header START -->
+					<!-- Card body START -->
+					<div class="card-body">
+
+						<!-- Tab nav line START -->
+						<ul class="nav nav-tabs nav-bottom-line justify-content-center justify-content-md-start">
+							<li class="nav-item"> <a class="nav-link active" data-bs-toggle="tab" href="#tab-0"> Toutes les oeuvres </a> </li>
+							<li class="nav-item"> <a class="nav-link" data-bs-toggle="tab" href="#tab-1"> Peintures </a> </li>
+							<li class="nav-item"> <a class="nav-link" data-bs-toggle="tab" href="#tab-2"> Sculptures </a> </li>
+							<li class="nav-item"> <a class="nav-link" data-bs-toggle="tab" href="#tab-3"> Photographies </a> </li>
+						</ul>
+						<!-- Tab nav line START -->
+
+						<!-- Album Tab content START -->
+						<div class="tab-content mb-0 pb-0">
+
+							<!-- Toutes les oeuvres tab START -->
+							<div class="tab-pane fade show active" id="tab-0">
+								<div class="row g-3 align-items-start">
+									{% if favorites is not empty %}
+										{% for oeuvre in favorites %}
+											<div class="col-6 col-lg-3 position-relative" data-favorite-card data-oeuvre-id="{{ oeuvre.id }}">
+												<div class="position-absolute bottom-0 end-0">
+													<div class="dropdown mb-2 me-3">
+														<a href="#" class="icon-sm bg-primary text-white rounded-circle" id="photoActionEditAll{{ oeuvre.id }}" data-bs-toggle="dropdown" aria-expanded="false" data-turbo="false">
+															<i class="bi bi-pencil-fill"></i>
+														</a>
+														<ul class="dropdown-menu dropdown-menu-end" aria-labelledby="photoActionEditAll{{ oeuvre.id }}">
+													<li>
+														<a class="dropdown-item favorite-remove-toggle" href="#" data-oeuvre-id="{{ oeuvre.id }}" data-favorited="true">
+															<i class="bi bi-star-fill text-warning fa-fw pe-1"></i> Retirer des favoris
+														</a>
+													</li>
+														</ul>
+													</div>
+												</div>
+												{% if oeuvre.image %}
+													<a href="#" class="favorite-post-open" data-bs-toggle="modal" data-bs-target="#favorisPostModal{{ oeuvre.id }}">
+														<img class="rounded img-fluid" src="{{ path('favoris_oeuvre_image', {'id': oeuvre.id}) }}" alt="{{ oeuvre.titre }}">
+													</a>
+												{% else %}
+													<a href="#" class="favorite-post-open" data-bs-toggle="modal" data-bs-target="#favorisPostModal{{ oeuvre.id }}">
+														<img class="rounded img-fluid" src="{{ asset('assetsfront/images/albums/01.jpg') }}" alt="{{ oeuvre.titre }}">
+													</a>
+												{% endif %}
+										</div>
+									{% endfor %}
+								{% else %}
+									<p class="text-center text-muted">L'utilisateur n'a pas encore de favoris.</p>
+								{% endif %}
+								</div>
+							</div>
+							<!-- Toutes les oeuvres tab END -->
+
+							<!-- Peintures tab START -->
+							<div class="tab-pane fade" id="tab-1">
+								<div class="row g-3 align-items-start">
+									{% if favoritesPeintures is not empty %}
+										{% for oeuvre in favoritesPeintures %}
+											<div class="col-6 col-lg-3 position-relative" data-favorite-card data-oeuvre-id="{{ oeuvre.id }}">
+												<div class="position-absolute bottom-0 end-0">
+													<div class="dropdown mb-2 me-3">
+														<a href="#" class="icon-sm bg-primary text-white rounded-circle" id="photoActionEdit{{ oeuvre.id }}" data-bs-toggle="dropdown" aria-expanded="false" data-turbo="false">
+															<i class="bi bi-pencil-fill"></i>
+														</a>
+														<ul class="dropdown-menu dropdown-menu-end" aria-labelledby="photoActionEdit{{ oeuvre.id }}">
+															<li>
+																<a class="dropdown-item favorite-remove-toggle" href="#" data-oeuvre-id="{{ oeuvre.id }}" data-favorited="true">
+															<i class="bi bi-star-fill text-warning fa-fw pe-1"></i> Retirer des favoris
+														</a>
+													</li>
+														</ul>
+													</div>
+												</div>
+												{% if oeuvre.image %}
+													<a href="#" class="favorite-post-open" data-bs-toggle="modal" data-bs-target="#favorisPostModal{{ oeuvre.id }}">
+														<img class="rounded img-fluid" src="{{ path('favoris_oeuvre_image', {'id': oeuvre.id}) }}" alt="{{ oeuvre.titre }}">
+													</a>
+												{% else %}
+													<a href="#" class="favorite-post-open" data-bs-toggle="modal" data-bs-target="#favorisPostModal{{ oeuvre.id }}">
+														<img class="rounded img-fluid" src="{{ asset('assetsfront/images/albums/01.jpg') }}" alt="{{ oeuvre.titre }}">
+													</a>
+												{% endif %}
+											</div>
+										{% endfor %}
+								{% else %}
+									<p class="text-center text-muted">Aucune oeuvre favorite dans cette categorie.</p>
+								{% endif %}
+
+								</div>
+							</div>
+							<!-- Peintures tab END -->
+
+							<!-- Sculptures tab START -->
+							<div class="tab-pane fade" id="tab-2">
+								<div class="row g-3 align-items-start">
+								{% if favoritesSculptures is not empty %}
+									{% for oeuvre in favoritesSculptures %}
+										<div class="col-6 col-lg-3 position-relative" data-favorite-card data-oeuvre-id="{{ oeuvre.id }}">
+											<div class="position-absolute bottom-0 end-0">
+												<div class="dropdown mb-2 me-3">
+												<a href="#" class="icon-sm bg-primary text-white rounded-circle" id="photoActionEdit{{ oeuvre.id }}" data-bs-toggle="dropdown" aria-expanded="false" data-turbo="false">
+													<i class="bi bi-pencil-fill"></i>
+												</a>
+												<ul class="dropdown-menu dropdown-menu-end" aria-labelledby="photoActionEdit{{ oeuvre.id }}">
+											<li>
+												<a class="dropdown-item favorite-remove-toggle" href="#" data-oeuvre-id="{{ oeuvre.id }}" data-favorited="true">
+																<i class="bi bi-star-fill text-warning fa-fw pe-1"></i> Retirer des favoris
+															</a>
+														</li>
+													</ul>
+												</div>
+											</div>
+											{% if oeuvre.image %}
+												<a href="#" class="favorite-post-open" data-bs-toggle="modal" data-bs-target="#favorisPostModal{{ oeuvre.id }}">
+													<img class="rounded img-fluid" src="{{ path('favoris_oeuvre_image', {'id': oeuvre.id}) }}" alt="{{ oeuvre.titre }}">
+												</a>
+											{% else %}
+												<a href="#" class="favorite-post-open" data-bs-toggle="modal" data-bs-target="#favorisPostModal{{ oeuvre.id }}">
+													<img class="rounded img-fluid" src="{{ asset('assetsfront/images/albums/01.jpg') }}" alt="{{ oeuvre.titre }}">
+												</a>
+											{% endif %}
+										</div>
+									{% endfor %}
+								{% else %}
+									<p class="text-center text-muted">Aucune oeuvre favorite dans cette categorie.</p>
+								{% endif %}
+							</div>
+						</div>
+						<!-- Sculptures tab END -->
+							
+							<!-- Photographies tab START -->
+							<div class="tab-pane fade" id="tab-3">
+								<div class="row g-3 align-items-start">
+									{% if favoritesPhotographies is not empty %}
+										{% for oeuvre in favoritesPhotographies %}
+											<div class="col-6 col-lg-3 position-relative" data-favorite-card data-oeuvre-id="{{ oeuvre.id }}">
+												<div class="position-absolute bottom-0 end-0">
+													<div class="dropdown mb-2 me-3">
+													<a href="#" class="icon-sm bg-primary text-white rounded-circle" id="photoActionEdit{{ oeuvre.id }}" data-bs-toggle="dropdown" aria-expanded="false" data-turbo="false">
+															<i class="bi bi-pencil-fill"></i>
+														</a>
+														<ul class="dropdown-menu dropdown-menu-end" aria-labelledby="photoActionEdit{{ oeuvre.id }}">
+													<li>
+														<a class="dropdown-item favorite-remove-toggle" href="#" data-oeuvre-id="{{ oeuvre.id }}" data-favorited="true">
+															<i class="bi bi-star-fill text-warning fa-fw pe-1"></i> Retirer des favoris
+														</a>
+													</li>
+														</ul>
+													</div>
+												</div>
+												{% if oeuvre.image %}
+													<a href="#" class="favorite-post-open" data-bs-toggle="modal" data-bs-target="#favorisPostModal{{ oeuvre.id }}">
+														<img class="rounded img-fluid" src="{{ path('favoris_oeuvre_image', {'id': oeuvre.id}) }}" alt="{{ oeuvre.titre }}">
+													</a>
+												{% else %}
+													<a href="#" class="favorite-post-open" data-bs-toggle="modal" data-bs-target="#favorisPostModal{{ oeuvre.id }}">
+														<img class="rounded img-fluid" src="{{ asset('assetsfront/images/albums/01.jpg') }}" alt="{{ oeuvre.titre }}">
+													</a>
+												{% endif %}
+											</div>
+										{% endfor %}
+									{% else %}
+										<p class="text-center text-muted">Aucune oeuvre favorite dans cette categorie.</p>
+									{% endif %}
+								</div>
+							</div>
+							<!-- Photographies tab END -->
+
+						</div>
+
+					<!-- Album Tab content END -->
+					</div>
+				<!-- Card body END -->
+				</div>
+			<!-- Card END -->
+
+			{% if favorites is not empty %}
+				{% for oeuvre in favorites %}
+					{% set oeuvreImageUrl = oeuvre.image ? path('favoris_oeuvre_image', {'id': oeuvre.id}) : asset('assetsfront/images/albums/01.jpg') %}
+					{% include 'Front Office/favoris/_favoris_post_modal.html.twig' with { oeuvre: oeuvre, imageUrl: oeuvreImageUrl } %}
+				{% endfor %}
+			{% endif %}
+
+<script>
+function updateFavorisCommentCount(frame) {
+	if (!frame || !frame.id || !frame.id.startsWith('comments-fav-')) {
+		return;
+	}
+
+	const oeuvreId = frame.id.replace('comments-fav-', '');
+	const count = frame.querySelectorAll('.comment-item').length;
+	if (!oeuvreId) {
+		return;
+	}
+
+	document.querySelectorAll(`.comment-count[data-oeuvre-id="${oeuvreId}"]`).forEach((el) => {
+		el.textContent = count;
+	});
+}
+
+function syncFavorisComments(frame) {
+	if (!frame || !frame.id || !frame.id.startsWith('comments-fav-')) {
+		return;
+	}
+
+	// Check if comments were previously expanded
+	if (frame.dataset.commentsExpanded === 'true') {
+		frame.querySelectorAll('.comment-item.hidden-comment.d-none').forEach((item) => {
+			item.classList.remove('d-none');
+		});
+
+		// Hide the load more button since all comments are visible
+		const loadMoreBtn = frame.querySelector('.fav-comments-load-more');
+		if (loadMoreBtn) {
+			const btnContainer = loadMoreBtn.closest('.pt-2');
+			if (btnContainer) {
+				btnContainer.style.display = 'none';
+			}
+		}
+	}
+}
+
+document.addEventListener('turbo:frame-load', function (event) {
+	updateFavorisCommentCount(event.target);
+	syncFavorisComments(event.target);
+});
+
+document.addEventListener('click', function (event) {
+	const commentsBtn = event.target.closest('.fav-comments-load-more');
+	if (commentsBtn) {
+		event.preventDefault();
+
+		if (commentsBtn.classList.contains('active')) {
+			return;
+		}
+
+		commentsBtn.classList.add('active');
+		const loader = commentsBtn.querySelector('.comments-loader');
+		const text = commentsBtn.querySelector('.comments-load-text');
+		if (loader) {
+			loader.style.display = 'inline-flex';
+		}
+		if (text) {
+			text.textContent = 'Chargement...';
+		}
+
+		setTimeout(() => {
+			const scope = commentsBtn.closest('.fav-comments-container')
+				|| commentsBtn.closest('.glightbox-desc')
+				|| commentsBtn.closest('.gdesc-inner')
+				|| commentsBtn.closest('.favoris-post-details');
+			if (!scope) {
+				commentsBtn.classList.remove('active');
+				if (loader) {
+					loader.style.display = 'none';
+				}
+				if (text) {
+					text.textContent = 'Voir plus de commentaires';
+				}
+				return;
+			}
+
+			// Mark the turbo-frame as expanded
+			const turboFrame = scope.closest('turbo-frame');
+			if (turboFrame) {
+				turboFrame.dataset.commentsExpanded = 'true';
+			}
+
+			const hiddenComments = Array.from(scope.querySelectorAll('.comment-item.hidden-comment.d-none'));
+			hiddenComments.forEach((comment) => {
+				comment.classList.remove('d-none');
+			});
+
+			const remaining = scope.querySelectorAll('.comment-item.hidden-comment.d-none').length;
+			if (remaining === 0) {
+				const btnContainer = commentsBtn.closest('.pt-2');
+				if (btnContainer) {
+					btnContainer.style.display = 'none';
+				}
+				return;
+			} else if (text) {
+				text.textContent = 'Voir plus de commentaires';
+			}
+
+			commentsBtn.classList.remove('active');
+			if (loader) {
+				loader.style.display = 'none';
+			}
+		}, 450);
+
+		return;
+	}
+
+	// Like toggle functionality
+	const likeLink = event.target.closest('.like-toggle');
+	if (likeLink) {
+		event.preventDefault();
+		// Prevent duplicate processing
+		if (likeLink.dataset.processing === 'true') return;
+		likeLink.dataset.processing = 'true';
+		const oeuvreId = likeLink.dataset.oeuvreId;
+		const icon = likeLink.querySelector('i');
+		const countSpan = likeLink.querySelector('.like-count');
+
+		fetch(`/oeuvre/${oeuvreId}/like-ajax`, {
+			method: 'POST',
+			headers: {
+				'X-Requested-With': 'XMLHttpRequest'
+			}
+		})
+		.then(response => response.json())
+		.then(data => {
+			if (data.success) {
+				if (data.liked) {
+					icon.classList.add('bi-heart-fill', 'text-danger');
+					icon.classList.remove('bi-heart');
+					likeLink.dataset.liked = 'true';
+				} else {
+					icon.classList.remove('bi-heart-fill', 'text-danger');
+					icon.classList.add('bi-heart');
+					likeLink.dataset.liked = 'false';
+				}
+				countSpan.textContent = data.likeCount;
+
+				// Update all like-toggle links for this oeuvre across all tabs/glightbox instances
+				document.querySelectorAll(`.like-toggle[data-oeuvre-id="${oeuvreId}"]`).forEach((link) => {
+					const linkIcon = link.querySelector('i');
+					const linkCount = link.querySelector('.like-count');
+					if (linkIcon) {
+						if (data.liked) {
+							linkIcon.classList.add('bi-heart-fill', 'text-danger');
+							linkIcon.classList.remove('bi-heart');
+						} else {
+							linkIcon.classList.remove('bi-heart-fill', 'text-danger');
+							linkIcon.classList.add('bi-heart');
+						}
+					}
+					if (linkCount) {
+						linkCount.textContent = data.likeCount;
+					}
+					link.dataset.liked = data.liked ? 'true' : 'false';
+				});
+			}
+		})
+		.catch(error => {
+			console.error('Error toggling like:', error);
+		})
+		.finally(() => {
+			likeLink.dataset.processing = 'false';
+		});
+		return;
+	}
+
+	const removeLink = event.target.closest('.favorite-remove-toggle');
+	if (!removeLink) {
+		return;
+	}
+
+	event.preventDefault();
+
+	const oeuvreId = removeLink.dataset.oeuvreId;
+	if (!oeuvreId || removeLink.dataset.loading === 'true') {
+		return;
+	}
+
+	removeLink.dataset.loading = 'true';
+
+	fetch(`/oeuvre/${oeuvreId}/favorite-ajax`, {
+		method: 'POST',
+		headers: {
+			'X-Requested-With': 'XMLHttpRequest'
+		},
+		credentials: 'same-origin'
+	})
+	.then(response => response.json())
+	.then(data => {
+		if (!data.success) {
+			return;
+		}
+
+		if (data.favorited === false) {
+			document.querySelectorAll(`[data-favorite-card][data-oeuvre-id="${oeuvreId}"]`).forEach((card) => {
+				card.remove();
+			});
+
+			// If a modal for this oeuvre is open, hide it
+			try {
+				const modalElement = document.getElementById(`favorisPostModal${oeuvreId}`);
+				if (modalElement && typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+					bootstrap.Modal.getOrCreateInstance(modalElement).hide();
+				}
+			} catch (err) {}
+
+			// Close GLightbox if open and avoid the automatic reload handler
+			try {
+				window._skipGlightboxReload = true;
+				const gClose = document.querySelector('.gclose');
+				if (gClose) {
+					gClose.click();
+				} else {
+					const active = document.querySelector('.glightbox-container:not(.inactive)');
+					if (active) {
+						// try to remove the container
+						active.classList.add('inactive');
+					}
+				}
+			} catch (err) {}
+
+			const emptyMessages = {
+				'tab-0': "L'utilisateur n'a pas encore de favoris.",
+				'tab-1': 'Aucune oeuvre favorite dans cette categorie.',
+				'tab-2': 'Aucune oeuvre favorite dans cette categorie.',
+				'tab-3': 'Aucune oeuvre favorite dans cette categorie.'
+			};
+
+			document.querySelectorAll('.tab-pane .row.g-3').forEach((row) => {
+				const tabPane = row.closest('.tab-pane');
+				if (!tabPane) {
+					return;
+				}
+
+				const hasCards = row.querySelector('[data-favorite-card]') !== null;
+				let emptyState = row.querySelector('.favorite-empty-state');
+
+				if (!hasCards && !emptyState) {
+					emptyState = document.createElement('p');
+					emptyState.className = 'col-12 text-center text-muted favorite-empty-state';
+					emptyState.textContent = emptyMessages[tabPane.id] || 'Aucune oeuvre favorite dans cette categorie.';
+					row.appendChild(emptyState);
+				}
+
+				if (hasCards && emptyState) {
+					emptyState.remove();
+				}
+			});
+		}
+	})
+	.catch(() => {})
+	.finally(() => {
+		removeLink.dataset.loading = 'false';
+	});
+});
+
+// Reload page when GLightbox closes
+document.addEventListener('keydown', function(e) {
+	if (e.key === 'Escape' && document.querySelector('.glightbox-container:not(.inactive)')) {
+		// Don't reload if skip flag is set (we closed programmatically)
+		if (window._skipGlightboxReload) { window._skipGlightboxReload = false; return; }
+		setTimeout(() => {
+			location.reload();
+		}, 100);
+	}
+});
+
+document.addEventListener('click', function(e) {
+	if (!document.querySelector('.glightbox-container:not(.inactive)')) {
+		return;
+	}
+
+	const overlay = e.target.closest('.goverlay');
+	if (overlay) {
+		if (window._skipGlightboxReload) { window._skipGlightboxReload = false; return; }
+		setTimeout(() => {
+			location.reload();
+		}, 100);
+	}
+
+	const closeBtn = e.target.closest('.gclose');
+	if (closeBtn) {
+		if (window._skipGlightboxReload) { window._skipGlightboxReload = false; return; }
+		setTimeout(() => {
+			location.reload();
+		}, 100);
+	}
+});
+
+// Auto-reopen GLightbox after comment submission and page reload
+document.addEventListener('DOMContentLoaded', function() {
+	const storedOeuvreId = sessionStorage.getItem('reopenGlightboxOeuvreId');
+	if (storedOeuvreId) {
+		sessionStorage.removeItem('reopenGlightboxOeuvreId');
+
+		const modalElement = document.getElementById(`favorisPostModal${storedOeuvreId}`);
+		if (modalElement && typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+			setTimeout(() => {
+				bootstrap.Modal.getOrCreateInstance(modalElement).show();
+			}, 200);
+			return;
+		}
+		
+		// Find and click the gallery link for this oeuvre
+		setTimeout(() => {
+			const galleryLink = document.querySelector(`a[data-gallery="favorites"][data-glightbox*="custom-desc-${storedOeuvreId}"]`);
+			if (galleryLink) {
+				galleryLink.click();
+			}
+		}, 300);
+	}
+});
+
+// Store oeuvre ID when comment form is submitted inside GLightbox
+document.addEventListener('submit', function(e) {
+	const form = e.target;
+	
+	// For add/edit/delete comment - check for oeuvre_id input
+	const oeuvreInput = form.querySelector('input[name="oeuvre_id"]');
+	if (oeuvreInput && oeuvreInput.value) {
+		sessionStorage.setItem('reopenGlightboxOeuvreId', oeuvreInput.value);
+		return;
+	}
+	
+	// For add comment without oeuvre_id input
+	if (form.action && form.action.includes('/oeuvre/') && form.action.includes('/commentaire')) {
+		const match = form.action.match(/\/oeuvre\/(\d+)\/commentaire/);
+		if (match) {
+			const oeuvreId = match[1];
+			sessionStorage.setItem('reopenGlightboxOeuvreId', oeuvreId);
+		}
+	}
+});
+
+// Inline comment edit toggle
+document.addEventListener('click', function(e) {
+	const editToggle = e.target.closest('.comment-edit-toggle');
+	if (editToggle) {
+		const editId = editToggle.dataset.editId;
+		const viewId = editToggle.dataset.viewId;
+		const editForm = document.getElementById(editId);
+		const textView = document.getElementById(viewId);
+
+		if (editForm && textView) {
+			textView.classList.add('d-none');
+			editForm.classList.remove('d-none');
+			const textarea = editForm.querySelector('textarea[name="contenu"]');
+			if (textarea) {
+				textarea.focus();
+				textarea.selectionStart = textarea.value.length;
+			}
+		}
+	}
+
+	const cancelToggle = e.target.closest('.comment-edit-cancel');
+	if (cancelToggle) {
+		const editId = cancelToggle.dataset.editId;
+		const viewId = cancelToggle.dataset.viewId;
+		const editForm = document.getElementById(editId);
+		const textView = document.getElementById(viewId);
+
+		if (editForm && textView) {
+			editForm.classList.add('d-none');
+			textView.classList.remove('d-none');
+		}
+	}
+});
+</script>
+
+<style>
+	.favoris-post-modal .modal-dialog {
+		max-width: min(1240px, calc(100vw - 48px));
+		margin: 24px auto;
+	}
+
+	.favoris-post-modal .modal-content {
+		border-radius: 0.9rem;
+		overflow: hidden;
+		max-height: calc(100vh - 48px);
+	}
+
+	.favoris-post-close {
+		position: absolute;
+		top: 12px;
+		right: 12px;
+		z-index: 3;
+		background-color: rgba(255, 255, 255, 0.9);
+		border-radius: 50%;
+	}
+
+	.favoris-post-modal .modal-body {
+		padding: 0;
+	}
+
+	.favoris-post-modal .row {
+		min-height: min(760px, calc(100vh - 110px));
+	}
+
+	.favoris-post-media-wrap {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		background: var(--bs-light);
+		padding: 18px;
+	}
+
+	.favoris-post-media-wrap img {
+		max-width: 100%;
+		max-height: min(700px, calc(100vh - 150px));
+		width: auto;
+		height: auto;
+		object-fit: contain;
+	}
+
+	.favoris-post-details {
+		height: min(760px, calc(100vh - 110px));
+		overflow: hidden;
+		overflow-x: hidden;
+		display: flex;
+		flex-direction: column;
+		gap: 0.5rem;
+	}
+
+	.favoris-post-scroll {
+		flex: 1 1 auto;
+		min-height: 0;
+		overflow-y: auto;
+		padding-right: 6px;
+	}
+
+	.favoris-post-modal .fav-comments-container .comment-item {
+		margin-bottom: 0.9rem;
+	}
+
+	.favoris-post-modal .fav-comments-container .comment-item:last-child {
+		margin-bottom: 0;
+	}
+
+	@media (max-width: 991px) {
+		.favoris-post-modal .modal-dialog {
+			max-width: calc(100vw - 20px);
+			margin: 10px auto;
+		}
+
+		.favoris-post-modal .modal-content {
+			max-height: calc(100vh - 20px);
+		}
+
+		.favoris-post-modal .row,
+		.favoris-post-details {
+			height: auto;
+		}
+
+		.favoris-post-scroll {
+			overflow: visible;
+			padding-right: 0;
+		}
+
+		.favoris-post-media-wrap img {
+			max-height: 48vh;
+		}
+	}
+</style>
+{% endblock %}

@@ -1,0 +1,77 @@
+{% extends 'base_amateur.html.twig' %}
+
+{% block title %}Reclamation #{{ reclamation.id }}{% endblock %}
+
+{% block amateur_content %}
+    <div class="card">
+        <div class="card-header border-bottom pb-3">
+            <div class="d-flex align-items-center justify-content-between">
+                <h1 class="h4 mb-0">Reclamation #{{ reclamation.id }}</h1>
+                <a href="{{ path('app_reclamationfront') }}" class="btn btn-sm btn-outline-secondary">
+                    <i class="bi bi-arrow-left"></i> Retour
+                </a>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="mb-4">
+                <div class="d-flex align-items-center gap-3 mb-3">
+                    {% if reclamation.statut and reclamation.statut.value == 'Non traitée' %}
+                        <span class="badge bg-warning text-dark">Non traitee</span>
+                    {% elseif reclamation.statut and reclamation.statut.value == 'En cours' %}
+                        <span class="badge bg-info text-dark">En cours</span>
+                    {% else %}
+                        <span class="badge bg-success">Traitee</span>
+                    {% endif %}
+                    <span class="text-muted">Type: <strong>{{ reclamation.type ? reclamation.type.value : '-' }}</strong></span>
+                    <span class="text-muted">Date: <strong>{{ reclamation.dateCreation ? reclamation.dateCreation|date('d/m/Y') : '-' }}</strong></span>
+                </div>
+                <div class="bg-light rounded p-3">
+                    <p class="mb-0">{{ reclamation.texte }}</p>
+                </div>
+            </div>
+
+            <hr>
+
+            <h5 class="mb-3">
+                <i class="bi bi-chat-dots"></i> Reponses de l'administration
+                <span class="badge bg-secondary">{{ reclamation.reponses|length }}</span>
+            </h5>
+
+            {% if reclamation.reponses|length > 0 %}
+                <div class="d-flex flex-column gap-3">
+                    {% for reponse in reclamation.reponses %}
+                        <div class="card border">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <div class="avatar avatar-sm rounded-circle bg-primary text-white d-flex align-items-center justify-content-center">
+                                            <i class="bi bi-person"></i>
+                                        </div>
+                                        <div>
+                                            <div class="fw-semibold">
+                                                {{ reponse.userAdmin ? reponse.userAdmin.prenom ~ ' ' ~ reponse.userAdmin.nom : 'Administrateur' }}
+                                            </div>
+                                            <small class="text-muted">
+                                                {{ reponse.dateReponse ? reponse.dateReponse|date('d/m/Y à H:i') : '-' }}
+                                            </small>
+                                        </div>
+                                    </div>
+                                    <span class="badge bg-success-soft">Admin</span>
+                                </div>
+                                <div class="mt-2">
+                                    <p class="mb-0">{{ reponse.contenu }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="text-center py-5">
+                    <i class="bi bi-inbox" style="font-size: 3rem; color: #ccc;"></i>
+                    <p class="text-muted mt-3 mb-0">Aucune reponse pour le moment.</p>
+                    <small class="text-muted">L'administration vous repondra bientot.</small>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,80 @@
+
+<div class="row g-4">
+	<!-- Card START -->
+	<div class="col-md-6 col-lg-12">
+		<div class="card">
+			<div class="card-header border-0 pb-0">
+				<h5 class="card-title">A propos</h5>
+			</div>
+			<!-- Card body START -->
+			<div class="card-body position-relative pt-0">
+				<p>{{ app.user.biographie is defined and app.user.biographie ? app.user.biographie : 'Aucune biographie renseignée.' }}</p>
+				<!-- Date time -->
+				<ul class="list-unstyled mt-3 mb-0">
+					<li class="mb-2">
+						<i class="bi bi-calendar-date fa-fw pe-1"></i>
+						Né(e) :
+						<strong>
+							{{ app.user.dateNaissance is defined and app.user.dateNaissance ? app.user.dateNaissance|date('d M Y') : 'Non renseignée' }}
+						</strong>
+					</li>
+					<li class="mb-2">
+						<i class="bi bi-calendar2-plus fa-fw pe-1"></i>
+						Inscrit le :
+						<strong>
+							{{ app.user.dateInscription is defined and app.user.dateInscription ? app.user.dateInscription|date('d M Y') : 'Non renseignée' }}
+						</strong>
+					</li>
+					<li>
+						<i class="bi bi-envelope fa-fw pe-1"></i>
+						Email :
+						<strong>
+							{{ app.user.email is defined and app.user.email ? app.user.email : 'Non renseigné' }}
+						</strong>
+					</li>
+				</ul>
+			</div>
+			<!-- Card body END -->
+		</div>
+	</div>
+	<!-- Card END -->
+
+	   <!-- Card START -->
+	   <div class="col-md-6 col-lg-12">
+		   <div class="card">
+			   <!-- Card header START -->
+			   <div class="card-header d-flex justify-content-between border-0">
+				   <h5 class="card-title">Statistiques</h5>
+			   </div>
+			   <!-- Card header END -->
+			   <!-- Card body START -->
+			   <div class="card-body position-relative pt-0">
+				   <ul class="list-group list-group-flush">
+					   <li class="list-group-item d-flex justify-content-between align-items-center">
+						   <span><i class="bi bi-brush fa-fw pe-1"></i> Œuvres ajoutées</span>
+						   <span class="badge bg-primary-soft text-primary">{{ nbOeuvres ?? 0 }}</span>
+					   </li>
+					   <li class="list-group-item d-flex justify-content-between align-items-center">
+						   <span><i class="bi bi-exclamation-triangle fa-fw pe-1"></i> Réclamations faites</span>
+						   <span class="badge bg-warning-soft text-warning">{{ nbReclamations ?? 0 }}</span>
+					   </li>
+					   <li class="list-group-item d-flex justify-content-between align-items-center">
+						   <span><i class="bi bi-calendar-event fa-fw pe-1"></i> Événements créés</span>
+						   <span class="badge bg-info-soft text-info">{{ nbEvenements ?? 0 }}</span>
+					   </li>
+					   <li class="list-group-item d-flex justify-content-between align-items-center">
+						   <span><i class="bi bi-chat-left-text fa-fw pe-1"></i> Commentaires reçus</span>
+						   <span class="badge bg-success-soft text-success">{{ nbCommentaires ?? 0 }}</span>
+					   </li>
+					   <li class="list-group-item d-flex justify-content-between align-items-center">
+						   <span><i class="bi bi-hand-thumbs-up fa-fw pe-1"></i> Likes reçus</span>
+						   <span class="badge bg-danger-soft text-danger">{{ nbLikes ?? 0 }}</span>
+					   </li>
+				   </ul>
+			   </div>
+			   <!-- Card body END -->
+		   </div>
+	   </div>
+	   <!-- Card END -->
+</div>
+

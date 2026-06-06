@@ -1,0 +1,22 @@
+{% set offcanvas_id = offcanvas_id|default('offcanvasEvent') %}
+{% set title = title|default('Ajouter un evenement') %}
+{% set subtitle = subtitle|default('Renseignez les details') %}
+
+{% embed 'Front Office/Partials/offcanvas_base.html.twig' with {
+  offcanvas_id: offcanvas_id,
+  title: title,
+  subtitle: subtitle,
+  width: width|default('720px'),
+  z_index: z_index|default(2100)
+} %}
+  {% block offcanvas_body %}
+    <div class="card border-0 shadow-sm">
+      <div class="card-body">
+        {% include 'Front Office/Partials/event_form_fields.html.twig' with {
+          form: form,
+          submit_label: submit_label|default('Enregistrer')
+        } %}
+      </div>
+    </div>
+  {% endblock %}
+{% endembed %}

@@ -1,0 +1,143 @@
+{% extends 'base_amateur.html.twig' %}
+
+{% block title %}Paiement réussi - ARTIUM{% endblock %}
+
+{% block amateur_content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-6 col-md-8">
+            <div class="card shadow-lg border-0">
+                <div class="card-body text-center p-5">
+                    <!-- Icône de succès -->
+                    <div class="mb-4">
+                        <div class="bg-success bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center" 
+                             style="width: 100px; height: 100px;">
+                            <i class="bi bi-check-circle-fill text-success" style="font-size: 4rem;"></i>
+                        </div>
+                    </div>
+
+                    <!-- Titre -->
+                    <h2 class="fw-bold mb-3">Paiement réussi !</h2>
+                    
+                    <!-- Message -->
+                    {% if evenement %}
+                    <p class="text-muted mb-2">
+                        Votre ticket pour <strong>{{ evenement.titre }}</strong> a été acheté avec succès !
+                    </p>
+                    <p class="text-muted mb-4">
+                        Un email de confirmation vous a été envoyé avec votre ticket.
+                    </p>
+                    {% else %}
+                    <p class="text-muted mb-4">
+                        Votre ticket a été acheté avec succès et vous a été envoyé par email.
+                        <br>
+                        Veuillez vérifier votre boîte de réception.
+                    </p>
+                    {% endif %}
+
+                    <!-- Informations supplémentaires -->
+                    <div class="alert alert-info d-flex align-items-start mb-4">
+                        <i class="bi bi-info-circle-fill me-2 mt-1"></i>
+                        <div class="text-start small">
+                            <strong>Que faire ensuite ?</strong>
+                            <ul class="mb-0 mt-2 ps-3">
+                                <li>Votre ticket est disponible ci-dessous</li>
+                                <li>Vous pouvez le télécharger en PDF ou afficher le QR code</li>
+                                <li>Présentez le code QR à l'entrée de l'événement</li>
+                                <li>Le ticket est également disponible dans votre espace personnel</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Boutons d'action -->
+                    {% if ticket %}
+                    <div class="d-flex flex-column flex-sm-row gap-3 justify-content-center mb-4">
+                        <a href="{{ path('app_ticket_qr', { id: ticket.id }) }}" class="btn btn-primary" target="_blank">
+                            <i class="bi bi-qr-code me-2"></i>Afficher le QR Code
+                        </a>
+                        <a href="{{ path('app_ticket_download', { id: ticket.id }) }}" class="btn btn-success">
+                            <i class="bi bi-download me-2"></i>Télécharger le ticket PDF
+                        </a>
+                    </div>
+                    
+                    {% if evenement %}
+                    <div class="d-flex flex-column flex-sm-row gap-3 justify-content-center">
+                        <a href="{{ path('app_eventdetails', { id: evenement.id }) }}" class="btn btn-outline-primary">
+                            <i class="bi bi-calendar-event me-2"></i>Retour à l'événement
+                        </a>
+                        <a href="{{ path('app_eventsfront') }}" class="btn btn-outline-secondary">
+                            <i class="bi bi-list me-2"></i>Tous les événements
+                        </a>
+                    </div>
+                    {% endif %}
+                    {% else %}
+                    <div class="d-flex flex-column flex-sm-row gap-3 justify-content-center">
+                        <a href="{{ path('app_eventsfront') }}" class="btn btn-primary">
+                            <i class="bi bi-calendar-event me-2"></i>Mes événements
+                        </a>
+                        <a href="{{ path('app_bibliofront') }}" class="btn btn-outline-primary">
+                            <i class="bi bi-book me-2"></i>Ma bibliothèque
+                        </a>
+                    </div>
+                    {% endif %}
+
+                    <!-- Référence de session (pour support) -->
+                    {% if session_id %}
+                    <div class="mt-4 pt-4 border-top">
+                        <p class="small text-muted mb-0">
+                            Référence de transaction : <code class="small">{{ session_id }}</code>
+                        </p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Support -->
+            <div class="text-center mt-4">
+                <p class="text-muted small mb-0">
+                    <i class="bi bi-envelope me-1"></i>
+                    Une question ? Contactez-nous à 
+                    <a href="mailto:support@artium.tn" class="text-decoration-none">support@artium.tn</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .card {
+        border-radius: 16px;
+        animation: fadeInUp 0.5s ease-out;
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .btn {
+        border-radius: 8px;
+        padding: 12px 24px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+
+    .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+
+    code {
+        background: #f8f9fa;
+        padding: 4px 8px;
+        border-radius: 4px;
+        color: #667eea;
+    }
+</style>
+{% endblock %}

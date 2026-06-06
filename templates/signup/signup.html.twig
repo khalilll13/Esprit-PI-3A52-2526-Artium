@@ -1,0 +1,226 @@
+{% extends 'basesign.html.twig' %}
+
+{% block title %}S'inscrire{% endblock %}
+
+{% block body %}
+<main>
+      <section class="container d-flex flex-column vh-100">
+        <div class="row align-items-center justify-content-center g-0 h-lg-100 py-8">
+          <div class="col-lg-5 col-md-8 py-8 py-xl-0">
+            <!-- Card -->
+            <div class="card shadow">
+              <!-- Card body -->
+              <div class="card-body p-6 d-flex flex-column gap-4">
+                <div>
+                 <!-- style="display: block; margin: 0 auto;" -->
+                  <!--<img src="{{ asset('assetsback/images/logo2.png') }}"class="logo" " />-->
+                  <img src="{{ asset('assetsback/images/logo2.png') }}" class="logo logo-light">
+                  <img src="{{ asset('assetsback/images/Colored PNG White Logo.png') }}" class="logo logo-dark">
+                  <div class="d-flex flex-column gap-1">
+                  <!-- style="text-align: center;"-->
+                    <h1 class="mb-0 fw-bold" >S'inscrire</h1>
+                    <span>
+                      Vous avez déjà un compte?
+                      <a href="{{ path('app_signin') }}" class="ms-1">Se connecter</a>
+                    </span>
+                  </div>
+                </div>
+                <!-- Formulaire Symfony -->
+                {{ form_start(form, {'attr': {'class': 'needs-validation', 'novalidate': 'novalidate'}}) }}
+                {% if form.vars.errors|length > 0 %}
+                  <div class="alert alert-danger d-flex align-items-center mb-4">
+                    <i class="fe fe-alert-circle me-2 fs-3 text-danger"></i>
+                    <div>
+                      <strong>Veuillez corriger les erreurs suivantes :</strong>
+                      <ul class="mb-0 mt-2">
+                        {% for error in form.vars.errors %}
+                          <li>{{ error.message }}</li>
+                        {% endfor %}
+                      </ul>
+                    </div>
+                  </div>
+                {% endif %}
+
+                <div id="signup-step-1" class="signup-step">
+                  <h5 class="mb-3">Informations personnelles</h5>
+                  <div class="mb-3">{{ form_row(form.nom, {'error_attr': {'class': 'text-danger fw-bold d-flex align-items-center mt-1'}}) }}</div>
+                  <div class="mb-3">{{ form_row(form.prenom, {'error_attr': {'class': 'text-danger fw-bold d-flex align-items-center mt-1'}}) }}</div>
+                  <div class="mb-3">{{ form_row(form.dateNaissance, {'error_attr': {'class': 'text-danger fw-bold d-flex align-items-center mt-1'}}) }}</div>
+                  <div class="mb-3">{{ form_row(form.numTel, {'error_attr': {'class': 'text-danger fw-bold d-flex align-items-center mt-1'}}) }}</div>
+                  <div class="mb-3">{{ form_row(form.ville, {'error_attr': {'class': 'text-danger fw-bold d-flex align-items-center mt-1'}}) }}</div>
+                </div>
+                <div id="signup-step-2" class="signup-step" style="display:none;">
+                  <h5 class="mb-3">Informations de connexion</h5>
+                  <div class="mb-3">{{ form_row(form.email, {'error_attr': {'class': 'text-danger fw-bold d-flex align-items-center mt-1'}}) }}</div>
+                  <div class="mb-3">{{ form_row(form.plainPassword, {'error_attr': {'class': 'text-danger fw-bold d-flex align-items-center mt-1'}}) }}</div>
+                </div>
+                <div id="signup-step-3" class="signup-step" style="display:none;">
+                  <h5 class="mb-3">Rôle et informations complémentaires</h5>
+                  <div class="mb-3">{{ form_row(form.role, {'error_attr': {'class': 'text-danger fw-bold d-flex align-items-center mt-1'}}) }}</div>
+                  <div id="specialite-row" style="display:none;">
+                    <div class="mb-3">{{ form_row(form.specialite, {'error_attr': {'class': 'text-danger fw-bold d-flex align-items-center mt-1'}}) }}</div>
+                  </div>
+                  <div id="centreInteret-row" style="display:none;">
+                    <div class="mb-3">{{ form_row(form.centreInteret, {'error_attr': {'class': 'text-danger fw-bold d-flex align-items-center mt-1'}}) }}</div>
+                  </div>
+                  <div class="mb-3">{{ form_row(form.biographie, {'error_attr': {'class': 'text-danger fw-bold d-flex align-items-center mt-1'}}) }}</div>
+                  <div class="mb-3">
+                    <!-- Capture webcam pour la photo de référence -->
+                    <div style="text-align:center;">
+                      <label class="form-label">Photo de référence (reconnaissance faciale)</label>
+                      <div style="display:flex; flex-direction:column; align-items:center; justify-content:center;">
+                        <video id="video-signup" width="320" height="240" autoplay style="display:block;margin-bottom:10px;"></video>
+                        <canvas id="canvas-signup" width="320" height="240" style="display:none;"></canvas>
+                        <input type="file" id="faceSignupPhoto" name="photo" accept="image/*" style="display:none;" />
+                        {{ form_row(form.photo, {'attr': {'style': 'display:none'}}) }}
+                        <button type="button" class="btn btn-secondary mt-2" id="captureSignupBtn" style="width:200px;">Prendre une photo</button>
+                      </div>
+                    </div>
+                  </div>
+                  <script>
+                  const videoSignup = document.getElementById('video-signup');
+                  const canvasSignup = document.getElementById('canvas-signup');
+                  const captureSignupBtn = document.getElementById('captureSignupBtn');
+                  const fileSignupInput = document.getElementById('faceSignupPhoto');
+                  // Récupère le champ file généré par Symfony (form.photo)
+                  const symfonyPhotoInput = document.querySelector('input[name="signup[photo]"]');
+                  let previewImg = null;
+                  navigator.mediaDevices.getUserMedia({ video: true })
+                    .then(stream => {
+                      videoSignup.srcObject = stream;
+                    })
+                    .catch(err => {
+                      alert("Impossible d'accéder à la caméra : " + err.message);
+                    });
+                  captureSignupBtn.addEventListener('click', function() {
+                    canvasSignup.getContext('2d').drawImage(videoSignup, 0, 0, canvasSignup.width, canvasSignup.height);
+                    canvasSignup.toBlob(function(blob) {
+                      const file = new File([blob], 'reference.jpg', { type: 'image/jpeg' });
+                      const dataTransfer = new DataTransfer();
+                      dataTransfer.items.add(file);
+                      fileSignupInput.files = dataTransfer.files;
+                      // Synchronise avec le champ Symfony invisible
+                      if (symfonyPhotoInput) {
+                        symfonyPhotoInput.files = dataTransfer.files;
+                      }
+                      // Affiche un aperçu de la photo capturée
+                      if (!previewImg) {
+                        previewImg = document.createElement('img');
+                        previewImg.style.marginTop = '10px';
+                        previewImg.style.maxWidth = '200px';
+                        canvasSignup.parentNode.appendChild(previewImg);
+                      }
+                      previewImg.src = URL.createObjectURL(blob);
+                    }, 'image/jpeg');
+                  });
+                  </script>
+                </div>
+
+                <div class="d-flex justify-content-between mt-4">
+                  <div class="w-100 d-flex flex-column align-items-center gap-2 mt-2">
+                    <div class="d-flex w-100 gap-2 justify-content-center">
+                      <button type="button" class="btn btn-outline-secondary flex-fill" id="signup-prev" style="display:none; min-width:110px;">Précédent</button>
+                      <button type="button" class="btn btn-primary flex-fill" id="signup-next" style="min-width:110px;">Suivant</button>
+                      <button type="submit" class="btn btn-primary flex-fill" id="signup-submit" style="display:none; min-width:110px;">S'inscrire</button>
+                    </div>
+                    <div id="recaptcha-container" style="display:none; margin-top: 0.5rem; width:100%;">
+                      <div style="display:flex; justify-content:center; align-items:center; width:100%;">
+                        <div class="g-recaptcha" data-sitekey="{{ recaptcha_site_key }}" data-theme="light" style="transform:scale(0.80);-webkit-transform:scale(0.80);transform-origin:center;"></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                {{ form_end(form) }}
+
+                <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                  let currentStep = 1;
+                  const totalSteps = 3;
+                  const stepDivs = [
+                    document.getElementById('signup-step-1'),
+                    document.getElementById('signup-step-2'),
+                    document.getElementById('signup-step-3')
+                  ];
+                  const btnPrev = document.getElementById('signup-prev');
+                  const btnNext = document.getElementById('signup-next');
+                  const btnSubmit = document.getElementById('signup-submit');
+                  const roleSelect = document.getElementById('signup_role');
+                  const specialiteRow = document.getElementById('specialite-row');
+                  const centreInteretRow = document.getElementById('centreInteret-row');
+                  const recaptchaContainer = document.getElementById('recaptcha-container');
+
+                  function showStep(step) {
+                    stepDivs.forEach((div, idx) => {
+                      div.style.display = (idx === step - 1) ? '' : 'none';
+                    });
+                    btnPrev.style.display = (step > 1) ? '' : 'none';
+                    btnNext.style.display = (step < totalSteps) ? '' : 'none';
+                    btnSubmit.style.display = (step === totalSteps) ? '' : 'none';
+                    if (recaptchaContainer) recaptchaContainer.style.display = (step === totalSteps) ? '' : 'none';
+                  }
+
+                  btnNext.addEventListener('click', function() {
+                    if (currentStep < totalSteps) {
+                      currentStep++;
+                      showStep(currentStep);
+                    }
+                  });
+                  btnPrev.addEventListener('click', function() {
+                    if (currentStep > 1) {
+                      currentStep--;
+                      showStep(currentStep);
+                    }
+                  });
+                  showStep(currentStep);
+
+                  // Affichage dynamique spécialité/centre d'intérêt
+                  function toggleFields() {
+                    if (!roleSelect) return;
+                    const selectedRole = roleSelect.value.toLowerCase().trim();
+                    if (specialiteRow) specialiteRow.style.display = 'none';
+                    if (centreInteretRow) centreInteretRow.style.display = 'none';
+                    if (selectedRole === 'artiste') {
+                      if (specialiteRow) specialiteRow.style.display = 'block';
+                    } else if (selectedRole === 'amateur') {
+                      if (centreInteretRow) centreInteretRow.style.display = 'block';
+                    }
+                  }
+                  if (roleSelect) {
+                    toggleFields();
+                    roleSelect.addEventListener('change', toggleFields);
+                  }
+                });
+                </script>
+                <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+              
+                
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      <div class="position-absolute bottom-0 m-4">
+        <div class="dropdown">
+          <button class="btn btn-light btn-icon rounded-circle d-flex align-items-center" type="button" aria-expanded="false" data-bs-toggle="dropdown" aria-label="Toggle theme (auto)">
+            <i class="bi theme-icon-active"></i>
+            <span class="visually-hidden bs-theme-text">Toggle theme</span>
+          </button>
+          <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="bs-theme-text">
+            <li>
+              <button type="button" class="dropdown-item d-flex align-items-center" data-bs-theme-value="light" aria-pressed="false">
+                <i class="bi theme-icon bi-sun-fill"></i>
+                <span class="ms-2">Clair</span>
+              </button>
+            </li>
+            <li>
+              <button type="button" class="dropdown-item d-flex align-items-center" data-bs-theme-value="dark" aria-pressed="false">
+                <i class="bi theme-icon bi-moon-stars-fill"></i>
+                <span class="ms-2">Sombre</span>
+              </button>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </main>
+
+{% endblock %}

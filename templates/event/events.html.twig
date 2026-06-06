@@ -1,0 +1,436 @@
+{% extends 'base_admin.html.twig' %}
+
+{% block title %}{{ 'Événements'|trans }}{% endblock %}
+
+{% block admin_content %}
+{# BLOC 1 : EN-TÊTE DE PAGE #}
+<div class="row">
+  <div class="col-lg-12 col-md-12 col-12">
+    <div class="border-bottom pb-3 mb-3 d-flex align-items-center justify-content-between">
+      <div class="d-flex flex-column gap-1">
+        <h1 class="mb-0 h1 fw-bold">Gestion des événements</h1>
+        <nav aria-label="breadcrumb">
+          <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+              <a href="{{ path('app_admin') }}">Tableau de bord</a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">Événements</li>
+          </ol>
+        </nav>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-lg-12 col-md-12 col-12">
+    <!-- Card -->
+    <div class="card rounded-3">
+      <!-- Card Header avec filtres -->
+      <div class="card-header p-0">
+        <ul class="nav nav-lb-tab border-bottom-0" role="tablist">
+          <li class="nav-item">
+            <a class="nav-link {% if status_filter is empty %}active{% endif %}"
+              href="{{ path('evenements', filter_params|default({})|merge({'status': ''})) }}">
+              Tous
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link {% if status_filter == 'A_VENIR' %}active{% endif %}"
+              href="{{ path('evenements', filter_params|default({})|merge({'status': 'A_VENIR'})) }}">
+              À venir
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link {% if status_filter == 'TERMINE' %}active{% endif %}"
+              href="{{ path('evenements', filter_params|default({})|merge({'status': 'TERMINE'})) }}">
+              Terminé
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link {% if status_filter == 'ANNULE' %}active{% endif %}"
+              href="{{ path('evenements', filter_params|default({})|merge({'status': 'ANNULE'})) }}">
+              Annulé
+            </a>
+          </li>
+        </ul>
+      </div>
+      <div class="p-4 row">
+        <form class="row g-3 align-items-end" method="get" action="{{ path('evenements') }}" id="filterForm">
+          {% if status_filter is not empty %}
+            <input type="hidden" name="status" value="{{ status_filter }}">
+          {% endif %}
+          
+          {# Tout sur une seule ligne #}
+          <div class="col-12 col-md-3 col-lg-3">
+            <label class="form-label mb-1 small text-muted">Recherche</label>
+            <div class="position-relative">
+              <span class="position-absolute ps-3 search-icon" style="top: 50%; transform: translateY(-50%);">
+                <i class="fe fe-search"></i>
+              </span>
+              <input type="text" name="filter_value" class="form-control ps-6" placeholder="Titre ou type" value="{{ filter_value | default('') }}">
+            </div>
+          </div>
+          
+          <div class="col-12 col-md-2 col-lg-2">
+            <label class="form-label mb-1 small text-muted">Ordonner par</label>
+            <select name="sort" class="form-select" onchange="this.form.submit()">
+              <option value="titre_asc" {% if sort == 'titre_asc' %}selected{% endif %}>Titre (A-Z)</option>
+              <option value="titre_desc" {% if sort == 'titre_desc' %}selected{% endif %}>Titre (Z-A)</option>
+              <option value="date_asc" {% if sort == 'date_asc' %}selected{% endif %}>Date (↑)</option>
+              <option value="date_desc" {% if sort == 'date_desc' %}selected{% endif %}>Date (↓)</option>
+            </select>
+          </div>
+          
+          <div class="col-12 col-md-3 col-lg-3">
+            <label class="form-label mb-1 small text-muted">
+              Capacité: <span class="text-dark fw-semibold" id="capacite-range-display">{{ capacite_min | default('0') }} - {{ capacite_max | default('1000') }}</span>
+            </label>
+            <div class="dual-range-wrapper">
+              <input type="range" name="capacite_min" class="form-range dual-range-min auto-submit" min="0" max="1000" step="10" 
+                     value="{{ capacite_min | default('0') }}" data-target="capacite">
+              <input type="range" name="capacite_max" class="form-range dual-range-max auto-submit" min="0" max="1000" step="10" 
+                     value="{{ capacite_max | default('1000') }}" data-target="capacite">
+            </div>
+          </div>
+          
+          <div class="col-12 col-md-4 col-lg-4">
+            <label class="form-label mb-1 small text-muted">
+              Prix: <span class="text-dark fw-semibold" id="prix-range-display">{{ prix_min | default('0') }} - {{ prix_max | default('500') }}</span> DT
+            </label>
+            <div class="dual-range-wrapper">
+              <input type="range" name="prix_min" class="form-range dual-range-min auto-submit" min="0" max="500" step="5" 
+                     value="{{ prix_min | default('0') }}" data-target="prix">
+              <input type="range" name="prix_max" class="form-range dual-range-max auto-submit" min="0" max="500" step="5" 
+                     value="{{ prix_max | default('500') }}" data-target="prix">
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <div>
+        <div class="tab-content" id="tabContent">
+          <!-- Tab -->
+          <div class="tab-pane fade show active" id="all-events" role="tabpanel" aria-labelledby="all-events-tab">
+            <div class="table-responsive">
+              <!-- Table -->
+              <table class="table mb-0 text-nowrap table-centered table-hover">
+                <!-- Table Head -->
+                <thead class="table-light">
+                  <tr>
+                    <th style="width: 40px;"></th>
+                    <th>Titre</th>
+                    <th>Type</th>
+                    <th>Date début</th>
+                    <th>Capacité max</th>
+                    <th>Prix ticket</th>
+                    <th>Statut</th>
+                    <th class="text-end">Actions</th>
+                  </tr>
+                </thead>
+                <!-- Table Body -->
+                <tbody>
+                  {% for evenement in evenements %}
+                  {% set is_termine = evenement.dateFin and evenement.dateFin < "now" %}
+                  {% set status_value = evenement.statut ? evenement.statut.value : null %}
+                  {% set status_text = status_value ? status_value : (is_termine ? 'Terminé' : 'À venir') %}
+                  {% set status_class = status_text == 'Annulé' ? 'danger' : (status_text == 'Terminé' ? 'secondary' : 'success') %}
+                  <tr class="evenement-row" data-bs-toggle="collapse" data-bs-target="#evenementDetails{{ evenement.id }}" aria-expanded="false" aria-controls="evenementDetails{{ evenement.id }}" style="cursor: pointer;">
+                    <td>
+                      <i class="fe fe-chevron-down chevron-icon" id="chevron{{ evenement.id }}" style="transition: transform 0.3s ease;"></i>
+                    </td>
+                    <td>
+                      <h5 class="mb-0">{{ evenement.titre }}</h5>
+                    </td>
+                    <td>{{ evenement.type ? evenement.type.value : '-' }}</td>
+                    <td>{{ evenement.dateDebut ? evenement.dateDebut|date('d/m/Y H:i') : '-' }}</td>
+                    <td>{{ evenement.capaciteMax }}</td>
+                    <td>{{ evenement.prixTicket ? evenement.prixTicket ~ ' DT' : '-' }}</td>
+                    <td>
+                      <span class="badge bg-{{ status_class }}">
+                        {{ status_text }}
+                      </span>
+                    </td>
+                    <td class="text-end" onclick="event.stopPropagation();">
+                      <span class="dropdown dropstart">
+                        <a class="btn-icon btn btn-ghost btn-sm rounded-circle" href="#" role="button" id="evenementDropdown{{ evenement.id }}" data-bs-toggle="dropdown" data-bs-offset="-20,20" aria-expanded="false">
+                          <i class="fe fe-more-vertical"></i>
+                        </a>
+                        <span class="dropdown-menu" aria-labelledby="evenementDropdown{{ evenement.id }}">
+                          <form method="post" action="{{ path('app_evenement_delete', {id: evenement.id}) }}" onsubmit="return confirm('Supprimer cet événement ?');" style="width: 100%;">
+                            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ evenement.id) }}">
+                            <button class="dropdown-item" type="submit" style="width: 100%; text-align: left;">
+                              <i class="fe fe-trash dropdown-item-icon"></i>
+                              Supprimer
+                            </button>
+                          </form>
+                        </span>
+                      </span>
+                    </td>
+                  </tr>
+                  <!-- Details Row -->
+                  <tr class="collapse" id="evenementDetails{{ evenement.id }}">
+                    <td colspan="8">
+                      <div class="p-4">
+                        <div class="row">
+                          <div class="col-md-6">
+                            <h6 class="fw-bold text-muted mb-3">Informations détaillées</h6>
+                            <dl class="row">
+                              <dt class="col-sm-4">ID:</dt>
+                              <dd class="col-sm-8">{{ evenement.id }}</dd>
+                              
+                              <dt class="col-sm-4">Titre:</dt>
+                              <dd class="col-sm-8">{{ evenement.titre }}</dd>
+                              
+                              <dt class="col-sm-4">Type:</dt>
+                              <dd class="col-sm-8">{{ evenement.type ? evenement.type.value : '-' }}</dd>
+                              
+                              <dt class="col-sm-4">Statut:</dt>
+                              <dd class="col-sm-8">
+                                <span class="badge bg-{{ status_class }}">
+                                  {{ status_text }}
+                                </span>
+                              </dd>
+                            </dl>
+                          </div>
+                          <div class="col-md-6">
+                            <h6 class="fw-bold text-muted mb-3">Détails des dates et capacités</h6>
+                            <dl class="row">
+                              <dt class="col-sm-4">Date début:</dt>
+                              <dd class="col-sm-8">{{ evenement.dateDebut ? evenement.dateDebut|date('d/m/Y H:i') : '-' }}</dd>
+                              
+                              <dt class="col-sm-4">Date fin:</dt>
+                              <dd class="col-sm-8">{{ evenement.dateFin ? evenement.dateFin|date('d/m/Y H:i') : '-' }}</dd>
+                              
+                              <dt class="col-sm-4">Capacité max:</dt>
+                              <dd class="col-sm-8">{{ evenement.capaciteMax }} Personnes</dd>
+                              
+                              <dt class="col-sm-4">Prix ticket:</dt>
+                              <dd class="col-sm-8">{{ evenement.prixTicket ? evenement.prixTicket ~ ' DT' : '-' }}</dd>
+
+                              <dt class="col-sm-4">Tickets vendus:</dt>
+                              <dd class="col-sm-8">{{ tickets_sold[evenement.id]|default(0) }}</dd>
+                            </dl>
+                          </div>
+                        </div>
+                        {% if evenement.description %}
+                        <div class="mt-3">
+                          <h6 class="fw-bold text-muted">Description</h6>
+                          <p class="text-muted">{{ evenement.description }}</p>
+                        </div>
+                        {% endif %}
+                      </div>
+                    </td>
+                  </tr>
+                  {% else %}
+                  <tr>
+                    <td colspan="8" class="text-center text-muted">Aucun événement trouvé.</td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card Footer -->
+      <div class="card-footer">
+        <nav>
+          <ul class="pagination justify-content-center mb-0">
+            <li class="page-item {{ current_page == 1 ? 'disabled' : '' }}">
+              <a class="page-link mx-1 rounded" href="{{ path('evenements', filter_params | default({}) | merge({page: current_page - 1})) }}" aria-label="Previous">
+                <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="currentColor" class="bi bi-chevron-left" viewBox="0 0 16 16">
+                  <path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"></path>
+                </svg>
+              </a>
+            </li>
+            {% for p in 1..total_pages | default(1) %}
+            <li class="page-item {{ p == current_page ? 'active' : '' }}">
+              <a class="page-link mx-1 rounded" href="{{ path('evenements', filter_params | default({}) | merge({page: p})) }}">{{ p }}</a>
+            </li>
+            {% endfor %}
+            <li class="page-item {{ current_page == total_pages | default(1) ? 'disabled' : '' }}">
+              <a class="page-link mx-1 rounded" href="{{ path('evenements', filter_params | default({}) | merge({page: current_page + 1})) }}" aria-label="Next">
+                <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="currentColor" class="bi bi-chevron-right" viewBox="0 0 16 16">
+                  <path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"></path>
+                </svg>
+              </a>
+            </li>
+          </ul>
+        </nav>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Animer les flèches lors du collapse/expand
+  const collapseElements = document.querySelectorAll('[id^="evenementDetails"]');
+  
+  collapseElements.forEach(function(collapseEl) {
+    const eventId = collapseEl.id.replace('evenementDetails', '');
+    const chevronIcon = document.getElementById('chevron' + eventId);
+    
+    collapseEl.addEventListener('show.bs.collapse', function() {
+      if (chevronIcon) {
+        chevronIcon.style.transform = 'rotate(180deg)';
+      }
+    });
+    
+    collapseEl.addEventListener('hide.bs.collapse', function() {
+      if (chevronIcon) {
+        chevronIcon.style.transform = 'rotate(0deg)';
+      }
+    });
+  });
+});
+
+// Gestion des sliders doubles
+document.addEventListener('DOMContentLoaded', function() {
+  const dualRangeWrappers = document.querySelectorAll('.dual-range-wrapper');
+  const form = document.getElementById('filterForm');
+  let submitTimeout;
+  
+  dualRangeWrappers.forEach(function(wrapper) {
+    const minSlider = wrapper.querySelector('.dual-range-min');
+    const maxSlider = wrapper.querySelector('.dual-range-max');
+    const target = minSlider.dataset.target;
+    const display = document.getElementById(target + '-range-display');
+    const suffix = target === 'prix' ? ' DT' : '';
+    
+    function updateDisplay() {
+      const minVal = parseInt(minSlider.value);
+      const maxVal = parseInt(maxSlider.value);
+      
+      // Empêcher le chevauchement
+      if (minVal > maxVal - parseInt(minSlider.step)) {
+        minSlider.value = maxVal - parseInt(minSlider.step);
+      }
+      if (maxVal < minVal + parseInt(maxSlider.step)) {
+        maxSlider.value = minVal + parseInt(maxSlider.step);
+      }
+      
+      display.textContent = minSlider.value + ' - ' + maxSlider.value + suffix;
+      
+      // Mettre à jour la progression visuelle
+      const minPercent = (minSlider.value / minSlider.max) * 100;
+      const maxPercent = (maxSlider.value / maxSlider.max) * 100;
+      wrapper.style.setProperty('--min-percent', minPercent + '%');
+      wrapper.style.setProperty('--max-percent', maxPercent + '%');
+    }
+    
+    function autoSubmit() {
+      // Debounce: attendre 800ms après le dernier changement avant de soumettre
+      clearTimeout(submitTimeout);
+      submitTimeout = setTimeout(function() {
+        form.submit();
+      }, 800);
+    }
+    
+    minSlider.addEventListener('input', function() {
+      updateDisplay();
+    });
+    
+    maxSlider.addEventListener('input', function() {
+      updateDisplay();
+    });
+    
+    // Soumettre automatiquement quand l'utilisateur relâche le curseur
+    minSlider.addEventListener('change', autoSubmit);
+    maxSlider.addEventListener('change', autoSubmit);
+    
+    // Initialiser
+    updateDisplay();
+  });
+  
+  // Auto-submit pour le champ de recherche (avec debounce)
+  const searchInput = document.querySelector('input[name="filter_value"]');
+  if (searchInput) {
+    searchInput.addEventListener('input', function() {
+      clearTimeout(submitTimeout);
+      submitTimeout = setTimeout(function() {
+        form.submit();
+      }, 600);
+    });
+  }
+});
+</script>
+
+<style>
+.dual-range-wrapper {
+  position: relative;
+  height: 30px;
+  --min-percent: 0%;
+  --max-percent: 100%;
+}
+
+.dual-range-wrapper input[type="range"] {
+  position: absolute;
+  width: 100%;
+  pointer-events: none;
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  margin: 0;
+  padding: 0;
+}
+
+.dual-range-wrapper input[type="range"]::-webkit-slider-thumb {
+  pointer-events: all;
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #28a745;
+  cursor: pointer;
+  border: 2px solid white;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  position: relative;
+  z-index: 3;
+}
+
+.dual-range-wrapper input[type="range"]::-moz-range-thumb {
+  pointer-events: all;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #28a745;
+  cursor: pointer;
+  border: 2px solid white;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  position: relative;
+  z-index: 3;
+}
+
+.dual-range-wrapper input[type="range"]::-webkit-slider-runnable-track {
+  width: 100%;
+  height: 6px;
+  background: #dee2e6;
+  border-radius: 3px;
+}
+
+.dual-range-wrapper input[type="range"]::-moz-range-track {
+  width: 100%;
+  height: 6px;
+  background: #dee2e6;
+  border-radius: 3px;
+}
+
+.dual-range-wrapper::before {
+  content: '';
+  position: absolute;
+  top: 12px;
+  left: var(--min-percent);
+  right: calc(100% - var(--max-percent));
+  height: 6px;
+  background: #28a745;
+  border-radius: 3px;
+  z-index: 1;
+}
+</style>
+
+{% endblock %}

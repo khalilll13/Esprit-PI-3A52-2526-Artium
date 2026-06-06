@@ -1,0 +1,81 @@
+<turbo-frame id="comments-{{ oeuvre.id }}">
+    <ul class="comment-wrap list-unstyled mb-0">
+                {% for commentaire in oeuvre.commentaires %}
+                <!-- Comment item START -->
+                <li class="comment-item{% if loop.index > 3 %} hidden-comment d-none{% endif %}">
+                    <div class="d-flex">
+                        <!-- Avatar -->
+                        <div class="avatar avatar-xs">
+                            <a href="#!"><img class="avatar-img rounded-circle"
+                                    src="{{ asset('assetsfront/images/avatar/default.jpg') }}" alt=""></a>
+                        </div>
+                        <div class="ms-2 w-100">
+                            <!-- Comment by -->
+                            <div class="bg-light rounded-start-top-0 p-3 rounded w-100">
+                                <div class="d-flex justify-content-between">
+                                    <h6 class="mb-1">
+                                        <a href="#!">
+                                            {{ commentaire.user ? (commentaire.user.nom ~ ' ' ~ commentaire.user.prenom) : 'Utilisateur' }}
+                                        </a>
+                                    </h6>
+                                    <div class="d-flex align-items-center">
+                                        <small class="ms-2">{{ commentaire.dateCommentaire|date('d F Y') }}</small>
+                                        {% if commentaire.user and app.user and commentaire.user.id == app.user.id %}
+                                            <div class="dropdown ms-2">
+                                                <a href="#" class="text-secondary btn btn-sm btn-link p-0" id="commentAction{{ commentaire.id }}" data-bs-toggle="dropdown" aria-expanded="false" data-turbo="false">
+                                                    <i class="bi bi-three-dots"></i>
+                                                </a>
+                                                <ul class="dropdown-menu dropdown-menu-end shadow-sm" aria-labelledby="commentAction{{ commentaire.id }}">
+                                                    <li>
+                                                        <button type="button" class="dropdown-item comment-edit-toggle" data-edit-id="editComment{{ commentaire.id }}" data-view-id="commentText{{ commentaire.id }}">
+                                                            <i class="bi bi-pencil-square text-primary pe-2"></i>Modifier
+                                                        </button>
+                                                    </li>
+                                                    <li><hr class="dropdown-divider"></li>
+                                                    <li>
+                                                        <form method="post" action="{{ path('commentaire_delete', {'id': commentaire.id}) }}" class="m-0" data-turbo-frame="comments-{{ oeuvre.id }}">
+                                                            <input type="hidden" name="_token" value="{{ csrf_token('delete_comment_' ~ commentaire.id) }}">
+                                                            <input type="hidden" name="redirect_path" value="{{ app.request.pathInfo }}">
+                                                            <button type="submit" class="dropdown-item text-danger">
+                                                                <i class="bi bi-trash3 pe-2"></i>Supprimer
+                                                            </button>
+                                                        </form>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div id="commentText{{ commentaire.id }}" class="small mb-0 comment-text">{{ commentaire.texte }}</div>
+                                {% if commentaire.user and app.user and commentaire.user.id == app.user.id %}
+                                    <form method="post" action="{{ path('commentaire_edit', {'id': commentaire.id}) }}" class="d-none w-100" id="editComment{{ commentaire.id }}" data-turbo-frame="comments-{{ oeuvre.id }}">
+                                        <div class="position-relative w-100">
+                                            <textarea name="contenu" class="form-control bg-white w-100 comment-edit-textarea" rows="3">{{ commentaire.texte }}</textarea>
+                                            <input type="hidden" name="_token" value="{{ csrf_token('edit_comment_' ~ commentaire.id) }}">
+                                            <input type="hidden" name="redirect_path" value="{{ app.request.pathInfo }}">
+                                            <input type="hidden" name="oeuvre_id" value="{{ oeuvre.id }}">
+                                            <div class="d-flex gap-2 mt-2">
+                                                <button type="submit" class="btn btn-sm btn-primary">
+                                                    <i class="bi bi-check2"></i>Enregistrer
+                                                </button>
+                                                <button type="button" class="btn btn-sm btn-outline-secondary comment-edit-cancel" data-edit-id="editComment{{ commentaire.id }}" data-view-id="commentText{{ commentaire.id }}">
+                                                    <i class="bi bi-x-lg"></i>Annuler
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                {% endif %}
+                            </div>
+                            <!-- Comment react -->
+                            <ul class="nav nav-divider py-2 small">
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#!">Répondre</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </li>
+                <!-- Comment item END -->
+                {% endfor %}
+    </ul>
+</turbo-frame>
